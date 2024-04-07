@@ -38,6 +38,7 @@ jobs:
       - name: Install bazelisk if it's needed
         if: steps.cache-bazelisk-bin.outputs.cache-hit != 'true'
         run: |
+          mkdir -p ${{ env.BAZELISK_BIN_DIR }}
           wget https://github.com/bazelbuild/bazelisk/releases/download/${{ env.BAZELISK_VERSION }} \
             -O "${{ env.BAZELISK_BIN_DIR }}/bazelisk"
           chmod +x "${{ env.BAZELISK_BIN_DIR }}/bazelisk"
