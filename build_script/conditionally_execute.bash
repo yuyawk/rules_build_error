@@ -8,7 +8,7 @@ Wrapper to conditionally execute the command.
 
 With the option '-f', this script can receive arbitrary number of files.
 If any of them is an empty file, this script exits successfully
-without executing the commands.
+without executing the command.
 
 Usage: $0 [OPTIONS] COMMAND
 
