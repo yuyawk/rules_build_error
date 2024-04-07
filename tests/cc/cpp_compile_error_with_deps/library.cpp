@@ -1,6 +1,6 @@
-#include "library.h"
+#include "library.hpp"
 
 int FunctionWithOneParameter(int value)
 {
-    return 123;
+   return 123;
 }
