@@ -24,6 +24,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+      - name: Get build cache key
+        id: build-cache-key
+        run: |
+          echo "key=${{ runner.os }}-build-${{ hashFiles('**') }}" \
+            >> "${GITHUB_OUTPUT}"
+      - name: Try to restore build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache
+          key: ${{ steps.build-cache-key.outputs.key }}
+          restore-keys: ${{ runner.os }}-build-
       - name: Try to restore bazelisk binary
         id: cache-bazelisk-bin
         uses: actions/cache/restore@v4
@@ -47,3 +58,8 @@ jobs:
         run: echo "${{ env.BAZELISK_BIN_DIR }}" >> "${GITHUB_PATH}"
       - name: Run unit tests
         run: ./execute_tests.bash
+      - name: Save build cache
+        uses: actions/cache/save@v4
+        with:
+          path: .cache
+          key: ${{ steps.build-cache-key.outputs.key }}
