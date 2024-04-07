@@ -40,4 +40,9 @@ In order to specify how to validate the error message, a struct `matcher` is ava
 
 ### How to test
 
-Execute [`execute_tests.sh`](execute_tests.sh) after installing [`bazelisk`](https://github.com/bazelbuild/bazelisk).
+Execute [`execute_tests.sh`](execute_tests.sh) after installing [`bazelisk`](https://github.com/bazelbuild/bazelisk). It executes `bazelisk test` and `bazelisk build` commands under the hood.
+
+When writing tests, in principle, do the following things
+
+- Use `tags = ["manual", "fail-to-build"]` if a test case target must fail to build with `bazelisk build`
+- Otherwise, do not use any of the tags above for the target.
