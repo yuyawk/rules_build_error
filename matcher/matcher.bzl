@@ -8,16 +8,6 @@ and return a struct with the following members:
                         $1: Pattern string
                         $2: Text file path to investigate
                     and exits with an error if the pattern doesn't match the content of the test file.
-
-The matcher function is registered to the global struct `matcher`. The user uses it such as
-```bazel
-
-cc_build_error(
-    name = "compile_error",
-    src = "cpp_compile_error.cpp",
-    compile_stderr = matcher.has_substr("error message pattern"),
-)
-```
 """
 
 visibility("private")

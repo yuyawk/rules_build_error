@@ -335,6 +335,7 @@ _try_build = rule(
         "additional_linker_inputs": attr.label_list(
             doc = "Pass these files to the linker command",
             allow_empty = True,
+            allow_files = True,
             mandatory = False,
         ),
         "copts": attr.string_list(
@@ -343,7 +344,7 @@ _try_build = rule(
             mandatory = False,
         ),
         "deps": attr.label_list(
-            doc = "The list of CcInfo libraries to be linked in to the binary target.",
+            doc = "The list of CcInfo libraries to be linked in to the target",
             allow_empty = True,
             mandatory = False,
             providers = [CcInfo],
