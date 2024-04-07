@@ -25,13 +25,13 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Try to restore build cache
-        uses: actions/cache/store@v4
+        uses: actions/cache/restore@v4
         with:
           path: .cache
           key: ${{ runner.os }}-build
       - name: Try to restore bazelisk binary
         id: cache-bazelisk-bin
-        uses: actions/cache/store@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.BAZELISK_BIN_DIR }}
           key: ${{ env.BAZELISK_VERSION }}-bazelisk-bin
