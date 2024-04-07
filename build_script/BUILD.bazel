@@ -1,0 +1,16 @@
+"""Scripts commonly used when validating build errors.
+"""
+
+package(
+    default_visibility = ["//lang:__subpackages__"],
+)
+
+filegroup(
+    name = "conditionally_execute",
+    srcs = ["conditionally_execute.bash"],
+)
+
+filegroup(
+    name = "check_emptiness",
+    srcs = ["check_emptiness.bash"],
+)

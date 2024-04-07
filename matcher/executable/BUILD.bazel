@@ -1,0 +1,21 @@
+"""Collection of matcher executables
+"""
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "contains_basic_regex",
+    srcs = ["contains_basic_regex.bash"],
+)
+
+filegroup(
+    name = "contains_extended_regex",
+    srcs = ["contains_extended_regex.bash"],
+)
+
+filegroup(
+    name = "has_substr",
+    srcs = ["has_substr.bash"],
+)

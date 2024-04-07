@@ -1,0 +1,16 @@
+# Set the cache location to local
+startup --output_user_root=.cache/bazel
+
+# Use bzlmod
+common --enable_bzlmod
+
+# For less error-prone testing
+build --sandbox_default_allow_network=false
+build --incompatible_strict_action_env
+build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build --incompatible_enable_cc_toolchain_resolution
+test --test_verbose_timeout_warnings
+
+# For testing convenience
+common --heap_dump_on_oom
+test --test_output=errors

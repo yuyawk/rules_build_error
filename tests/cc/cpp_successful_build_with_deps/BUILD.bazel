@@ -1,0 +1,40 @@
+load("//lang/cc:defs.bzl", "cc_build_error")
+load("//matcher:defs.bzl", "matcher")
+
+cc_library(
+    name = "library",
+    srcs = ["library.cpp"],
+    hdrs = ["library.hpp"],
+    tags = ["manual"],
+)
+
+cc_build_error(
+    name = "plain",
+    src = "cpp_compile_error.cpp",
+    tags = ["manual"],
+    deps = [":library"],
+)
+
+cc_build_error(
+    name = "with_substr_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.has_substr("requires single argument"),
+    tags = ["manual"],
+    deps = [":library"],
+)
+
+cc_build_error(
+    name = "with_basic_regex_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.contains_basic_regex("requires single argument.*argument"),
+    tags = ["manual"],
+    deps = [":library"],
+)
+
+cc_build_error(
+    name = "with_extended_regex_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.contains_extended_regex("requires single argument.*argument"),
+    tags = ["manual"],
+    deps = [":library"],
+)
