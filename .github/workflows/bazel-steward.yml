@@ -1,0 +1,16 @@
+---
+name: Bazel Steward
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 5 * * *" # runs every day at 5:30 am
+
+jobs:
+  bazel-steward:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: VirtusLab/bazel-steward@v1.4.0
