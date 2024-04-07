@@ -28,7 +28,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache
-          key: ${{ runner.os }}-build
+          key: ${{ runner.os }}-build-${{ hashFiles('.cache/**') }}
+          restore-keys: ${{ runner.os }}-build-
       - name: Try to restore bazelisk binary
         id: cache-bazelisk-bin
         uses: actions/cache/restore@v4
@@ -56,4 +57,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache
-          key: ${{ runner.os }}-build
+          key: ${{ runner.os }}-build-${{ hashFiles('.cache/**') }}
