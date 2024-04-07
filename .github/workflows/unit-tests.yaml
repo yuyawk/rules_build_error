@@ -1,6 +1,7 @@
 ---
 name: Run unit tests
-on: push
+on:
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -8,7 +9,7 @@ concurrency:
 
 jobs:
   unit-tests:
-  runs-on: ubuntu-22.04
+  runs-on: ubuntu-latest
   steps:
     - name: Checkout
       uses: actions/checkout@v4
