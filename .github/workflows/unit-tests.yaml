@@ -1,6 +1,13 @@
 ---
 name: Run unit tests
-on: push
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
