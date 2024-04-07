@@ -1,3 +1,6 @@
 # Bazel
 /bazel-*
 MODULE.bazel.lock
+
+# For CI
+/.bazelisk-bin
