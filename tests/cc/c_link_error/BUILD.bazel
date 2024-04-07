@@ -1,0 +1,36 @@
+load("//lang/cc:defs.bzl", "cc_build_error")
+load("//matcher:defs.bzl", "matcher")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+
+cc_build_error(
+    name = "plain",
+    src = "c_link_error.c",
+)
+
+cc_build_error(
+    name = "with_substr_matcher",
+    src = "c_link_error.c",
+    link_stderr = matcher.has_substr("GetReturnValue"),
+)
+
+cc_build_error(
+    name = "with_basic_regex_matcher",
+    src = "c_link_error.c",
+    link_stderr = matcher.contains_basic_regex(r"undefined.*GetReturnValue"),
+)
+
+cc_build_error(
+    name = "with_extended_regex_matcher",
+    src = "c_link_error.c",
+    link_stderr = matcher.contains_extended_regex(r"undefined.*GetReturnValue"),
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":plain",
+        ":with_substr_matcher",
+        ":with_basic_regex_matcher",
+        ":with_extended_regex_matcher",
+    ],
+)

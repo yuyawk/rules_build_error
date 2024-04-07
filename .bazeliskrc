@@ -1,0 +1,2 @@
+BAZELISK_HOME=.cache/bazelisk
+USE_BAZEL_VERSION=7.1.1
