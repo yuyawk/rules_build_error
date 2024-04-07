@@ -26,4 +26,4 @@ jobs:
           chmod +x "${bazelisk_dir}/bazelisk"
           echo "${bazelisk_dir}" >> "${GITHUB_PATH}"
       - name: Run unit tests
-        run: ./execute_tests.sh
+        run: ./execute_tests.bash
