@@ -10,12 +10,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  # Location to store the bazelisk executable
-  BAZELISK_BIN_DIR: .bazelisk-bin
-  # Version of the bazelisk to use
-  BAZELISK_VERSION: v1.19.0/bazelisk-linux-amd64
-
 jobs:
   unit-tests:
     runs-on: ubuntu-22.04
@@ -24,42 +18,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-      - name: Get build cache key
-        id: build-cache-key
+      - name: Install bazelisk
         run: |
-          echo "key=${{ runner.os }}-build-${{ hashFiles('**') }}" \
-            >> "${GITHUB_OUTPUT}"
-      - name: Try to restore build cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .cache
-          key: ${{ steps.build-cache-key.outputs.key }}
-          restore-keys: ${{ runner.os }}-build-
-      - name: Try to restore bazelisk binary
-        id: cache-bazelisk-bin
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.BAZELISK_BIN_DIR }}
-          key: ${{ env.BAZELISK_VERSION }}-bazelisk-bin
-      - name: Install bazelisk if it's needed
-        if: steps.cache-bazelisk-bin.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ${{ env.BAZELISK_BIN_DIR }}
-          wget https://github.com/bazelbuild/bazelisk/releases/download/${{ env.BAZELISK_VERSION }} \
-            -O "${{ env.BAZELISK_BIN_DIR }}/bazelisk"
-          chmod +x "${{ env.BAZELISK_BIN_DIR }}/bazelisk"
-      - name: Save bazelisk binary
-        uses: actions/cache/save@v4
-        if: steps.cache-bazelisk-bin.outputs.cache-hit != 'true'
-        with:
-          path: ${{ env.BAZELISK_BIN_DIR }}
-          key: ${{ env.BAZELISK_VERSION }}-bazelisk-bin
-      - name: Add bazelisk to PATH
-        run: echo "${{ env.BAZELISK_BIN_DIR }}" >> "${GITHUB_PATH}"
+          bazelisk_dir="$(realpath "$(mktemp -d -p .)")"
+          wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+            -O "${bazelisk_dir}/bazelisk"
+          chmod +x "${bazelisk_dir}/bazelisk"
+          echo "${bazelisk_dir}" >> "${GITHUB_PATH}"
       - name: Run unit tests
         run: ./execute_tests.bash
-      - name: Save build cache
-        uses: actions/cache/save@v4
-        with:
-          path: .cache
-          key: ${{ steps.build-cache-key.outputs.key }}
