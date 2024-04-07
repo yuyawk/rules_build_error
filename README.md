@@ -40,6 +40,6 @@ In order to specify how to validate the error message, a struct `matcher` is ava
 
 ### How to test
 
-Execute [`execute_tests.sh`](execute_tests.sh) after installing [`bazelisk`](https://github.com/bazelbuild/bazelisk). It executes `bazelisk test` and `bazelisk build` commands under the hood.
+Execute [`execute_tests.bash`](execute_tests.bash) after installing [`bazelisk`](https://github.com/bazelbuild/bazelisk). It executes `bazelisk test` and `bazelisk build` commands under the hood.
 
-When writing tests, in principle, use `tags = ["manual"]` if a test case target must fail with `bazelisk test`. In such a test case, confirm its failure in [`execute_tests.sh`](execute_tests.sh) one by one.
+When writing tests, in principle, use `tags = ["manual"]` if a test case target must fail with `bazelisk test`. In such a test case, confirm its failure in [`execute_tests.bash`](execute_tests.bash) one by one.
