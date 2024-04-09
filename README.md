@@ -43,3 +43,9 @@ In order to specify how to validate the error message, a struct `matcher` is ava
 Execute [`execute_tests.bash`](execute_tests.bash) after installing [`bazelisk`](https://github.com/bazelbuild/bazelisk). It executes `bazelisk test` and `bazelisk build` commands under the hood.
 
 When writing tests, in principle, use `tags = ["manual"]` if a test case target must fail with `bazelisk test`. In such a test case, confirm its failure in [`execute_tests.bash`](execute_tests.bash) one by one.
+
+## CI
+
+[![Tests](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml)
+
+[![Bazel Steward](https://github.com/yuyawk/rules_build_error/actions/workflows/bazel-steward.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/bazel-steward.yml)
