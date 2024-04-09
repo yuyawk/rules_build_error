@@ -5,6 +5,7 @@ runs:
   using: composite
   steps:
     - name: Install bazelisk
+      shell: bash
       run: |
         bazelisk_dir="$(realpath "$(mktemp -d -p .)")"
         wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
