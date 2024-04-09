@@ -1,0 +1,42 @@
+---
+name: Run unit tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up
+        uses: ./.github/actions/setup
+      - name: Run unit tests
+        run: ./execute_tests.bash
+
+  style-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up
+        uses: ./.github/actions/setup
+      - name: Run formatters and linters
+        run: ./style_check.bash
+      - name: Fail if some files are changed
+        run: |
+          if ! git diff --exit-code; then
+            echo "ERROR: Files are changed by formatters" >&2
+            exit 1
+          fi
