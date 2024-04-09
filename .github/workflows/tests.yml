@@ -19,7 +19,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Set up
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup/action.yml
       - name: Run unit tests
         run: ./execute_tests.bash
 
@@ -31,7 +31,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Set up
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup/action.yml
       - name: Run formatters and linters
         run: ./style_check.bash
       - name: Fail if some files are changed
