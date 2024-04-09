@@ -1,17 +1,11 @@
 ---
-name: Run unit tests
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+name: Set up environment
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+on:
+  workflow_call:
 
 jobs:
-  unit-tests:
+  set-up-environment:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -25,5 +19,3 @@ jobs:
             -O "${bazelisk_dir}/bazelisk"
           chmod +x "${bazelisk_dir}/bazelisk"
           echo "${bazelisk_dir}" >> "${GITHUB_PATH}"
-      - name: Run unit tests
-        run: ./execute_tests.bash
