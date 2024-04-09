@@ -8,10 +8,6 @@ jobs:
   set-up-environment:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
       - name: Install bazelisk
         run: |
           bazelisk_dir="$(realpath "$(mktemp -d -p .)")"
