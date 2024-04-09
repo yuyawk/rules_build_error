@@ -11,13 +11,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  set-up:
-    uses: ./.github/workflows/_reusable_setup.yml
-
   unit-test:
     needs: set-up
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up
+        uses: ./.github/actions/setup.yml
       - name: Run unit tests
         run: ./execute_tests.bash
 
@@ -25,6 +28,12 @@ jobs:
     needs: set-up
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up
+        uses: ./.github/actions/setup.yml
       - name: Run formatters and linters
         run: ./style_check.bash
       - name: Fail if some files are changed
