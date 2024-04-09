@@ -14,24 +14,16 @@ jobs:
   unit-test:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/workflows/_reusable_setup.yml
       - name: Run unit tests
         run: ./execute_tests.bash
 
   style-check:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/workflows/_reusable_setup.yml
       - name: Run formatters and linters
         run: ./style_check.bash
       - name: Fail if some files are changed
