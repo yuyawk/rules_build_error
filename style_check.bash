@@ -15,6 +15,6 @@ BAZEL_EXECUTABLE=(
     bazelisk
 )
 
-buildifier_targets="$(git ls-files *.bzl *.bazel BUILD WORKSPACE MODULE | xargs -I{} echo "$(pwd)/{}")"
+buildifier_targets="$(git ls-files *.bzl *.bazel *BUILD WORKSPACE WORKSPACE.bzlmod MODULE | xargs -I{} echo "$(pwd)/{}")"
 
 "${BAZEL_EXECUTABLE[@]}" run -- @buildifier_prebuilt//:buildifier -lint=fix ${buildifier_targets}

@@ -1,0 +1,10 @@
+# Copied from the original workspace
+.bazelrc
+.bazeliskrc
+.bazelignore
+
+# Bazel
+/bazel-*
+MODULE.bazel.lock
+
+/.cache
