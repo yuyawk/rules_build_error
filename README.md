@@ -10,7 +10,7 @@ There's a situation where a developer wants to test if particular code doesn't c
 
 ## Usage
 
-See [examples](examples) for more details.
+Also refer to [the example module](examples) for more details.
 
 ### C/C++ usage
 
