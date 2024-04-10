@@ -19,6 +19,9 @@ llvm.toolchain(
 )
 use_repo(llvm, "llvm_toolchain")
 
-register_toolchains("@llvm_toolchain//:all", dev_dependency = True)
+register_toolchains(
+    "@llvm_toolchain//:all",
+    dev_dependency = True,
+)
 
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
