@@ -23,6 +23,18 @@ jobs:
       - name: Run unit tests
         run: ./execute_tests.bash
 
+  example:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up
+        uses: ./.github/actions/setup
+      - name: Validate example
+        run: ./validate_example.bash
+
   style-check:
     runs-on: ubuntu-22.04
     steps:
