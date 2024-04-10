@@ -1,6 +1,6 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("//lang/cc:defs.bzl", "cc_build_error")
 load("//matcher:defs.bzl", "matcher")
-load("@bazel_skylib//rules:build_test.bzl", "build_test")
 
 cc_build_error(
     name = "plain",

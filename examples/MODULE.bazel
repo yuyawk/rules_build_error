@@ -7,7 +7,6 @@ module(
 )
 
 bazel_dep(name = "rules_build_error", version = "0.0.0")
-
 local_path_override(
     module_name = "rules_build_error",
     path = "..",
