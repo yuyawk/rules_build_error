@@ -1,0 +1,15 @@
+{
+  "homepage": "https://github.com/yuyawk/rules_build_error",
+  "maintainers": [
+    {
+      "name": "yuyawk",
+      "email": "h1gh5peedne6ula@gmail.com",
+      "github": "yuyawk"
+    }
+  ],
+  "repository": [
+    "github:yuyawk/rules_build_error"
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
