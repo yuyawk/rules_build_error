@@ -1,0 +1,8 @@
+load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error")
+load("@rules_build_error//matcher:defs.bzl", "matcher")
+
+cc_build_error(
+    name = "example",
+    src = "compile_error.cpp",
+    compile_stderr = matcher.has_substr("Example compile error"),
+)

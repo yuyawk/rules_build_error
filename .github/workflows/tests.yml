@@ -21,7 +21,19 @@ jobs:
       - name: Set up
         uses: ./.github/actions/setup
       - name: Run unit tests
-        run: ./execute_tests.bash
+        run: ./scripts/execute_tests.bash
+
+  example:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up
+        uses: ./.github/actions/setup
+      - name: Validate example
+        run: ./scripts/validate_example.bash
 
   style-check:
     runs-on: ubuntu-22.04
@@ -33,7 +45,7 @@ jobs:
       - name: Set up
         uses: ./.github/actions/setup
       - name: Run formatters and linters
-        run: ./style_check.bash
+        run: ./scripts/style_check.bash
       - name: Fail if some files are changed
         run: |
           if ! git diff --exit-code; then
