@@ -25,7 +25,6 @@ llvm = use_extension(
 llvm.toolchain(
     llvm_versions = {
         "": "16.0.0",
-        "darwin-x86_64": "15.0.7",
     },
 )
 use_repo(llvm, "llvm_toolchain")
