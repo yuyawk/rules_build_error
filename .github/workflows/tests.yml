@@ -19,6 +19,7 @@ jobs:
           - 7.1.1
         runner:
           - ubuntu-20.04
+          - ubuntu-22.04
           - macos-12
           - macos-13
           - macos-14
@@ -43,6 +44,7 @@ jobs:
           - 7.1.1
         runner:
           - ubuntu-20.04
+          - ubuntu-22.04
           - macos-12
           - macos-13
           - macos-14
@@ -60,7 +62,7 @@ jobs:
         run: ./scripts/validate_example.bash
 
   style-check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
