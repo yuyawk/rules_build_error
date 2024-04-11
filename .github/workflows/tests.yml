@@ -20,9 +20,6 @@ jobs:
         runner:
           - ubuntu-20.04
           - ubuntu-22.04
-          - macos-12
-          - macos-13
-          - macos-14
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
@@ -45,9 +42,6 @@ jobs:
         runner:
           - ubuntu-20.04
           - ubuntu-22.04
-          - macos-12
-          - macos-13
-          - macos-14
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
