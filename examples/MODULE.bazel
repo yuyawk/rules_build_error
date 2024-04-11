@@ -24,7 +24,7 @@ llvm = use_extension(
 )
 llvm.toolchain(
     llvm_versions = {
-        "": "16.0.6",
+        "": "16.0.1",
         "darwin-x86_64": "15.0.7",
     },
 )
