@@ -97,6 +97,10 @@ fi
 
 if [[ "${ignore_error}" == "true" ]]; then
     "$@" >"${stdout_file:-"/dev/null"}" 2>"${stderr_file:-"/dev/null"}" || true
+    echo "StdEut:"
+    cat "${stdout_file:-"/dev/null"}" >&2
+    echo "StdErr:"
+    cat "${std_file:-"/dev/null"}" >&2
 else
     if ! "$@" >"${stdout_file:-"/dev/null"}" 2>"${stderr_file:-"/dev/null"}" ; then
         echo "${error_message}"
