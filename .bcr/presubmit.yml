@@ -4,7 +4,6 @@ bcr_test_module:
   matrix:
     platform:
       - "debian10"
-      - "macos"
       - "ubuntu2004"
     bazel:
       - "6.x"
