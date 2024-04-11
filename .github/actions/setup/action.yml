@@ -19,7 +19,16 @@ runs:
       run: |
         bazelisk_dir=bazelisk-bin-dir
         mkdir "${bazelisk_dir}"
-        wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+        if [ "${RUNNER_OS}" == "Linux" ]; then
+          part_os="linux"
+        elif [ "${RUNNER_OS}" == "macOS" ]; then
+          part_os="darwin"
+        else
+          echo "${RUNNER_OS} not supported"
+          exit 1
+        fi
+
+        wget "https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-${part_os}-amd64" \
           -O "${bazelisk_dir}/bazelisk"
         chmod +x "${bazelisk_dir}/bazelisk"
         echo "${bazelisk_dir}" >> "${GITHUB_PATH}"
