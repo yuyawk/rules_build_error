@@ -15,6 +15,7 @@ test --test_verbose_timeout_warnings
 common --heap_dump_on_oom
 test --test_output=errors
 
-# To enable LLVM build on mac
-# https://github.com/bazel-contrib/toolchains_llvm/issues/237
-build --features=-libtool
+# For `hermetic_cc_toolchain`
+common --enable_platform_specific_config
+build:linux --sandbox_add_mount_pair=/tmp
+build:macos --sandbox_add_mount_pair=/var/tmp

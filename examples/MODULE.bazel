@@ -15,19 +15,22 @@ local_path_override(
 # For testing utility
 bazel_dep(name = "bazel_skylib", version = "1.5.0", dev_dependency = True)
 
-# Register LLVM toolchain for C/C++
-bazel_dep(name = "toolchains_llvm", version = "0.10.3")
+# Register toolchain for C/C++
 
-llvm = use_extension(
-    "@toolchains_llvm//toolchain/extensions:llvm.bzl",
-    "llvm",
+bazel_dep(
+    name = "hermetic_cc_toolchain",
+    version = "3.0.1",
+    dev_dependency = True,
 )
-llvm.toolchain(
-    llvm_versions = {
-        "": "16.0.0",
-        "darwin-x86_64": "15.0.7",
-    },
-)
-use_repo(llvm, "llvm_toolchain")
 
-register_toolchains("@llvm_toolchain//:all")
+cc_toolchains = use_extension(
+    "@hermetic_cc_toolchain//toolchain:ext.bzl",
+    "toolchains",
+    dev_dependency = True,
+)
+use_repo(cc_toolchains, "zig_sdk")
+
+register_toolchains(
+    "@zig_sdk//toolchain:linux_amd64_gnu.2.31",
+    "@zig_sdk//toolchain:darwin_amd64",
+)
