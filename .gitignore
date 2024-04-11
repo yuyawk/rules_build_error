@@ -2,3 +2,6 @@
 /bazel-*
 MODULE.bazel.lock
 .bazeliskrc
+
+# For CI
+/bazelisk-bin-dir

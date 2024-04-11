@@ -17,7 +17,8 @@ runs:
     - name: Install bazelisk
       shell: bash
       run: |
-        bazelisk_dir="$(realpath "$(mktemp -d -p .)")"
+        bazelisk_dir=bazelisk-bin-dir
+        mkdir "${bazelisk_dir}"
         wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
           -O "${bazelisk_dir}/bazelisk"
         chmod +x "${bazelisk_dir}/bazelisk"
