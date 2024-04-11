@@ -17,7 +17,6 @@ BAZEL_EXECUTABLE=(
 
 copied_files=(
     ".bazelignore"
-    ".bazeliskrc"
     ".bazelrc"
 )
 
@@ -27,4 +26,4 @@ done
 
 cd examples
 
-"${BAZEL_EXECUTABLE[@]}" build //...
+"${BAZEL_EXECUTABLE[@]}" test //...
