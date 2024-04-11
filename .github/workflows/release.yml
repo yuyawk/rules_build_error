@@ -1,0 +1,13 @@
+---
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  release:
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v6
+    with:
+      release_files: rules_build_error-*.tar.gz
