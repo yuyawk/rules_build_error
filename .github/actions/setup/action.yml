@@ -1,9 +1,19 @@
 ---
 name: Set up environment
 
+inputs:
+  bazel-version:
+    description: Bazel version
+    required: true
+
 runs:
   using: composite
   steps:
+    - name: Generate .bazeliskrc
+      shell: bash
+      run: |
+        echo ${{ inputs.bazel-version }} > .bazeliskrc
+        echo ${{ inputs.bazel-version }} > examples/.bazeliskrc
     - name: Install bazelisk
       shell: bash
       run: |
