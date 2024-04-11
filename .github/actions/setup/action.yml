@@ -12,8 +12,8 @@ runs:
     - name: Generate .bazeliskrc
       shell: bash
       run: |
-        echo ${{ inputs.bazel-version }} > .bazeliskrc
-        echo ${{ inputs.bazel-version }} > examples/.bazeliskrc
+        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > .bazeliskrc
+        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > examples/.bazeliskrc
     - name: Install bazelisk
       shell: bash
       run: |
