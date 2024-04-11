@@ -12,6 +12,7 @@ build --incompatible_enable_cc_toolchain_resolution
 test --test_verbose_timeout_warnings
 
 # For testing convenience
+build --keep_going
 common --heap_dump_on_oom
 test --test_output=errors
 
