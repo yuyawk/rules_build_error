@@ -14,3 +14,7 @@ test --test_verbose_timeout_warnings
 # For testing convenience
 common --heap_dump_on_oom
 test --test_output=errors
+
+# To enable build on mac
+# https://github.com/bazel-contrib/toolchains_llvm/issues/237
+build --features=-libtool
