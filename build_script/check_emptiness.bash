@@ -66,9 +66,11 @@ if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
     trap 'touch "${files_to_touch[@]}"' EXIT
 fi
 
-for file_to_check in "${files_to_check[@]}"; do
-    exit_if_empty_file "${file_to_check}"
-done
+if [[ "${#files_to_check[@]}" -gt 0 ]]; then
+    for file_to_check in "${files_to_check[@]}"; do
+        exit_if_empty_file "${file_to_check}"
+    done
+fi
 
 # Exit with error if there's no empty file
 echo "${error_message}" >&2
