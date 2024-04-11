@@ -3,8 +3,14 @@
 set -o errexit -o nounset -o pipefail
 
 TAG="${GITHUB_REF_NAME}"
+PREFIX="rules_build_error-${TAG}"
+ARCHIVE="rules_build_error-${TAG}.tar.gz"
 
-# StdOut of this script is used for release description
+git archive --format=tar "--prefix=${PREFIX}/" "${TAG}" | \
+    gzip \
+    > "${ARCHIVE}"
+
+# StdOut of this sript is used for release description
 cat << EOF
 ## Using Bzlmod with Bazel 6 or greater
 
