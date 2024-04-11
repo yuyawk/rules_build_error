@@ -1,7 +1,5 @@
 # Copied from the original workspace
-.bazelrc
 .bazeliskrc
-.bazelignore
 
 # Bazel
 /bazel-*

@@ -15,15 +15,6 @@ BAZEL_EXECUTABLE=(
     bazelisk
 )
 
-copied_files=(
-    ".bazelignore"
-    ".bazelrc"
-)
-
-for copied_file in "${copied_files[@]}"; do
-    cp "${copied_file}" examples
-done
-
 cd examples
 
 "${BAZEL_EXECUTABLE[@]}" test //...
