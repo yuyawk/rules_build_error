@@ -7,7 +7,7 @@ module(
 )
 
 bazel_dep(name = "bazel_skylib", version = "1.5.0", dev_dependency = True)
-bazel_dep(name = "toolchains_llvm", version = "1.0.0", dev_dependency = True)
+bazel_dep(name = "toolchains_llvm", version = "0.10.3", dev_dependency = True)
 
 llvm = use_extension(
     "@toolchains_llvm//toolchain/extensions:llvm.bzl",
@@ -15,7 +15,7 @@ llvm = use_extension(
     dev_dependency = True,
 )
 llvm.toolchain(
-    llvm_version = "17.0.6",
+    llvm_version = "14.0.6",
 )
 use_repo(llvm, "llvm_toolchain")
 
