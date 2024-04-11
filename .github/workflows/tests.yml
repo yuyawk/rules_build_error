@@ -12,7 +12,15 @@ concurrency:
 
 jobs:
   unit-test:
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        bazel-version:
+          - 6.5.0
+          - 7.1.1
+        runner:
+          - ubuntu-20.04
+          - ubuntu-22.04
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,11 +28,21 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
+        with:
+          bazel-version: ${{ matrix.bazel-version }}
       - name: Run unit tests
         run: ./scripts/execute_tests.bash
 
   example:
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        bazel-version:
+          - 6.5.0
+          - 7.1.1
+        runner:
+          - ubuntu-20.04
+          - ubuntu-22.04
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,6 +50,8 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
+        with:
+          bazel-version: ${{ matrix.bazel-version }}
       - name: Validate example
         run: ./scripts/validate_example.bash
 

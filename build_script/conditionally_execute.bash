@@ -89,9 +89,11 @@ if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
     trap 'touch "${files_to_touch[@]}"' EXIT
 fi
 
-for file_to_check in "${files_to_check[@]}"; do
-    exit_if_empty_file "${file_to_check}"
-done
+if [[ "${#files_to_check[@]}" -gt 0 ]]; then
+    for file_to_check in "${files_to_check[@]}"; do
+        exit_if_empty_file "${file_to_check}"
+    done
+fi
 
 if [[ "${ignore_error}" == "true" ]]; then
     "$@" >"${stdout_file:-"/dev/null"}" 2>"${stderr_file:-"/dev/null"}" || true

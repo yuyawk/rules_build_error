@@ -4,7 +4,6 @@ bcr_test_module:
   matrix:
     platform:
       - "debian10"
-      - "macos"
       - "ubuntu2004"
     bazel:
       - "6.x"
@@ -14,5 +13,5 @@ bcr_test_module:
       name: "Run test module"
       platform: ${{ platform }}
       bazel: ${{ bazel }}
-      build_targets:
+      test_targets:
         - "//..."

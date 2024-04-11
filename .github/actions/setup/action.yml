@@ -1,14 +1,34 @@
 ---
 name: Set up environment
 
+inputs:
+  bazel-version:
+    description: Bazel version
+    required: true
+
 runs:
   using: composite
   steps:
+    - name: Generate .bazeliskrc
+      shell: bash
+      run: |
+        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > .bazeliskrc
+        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > examples/.bazeliskrc
     - name: Install bazelisk
       shell: bash
       run: |
-        bazelisk_dir="$(realpath "$(mktemp -d -p .)")"
-        wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+        bazelisk_dir=bazelisk-bin-dir
+        mkdir "${bazelisk_dir}"
+        if [ "${RUNNER_OS}" == "Linux" ]; then
+          part_os="linux"
+        elif [ "${RUNNER_OS}" == "macOS" ]; then
+          part_os="darwin"
+        else
+          echo "${RUNNER_OS} not supported"
+          exit 1
+        fi
+
+        wget "https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-${part_os}-amd64" \
           -O "${bazelisk_dir}/bazelisk"
         chmod +x "${bazelisk_dir}/bazelisk"
         echo "${bazelisk_dir}" >> "${GITHUB_PATH}"

@@ -14,3 +14,8 @@ test --test_verbose_timeout_warnings
 # For testing convenience
 common --heap_dump_on_oom
 test --test_output=errors
+
+# For `hermetic_cc_toolchain`
+common --enable_platform_specific_config
+build:linux --sandbox_add_mount_pair=/tmp
+build:macos --sandbox_add_mount_pair=/var/tmp
