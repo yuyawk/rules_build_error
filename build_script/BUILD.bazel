@@ -6,11 +6,16 @@ package(
 )
 
 sh_binary(
-    name = "conditionally_execute",
-    srcs = ["conditionally_execute.bash"],
+    name = "check_each_message",
+    srcs = ["check_each_message.bash"],
 )
 
 sh_binary(
     name = "check_emptiness",
     srcs = ["check_emptiness.bash"],
+)
+
+sh_binary(
+    name = "try_build",
+    srcs = ["try_build.bash"],
 )

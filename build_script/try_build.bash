@@ -4,17 +4,17 @@ set -euo pipefail
 
 usage() {
     cat <<EOS >&2
-Wrapper to conditionally execute the command.
+Try building the code.
 
 With the option '-f', this script can receive arbitrary number of files.
 If any of them is an empty file, this script exits successfully
-without executing the command.
+without executing the build command.
+
+Even if the build command fails, this script won't exit with an error.
 
 Usage: $0 [OPTIONS] COMMAND
 
 OPTIONS
-    -i
-        Ignore error when executing the command.
     -f FILE_TO_CHECK
         Successfully exit if the file is empty
     -h
@@ -23,12 +23,11 @@ OPTIONS
         A file path to write stderr message
     -o STDOUT_FILE
         A file path to write stdout message
-    -m MESSAGE
-        Message when the command fails
     -n NEW_FILE_PATH
-        If specified, create a new empty file before executing the command
+        If specified, create a new empty file with 'touch' before exiting the script.
 
 COMMAND
+    Build command.
     Executed if there's no empty file given with '-f'.
 EOS
 }
@@ -53,10 +52,10 @@ exit_if_empty_file() {
 
 files_to_check=()
 files_to_touch=()
-ignore_error="false"
-error_message="ERROR: execution failed"
+stdout_file="/dev/null"
+stderr_file="/dev/null"
 
-while getopts "e:f:him:n:o:" opt; do
+while getopts "e:f:hn:o:" opt; do
     case "${opt}" in
         e)
             stderr_file="${OPTARG}"
@@ -67,12 +66,6 @@ while getopts "e:f:him:n:o:" opt; do
         h)
             usage
             exit 0
-        ;;
-        i)
-            ignore_error="true"
-        ;;
-        m)
-            error_message="${OPTARG}"
         ;;
         n)
             files_to_touch+=("${OPTARG}")
@@ -95,11 +88,4 @@ if [[ "${#files_to_check[@]}" -gt 0 ]]; then
     done
 fi
 
-if [[ "${ignore_error}" == "true" ]]; then
-    "$@" >"${stdout_file:-"/dev/null"}" 2>"${stderr_file:-"/dev/null"}" || true
-else
-    if ! "$@" >"${stdout_file:-"/dev/null"}" 2>"${stderr_file:-"/dev/null"}" ; then
-        echo "${error_message}"
-        exit 1
-    fi
-fi
+"$@" >"${stdout_file}" 2>"${stderr_file}" || true
