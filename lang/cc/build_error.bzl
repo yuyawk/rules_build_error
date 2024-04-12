@@ -36,6 +36,19 @@ _EXTENSIONS_CPP = [
     ".c++",
 ]
 
+def _get_executable_file(label):
+    """Get executable file if the label is not None.
+
+    Args:
+        label(label or None): Executable label
+
+    Returns:
+        File: Executable file.
+    """
+    if not label:
+        return None
+    return label.files_to_run.executable
+
 def _is_c(src_file):
     """Whether the source file is for C.
 
@@ -156,7 +169,7 @@ def _try_compile(ctx):
     ctx.actions.run(
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
-        executable = ctx.file._conditionally_execute,
+        executable = _get_executable_file(ctx.attr._conditionally_execute),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -249,7 +262,7 @@ def _try_link(ctx, compile_output):
     ctx.actions.run(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
-        executable = ctx.file._conditionally_execute,
+        executable = _get_executable_file(ctx.attr._conditionally_execute),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -291,7 +304,7 @@ def _check_build_error(ctx, compile_output, link_output):
     ctx.actions.run(
         outputs = [marker_check_build_error],
         inputs = [compile_output, link_output],
-        executable = ctx.file._check_emptiness,
+        executable = _get_executable_file(ctx.attr._check_emptiness),
         arguments = [args],
     )
 
@@ -369,15 +382,9 @@ _try_build = rule(
         ),
         "_check_emptiness": attr.label(
             default = Label("//build_script:check_emptiness"),
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
         ),
         "_conditionally_execute": attr.label(
             default = Label("//build_script:conditionally_execute"),
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
         ),
     },
     fragments = ["cpp"],
@@ -429,7 +436,7 @@ def _check_each_message(ctx, message_file, matcher, pattern):
         ctx.actions.run(
             outputs = [marker_file],
             inputs = [message_file],
-            executable = ctx.file._conditionally_execute,
+            executable = _get_executable_file(ctx.attr._conditionally_execute),
             arguments = [
                 "-m",
                 "Pattern '{pattern}' is not found in '{message_file}' with the matcher '{matcher}'".format(
@@ -463,25 +470,25 @@ def _check_messages_impl(ctx):
     marker_compile_stderr = _check_each_message(
         ctx,
         cc_build_error_info.compile_stderr,
-        ctx.file.matcher_compile_stderr,
+        _get_executable_file(ctx.attr.matcher_compile_stderr),
         ctx.attr.pattern_compile_stderr,
     )
     marker_compile_stdout = _check_each_message(
         ctx,
         cc_build_error_info.compile_stdout,
-        ctx.file.matcher_compile_stdout,
+        _get_executable_file(ctx.attr.matcher_compile_stdout),
         ctx.attr.pattern_compile_stdout,
     )
     marker_link_stderr = _check_each_message(
         ctx,
         cc_build_error_info.link_stderr,
-        ctx.file.matcher_link_stderr,
+        _get_executable_file(ctx.attr.matcher_link_stderr),
         ctx.attr.pattern_link_stderr,
     )
     marker_link_stdout = _check_each_message(
         ctx,
         cc_build_error_info.link_stdout,
-        ctx.file.matcher_link_stdout,
+        _get_executable_file(ctx.attr.matcher_link_stdout),
         ctx.attr.pattern_link_stdout,
     )
     markers = [
@@ -514,30 +521,18 @@ _check_messages = rule(
         ),
         "matcher_compile_stderr": attr.label(
             doc = "Matcher executable for stderr while compiling",
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
             mandatory = False,
         ),
         "matcher_compile_stdout": attr.label(
             doc = "Matcher executable for stdout while compiling",
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
             mandatory = False,
         ),
         "matcher_link_stderr": attr.label(
             doc = "Matcher executable for stderr while linking",
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
             mandatory = False,
         ),
         "matcher_link_stdout": attr.label(
             doc = "Matcher executable for stdout while linking",
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
             mandatory = False,
         ),
         "pattern_compile_stderr": attr.string(
@@ -558,9 +553,6 @@ _check_messages = rule(
         ),
         "_conditionally_execute": attr.label(
             default = Label("//build_script:conditionally_execute"),
-            allow_single_file = True,
-            cfg = "exec",
-            executable = True,
         ),
     },
     provides = [CcBuildErrorInfo, DefaultInfo],

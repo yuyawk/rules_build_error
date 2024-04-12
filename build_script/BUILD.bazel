@@ -5,12 +5,12 @@ package(
     default_visibility = ["//lang:__subpackages__"],
 )
 
-filegroup(
+sh_binary(
     name = "conditionally_execute",
     srcs = ["conditionally_execute.bash"],
 )
 
-filegroup(
+sh_binary(
     name = "check_emptiness",
     srcs = ["check_emptiness.bash"],
 )

@@ -5,17 +5,17 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
-filegroup(
+sh_binary(
     name = "contains_basic_regex",
     srcs = ["contains_basic_regex.bash"],
 )
 
-filegroup(
+sh_binary(
     name = "contains_extended_regex",
     srcs = ["contains_extended_regex.bash"],
 )
 
-filegroup(
+sh_binary(
     name = "has_substr",
     srcs = ["has_substr.bash"],
 )
