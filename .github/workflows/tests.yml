@@ -72,3 +72,16 @@ jobs:
             echo "ERROR: Files are changed by formatters" >&2
             exit 1
           fi
+
+  all-tests-passable:
+    if: always()
+    needs:
+      - unit-test
+      - example
+      - style-check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
