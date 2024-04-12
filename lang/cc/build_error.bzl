@@ -138,9 +138,8 @@ def _try_compile(ctx):
     # Input files for executing the action
     inputs = [ctx.file.src]
 
-    # Arguments for `conditionally_execute`
+    # Arguments for `try_build.bash`
     args = ctx.actions.args()
-    args.add("-i")
     args.add("-e", compile_stderr)
     args.add("-o", compile_stdout)
     args.add("-n", compile_output)
@@ -169,7 +168,7 @@ def _try_compile(ctx):
     ctx.actions.run(
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
-        executable = _get_executable_file(ctx.attr._conditionally_execute),
+        executable = _get_executable_file(ctx.attr._try_build),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -228,9 +227,8 @@ def _try_link(ctx, compile_output):
 
     inputs = [compile_output] + ctx.attr.additional_linker_inputs
 
-    # Arguments for `conditionally_execute`
+    # Arguments for `try_build.bash`
     args = ctx.actions.args()
-    args.add("-i")
     args.add("-e", link_stderr)
     args.add("-o", link_stdout)
     args.add("-n", link_output)
@@ -262,7 +260,7 @@ def _try_link(ctx, compile_output):
     ctx.actions.run(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
-        executable = _get_executable_file(ctx.attr._conditionally_execute),
+        executable = _get_executable_file(ctx.attr._try_build),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -383,8 +381,8 @@ _try_build = rule(
         "_check_emptiness": attr.label(
             default = Label("//build_script:check_emptiness"),
         ),
-        "_conditionally_execute": attr.label(
-            default = Label("//build_script:conditionally_execute"),
+        "_try_build": attr.label(
+            default = Label("//build_script:try_build"),
         ),
     },
     fragments = ["cpp"],
@@ -436,20 +434,12 @@ def _check_each_message(ctx, message_file, matcher, pattern):
         ctx.actions.run(
             outputs = [marker_file],
             inputs = [message_file],
-            executable = _get_executable_file(ctx.attr._conditionally_execute),
+            executable = _get_executable_file(ctx.attr._check_each_message),
             arguments = [
-                "-m",
-                "Pattern '{pattern}' is not found in '{message_file}' with the matcher '{matcher}'".format(
-                    pattern = pattern,
-                    message_file = message_file.path,
-                    matcher = matcher.path,
-                ),
-                "-n",
-                marker_file.path,
-                # From here, the matcher command starts
                 matcher.path,
                 pattern,
                 message_file.path,
+                marker_file.path,
             ],
             tools = [matcher],
         )
@@ -551,8 +541,8 @@ _check_messages = rule(
             doc = "Pattern string for stdout while linking",
             mandatory = False,
         ),
-        "_conditionally_execute": attr.label(
-            default = Label("//build_script:conditionally_execute"),
+        "_check_each_message": attr.label(
+            default = Label("//build_script:check_each_message"),
         ),
     },
     provides = [CcBuildErrorInfo, DefaultInfo],

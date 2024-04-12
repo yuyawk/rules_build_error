@@ -16,7 +16,7 @@ OPTIONS
     -m MESSAGE
         Error message when no files are empty
     -n NEW_FILE_PATH
-        If specified, create a new empty file
+        If specified, create a new empty file before exiting the script
 EOS
 }
 
