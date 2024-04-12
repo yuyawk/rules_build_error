@@ -51,3 +51,5 @@ When writing tests, in principle, use `tags = ["manual"]` if a test case target 
 [![Tests](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml)
 
 [![Bazel Steward](https://github.com/yuyawk/rules_build_error/actions/workflows/bazel-steward.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/bazel-steward.yml)
+
+[![Release](https://github.com/yuyawk/rules_build_error/actions/workflows/release.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/release.yml)
