@@ -43,12 +43,11 @@ if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
 fi
 
 if ! "${matcher}" "${pattern}" "${message_file}" ; then
-    echo
-    cat <<EOS >&2
-Pattern '${pattern}' is not found in the message file '${message_file}' with the matcher '${matcher}'.
-
-Actual message:
-EOS
+    echo "Pattern '${pattern}' is not found in the message file '${message_file}' with the matcher '${matcher}'." >&2
+    echo "" >&2
+    echo "---------- Message: BEGIN ----------" >&2
     cat "${message_file}" >&2
+    echo "---------- Message:  END  ----------" >&2
+    echo "" >&2
     exit 1
 fi
