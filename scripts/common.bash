@@ -2,6 +2,8 @@
 #
 # Common prerequisites for manual bash execution
 
+set -euo pipefail
+
 # Absolute path of `scripts/` directory
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
