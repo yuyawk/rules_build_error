@@ -4,25 +4,9 @@
 
 set -euo pipefail
 
-BAZEL_VERSION_DEFAULT="7.1.1"
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+source "${SCRIPT_DIR}/common.bash"
 
-# Bazel executable with some arguments
-BAZEL_EXECUTABLE=(
-    "env"
-    "-i"
-    BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
-    BAZELISK_HOME=../.cache/bazelisk
-    "HOME=${HOME}"
-    "PATH=${PATH}"
-    bazelisk
-)
-
-cd examples
-
-if [[ ! -f .bazeliskrc ]]; then
-    echo "WARN: .bazeliskrc not found." >&2
-    echo "WARN: Creating it with a default version ${BAZEL_VERSION_DEFAULT}." >&2
-    echo "USE_BAZEL_VERSION=7.1.1" > .bazeliskrc
-fi
+cd "${REPO_ROOT_DIR}/examples"
 
 "${BAZEL_EXECUTABLE[@]}" test //...

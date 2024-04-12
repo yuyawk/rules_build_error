@@ -4,16 +4,10 @@
 
 set -euo pipefail
 
-# Bazel executable with some arguments
-BAZEL_EXECUTABLE=(
-    "env"
-    "-i"
-    BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
-    BAZELISK_HOME=.cache/bazelisk
-    "HOME=${HOME}"
-    "PATH=${PATH}"
-    bazelisk
-)
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+source "${SCRIPT_DIR}/common.bash"
+
+cd "${REPO_ROOT_DIR}"
 
 buildifier_targets="$(
     git ls-files | \
