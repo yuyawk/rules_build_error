@@ -5,6 +5,7 @@ bcr_test_module:
     platform:
       - "debian10"
       - "ubuntu2004"
+      - "macos"
     bazel:
       - "6.x"
       - "7.x"

@@ -179,6 +179,24 @@ def _try_compile(ctx):
         stderr = compile_stderr,
     )
 
+def _get_library_link_option(library_path):
+    """Get library link option, such as `-lfoo`.
+
+    Args:
+        library_path(str): Library path
+
+    Returns:
+        list[str]: Link option for the library.
+    """
+    if not library_path.startswith("lib"):
+        return ["-l", ":" + library_path]
+
+    for ext in [".a", ".so"]:
+        if library_path.endswith(ext):
+            return ["-l", library_path.removeprefix("lib").removesuffix(ext)]
+
+    return ["-l", ":" + library_path]
+
 def _try_link(ctx, compile_output):
     """Try linking the object file.
 
@@ -250,8 +268,8 @@ def _try_link(ctx, compile_output):
                 # TODO: Ideally the way of linking should be controlled by the attributes
                 library = library_to_link.static_library if library_to_link.static_library else library_to_link.dynamic_library
                 if library:
-                    args.add("-L" + library.dirname)
-                    args.add("-l:" + library.basename)
+                    args.add("-L", library.dirname)
+                    args.add(*_get_library_link_option(library.basename))
                     inputs.append(library)
 
     args.add("-o", link_output)
