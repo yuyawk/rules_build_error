@@ -35,6 +35,7 @@ jobs:
         with:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Run unit tests
+        shell: bash
         run: ./scripts/execute_tests.bash
 
   example:
@@ -61,6 +62,7 @@ jobs:
         with:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Validate example
+        shell: bash
         run: ./scripts/validate_example.bash
 
   style-check:
@@ -73,8 +75,10 @@ jobs:
       - name: Set up
         uses: ./.github/actions/setup
       - name: Run formatters and linters
+        shell: bash
         run: ./scripts/style_check.bash
       - name: Fail if some files are changed
+        shell: bash
         run: |
           if ! git diff --exit-code; then
             echo "ERROR: Files are changed by formatters" >&2
