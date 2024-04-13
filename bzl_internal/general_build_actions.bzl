@@ -19,7 +19,6 @@ def get_executable_file(label):
 def check_build_error(
         *,
         ctx,
-        marker_file_name,
         files_to_check,
         error_message,
         check_emptiness):
@@ -31,10 +30,9 @@ def check_build_error(
 
     Args:
         ctx(ctx): The rule's context.
-        marker_file_name(str): Name of the marker file
         files_to_check(list[File]): Output of the previous build actions.
         error_message(str): Error message when the validation fails
-        check_emptiness(File): File object of `check_emptiness.bash`.
+        check_emptiness(File): Executable file object of `check_emptiness.bash`.
 
     Returns:
         File: An empty text file.
@@ -42,7 +40,7 @@ def check_build_error(
 
     # Marker file for the check
     marker_check_build_error = ctx.actions.declare_file(
-        marker_file_name,
+        ctx.label.name + "/marker_check_build_error",
     )
 
     # Arguments for `check_emptiness`

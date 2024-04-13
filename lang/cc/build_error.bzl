@@ -294,7 +294,6 @@ def _try_build_impl(ctx):
     link_result = _try_link(ctx, compile_result.output)
     marker_check_build_error = check_build_error(
         ctx = ctx,
-        marker_file_name = ctx.label.name + "/marker_check_build_error",
         files_to_check = [
             compile_result.output,
             link_result.output,
