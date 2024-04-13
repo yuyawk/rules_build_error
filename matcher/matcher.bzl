@@ -4,7 +4,7 @@ Each matcher function must receive a positional string argument,
 and return a struct with the following members:
     pattern(str): Argument of the matcher function
     matcher(label): Label to the matcher executable.
-                    Matcher executable is an executables which receives two arguments
+                    Matcher executable is an executable which receives two arguments
                         $1: Text file containing a pattern string
                         $2: Text file where the matcher searches for a pattern string
                     and exits with an error if the pattern doesn't match the content of the test file.
