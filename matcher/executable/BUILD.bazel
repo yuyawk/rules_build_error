@@ -1,4 +1,7 @@
 """Collection of matcher executables
+
+Each of the executable targets in this package must have a public visibility to allow the user to use it.
+However, the users are not suppose to directly refer to their labels. That is, they're supposed to refer to them via `matcher`.
 """
 
 package(

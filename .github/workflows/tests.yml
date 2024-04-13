@@ -22,6 +22,8 @@ jobs:
           - ubuntu-22.04
           - macos-13
           - macos-14
+          - windows-2019
+          - windows-2022
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
@@ -33,6 +35,7 @@ jobs:
         with:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Run unit tests
+        shell: bash
         run: ./scripts/execute_tests.bash
 
   example:
@@ -46,6 +49,9 @@ jobs:
           - ubuntu-22.04
           - macos-13
           - macos-14
+          # TODO: Currently OOM occurs on Windows
+          # - windows-2019
+          # - windows-2022
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
@@ -57,6 +63,7 @@ jobs:
         with:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Validate example
+        shell: bash
         run: ./scripts/validate_example.bash
 
   style-check:
@@ -71,8 +78,10 @@ jobs:
         with:
           bazel-version: 7.1.1
       - name: Run formatters and linters
+        shell: bash
         run: ./scripts/style_check.bash
       - name: Fail if some files are changed
+        shell: bash
         run: |
           if ! git diff --exit-code; then
             echo "ERROR: Files are changed by formatters" >&2

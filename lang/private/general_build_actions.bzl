@@ -70,6 +70,7 @@ def check_build_error(
 def check_each_message(
         *,
         ctx,
+        id,
         message_file,
         matcher,
         pattern,
@@ -81,6 +82,7 @@ def check_each_message(
 
     Args:
         ctx(ctx): The rule's context.
+        id(str): Identifier string to distinguish different checks corresponding to the same label.
         message_file(File): A text file containing message.
         matcher(File): A matcher executable.
         pattern(str): A pattern string.
@@ -89,12 +91,19 @@ def check_each_message(
     Returns:
         File: Marker file for the check.
     """
+
+    # Marker for the check
     marker_file = ctx.actions.declare_file(
         ctx.label.name +
-        "/marker_check_each_message__" +
-        message_file.basename + "__" +
-        (matcher.path if matcher else "NONE") + "__" +
-        (pattern if pattern else "NONE") + "__",
+        "/marker_check_each_message/" +
+        id,
+    )
+
+    # Text file containing the pattern string
+    pattern_file = ctx.actions.declare_file(
+        ctx.label.name +
+        "/pattern_check_each_message/" +
+        id,
     )
 
     if not matcher:
@@ -105,10 +114,11 @@ def check_each_message(
             )
 
         ctx.actions.run(
-            outputs = [marker_file],
+            outputs = [marker_file, pattern_file],
             executable = "touch",
             arguments = [
                 marker_file.path,
+                pattern_file.path,
             ],
         )
     else:
@@ -118,13 +128,18 @@ def check_each_message(
                 "pattern string must not be empty",
             )
 
+        ctx.actions.write(
+            output = pattern_file,
+            content = pattern,
+        )
+
         ctx.actions.run(
             outputs = [marker_file],
-            inputs = [message_file],
+            inputs = [message_file, pattern_file],
             executable = checker,
             arguments = [
                 matcher.path,
-                pattern,
+                pattern_file.path,
                 message_file.path,
                 marker_file.path,
             ],

@@ -4,10 +4,13 @@ Each matcher function must receive a positional string argument,
 and return a struct with the following members:
     pattern(str): Argument of the matcher function
     matcher(label): Label to the matcher executable.
-                    Matcher executable is an executables which receives two arguments
-                        $1: Pattern string
-                        $2: Text file path to investigate
+                    Matcher executable is an executable which receives two arguments
+                        $1: Text file containing a pattern string
+                        $2: Text file where the matcher searches for a pattern string
                     and exits with an error if the pattern doesn't match the content of the test file.
+
+As a side note, the reason the matcher executable doesn't directly receive a pattern string is to support Windows.
+Shell in Windows lacks of the ability to sufficiently quote command line arguments. (https://github.com/bazelbuild/bazel/issues/17487)
 """
 
 visibility("private")

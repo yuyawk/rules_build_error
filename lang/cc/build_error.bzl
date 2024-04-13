@@ -173,8 +173,28 @@ def _try_compile(ctx):
         stderr = compile_stderr,
     )
 
-def _get_library_link_option(library_path):
+def _get_library_link_option(ctx, library_path):
     """Get library link option, such as `-lfoo`.
+
+    Args:
+        ctx(ctx): The rule's context.
+        library_path(str): Library path
+
+    Returns:
+        list[str]: Link option for the library.
+    """
+    if ctx.attr.os == "linux":
+        return _get_library_link_option_linux(library_path)
+    elif ctx.attr.os == "macos":
+        return _get_library_link_option_macos(library_path)
+    elif ctx.attr.os == "windows":
+        return _get_library_link_option_windows(library_path)
+    else:
+        # This line should be unreachable
+        fail("Unsupported OS: {}".format(ctx.attr.os))
+
+def _get_library_link_option_linux(library_path):
+    """Get library link option for linux.
 
     Args:
         library_path(str): Library path
@@ -188,6 +208,40 @@ def _get_library_link_option(library_path):
     for ext in [".a", ".so"]:
         if library_path.endswith(ext):
             return ["-l", library_path.removeprefix("lib").removesuffix(ext)]
+
+    return ["-l", ":" + library_path]
+
+def _get_library_link_option_macos(library_path):
+    """Get library link option for macos.
+
+    Args:
+        library_path(str): Library path
+
+    Returns:
+        list[str]: Link option for the library.
+    """
+    if not library_path.startswith("lib"):
+        return ["-l", ":" + library_path]
+
+    for ext in [".a", ".so", ".dylib"]:
+        if library_path.endswith(ext):
+            return ["-l", library_path.removeprefix("lib").removesuffix(ext)]
+
+    return ["-l", ":" + library_path]
+
+def _get_library_link_option_windows(library_path):
+    """Get library link option for windows.
+
+    Args:
+        library_path(str): Library path
+
+    Returns:
+        list[str]: Link option for the library.
+    """
+
+    for ext in [".lib", ".dll"]:
+        if library_path.endswith(ext):
+            return ["-l", library_path.removesuffix(ext)]
 
     return ["-l", ":" + library_path]
 
@@ -263,7 +317,7 @@ def _try_link(ctx, compile_output):
                 library = library_to_link.static_library if library_to_link.static_library else library_to_link.dynamic_library
                 if library:
                     args.add("-L", library.dirname)
-                    args.add(*_get_library_link_option(library.basename))
+                    args.add(*_get_library_link_option(ctx, library.basename))
                     inputs.append(library)
 
     args.add("-o", link_output)
@@ -358,6 +412,18 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
 _try_build = rule(
     implementation = _try_build_impl,
     attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
+        "os": attr.string(
+            doc = (
+                "OS of the build environment. " +
+                "This attribute is not user-facing."
+            ),
+            values = [
+                "linux",
+                "macos",
+                "windows",
+            ],
+            mandatory = True,
+        ),
         "_cc_toolchain": attr.label(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
@@ -386,6 +452,7 @@ def _check_messages_impl(ctx):
     cc_build_error_info = ctx.attr.build_trial[CcBuildErrorInfo]
     marker_compile_stderr = check_each_message(
         ctx = ctx,
+        id = "compile_stderr",
         message_file = cc_build_error_info.compile_stderr,
         matcher = get_executable_file(ctx.attr.matcher_compile_stderr),
         pattern = ctx.attr.pattern_compile_stderr,
@@ -393,6 +460,7 @@ def _check_messages_impl(ctx):
     )
     marker_compile_stdout = check_each_message(
         ctx = ctx,
+        id = "compile_stdout",
         message_file = cc_build_error_info.compile_stdout,
         matcher = get_executable_file(ctx.attr.matcher_compile_stdout),
         pattern = ctx.attr.pattern_compile_stdout,
@@ -400,6 +468,7 @@ def _check_messages_impl(ctx):
     )
     marker_link_stderr = check_each_message(
         ctx = ctx,
+        id = "link_stderr",
         message_file = cc_build_error_info.link_stderr,
         matcher = get_executable_file(ctx.attr.matcher_link_stderr),
         pattern = ctx.attr.pattern_link_stderr,
@@ -407,6 +476,7 @@ def _check_messages_impl(ctx):
     )
     marker_link_stdout = check_each_message(
         ctx = ctx,
+        id = "link_stdout",
         message_file = cc_build_error_info.link_stdout,
         matcher = get_executable_file(ctx.attr.matcher_link_stdout),
         pattern = ctx.attr.pattern_link_stdout,
@@ -520,6 +590,11 @@ def cc_build_error(
         tags = ["manual"] + tags,
         visibility = ["//visibility:private"],
         testonly = testonly,
+        os = select({
+            "@platforms//os:linux": "linux",
+            "@platforms//os:macos": "macos",
+            "@platforms//os:windows": "windows",
+        }),
         **kwargs_try_build
     )
 
