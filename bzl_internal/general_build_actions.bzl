@@ -35,7 +35,7 @@ def check_build_error(
         check_emptiness(File): Executable file object of `check_emptiness.bash`.
 
     Returns:
-        File: An empty text file.
+        File: Marker file for the check.
     """
 
     # Marker file for the check
@@ -60,3 +60,69 @@ def check_build_error(
     )
 
     return marker_check_build_error
+
+def check_each_message(
+        *,
+        ctx,
+        message_file,
+        matcher,
+        pattern,
+        checker):
+    """Check each message with a matcher and a pattern string.
+
+    After checking the message, create an empty text file as a marker for the action.
+    This marker file has to be surely evaluated by the rule.
+
+    Args:
+        ctx(ctx): The rule's context.
+        message_file(File): A text file containing message.
+        matcher(File): A matcher executable.
+        pattern(str): A pattern string.
+        checker(File): Executable file object for `check_each_message.bash`
+
+    Returns:
+        File: Marker file for the check.
+    """
+    marker_file = ctx.actions.declare_file(
+        ctx.label.name +
+        "/marker_check_each_message__" +
+        message_file.basename + "__" +
+        (matcher.path if matcher else "NONE") + "__" +
+        (pattern if pattern else "NONE") + "__",
+    )
+
+    if not matcher:
+        if pattern:
+            fail(
+                "When not specifying the matcher, " +
+                "pattern string must be empty",
+            )
+
+        ctx.actions.run(
+            outputs = [marker_file],
+            executable = "touch",
+            arguments = [
+                marker_file.path,
+            ],
+        )
+    else:
+        if not pattern:
+            fail(
+                "When specifying the matcher, " +
+                "pattern string must not be empty",
+            )
+
+        ctx.actions.run(
+            outputs = [marker_file],
+            inputs = [message_file],
+            executable = checker,
+            arguments = [
+                matcher.path,
+                pattern,
+                message_file.path,
+                marker_file.path,
+            ],
+            tools = [matcher],
+        )
+
+    return marker_file

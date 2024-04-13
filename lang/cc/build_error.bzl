@@ -13,6 +13,7 @@ load(
 load(
     "//bzl_internal:general_build_actions.bzl",
     "check_build_error",
+    "check_each_message",
     "get_executable_file",
 )
 
@@ -367,62 +368,6 @@ _try_build = rule(
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
-def _check_each_message(ctx, message_file, matcher, pattern):
-    """Check each message with a matcher and a pattern string.
-
-    Args:
-        ctx(ctx): The rule's context.
-        message_file(File): A text file containing message.
-        matcher(File): A matcher executable.
-        pattern(str): A pattern string.
-
-    Returns:
-        File: Marker file for the check.
-    """
-    marker_file = ctx.actions.declare_file(
-        ctx.label.name +
-        "/marker_check_message__" +
-        message_file.basename + "__" +
-        (matcher.path if matcher else "NONE") + "__" +
-        (pattern if pattern else "NONE") + "__",
-    )
-
-    if not matcher:
-        if pattern:
-            fail(
-                "When not specifying the matcher, " +
-                "pattern string must be empty",
-            )
-
-        ctx.actions.run(
-            outputs = [marker_file],
-            executable = "touch",
-            arguments = [
-                marker_file.path,
-            ],
-        )
-    else:
-        if not pattern:
-            fail(
-                "When specifying the matcher, " +
-                "pattern string must not be empty",
-            )
-
-        ctx.actions.run(
-            outputs = [marker_file],
-            inputs = [message_file],
-            executable = get_executable_file(ctx.attr._check_each_message),
-            arguments = [
-                matcher.path,
-                pattern,
-                message_file.path,
-                marker_file.path,
-            ],
-            tools = [matcher],
-        )
-
-    return marker_file
-
 def _check_messages_impl(ctx):
     """Implementation of `_check_messages`.
 
@@ -434,29 +379,33 @@ def _check_messages_impl(ctx):
     """
 
     cc_build_error_info = ctx.attr.build_trial[CcBuildErrorInfo]
-    marker_compile_stderr = _check_each_message(
-        ctx,
-        cc_build_error_info.compile_stderr,
-        get_executable_file(ctx.attr.matcher_compile_stderr),
-        ctx.attr.pattern_compile_stderr,
+    marker_compile_stderr = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.compile_stderr,
+        matcher = get_executable_file(ctx.attr.matcher_compile_stderr),
+        pattern = ctx.attr.pattern_compile_stderr,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
-    marker_compile_stdout = _check_each_message(
-        ctx,
-        cc_build_error_info.compile_stdout,
-        get_executable_file(ctx.attr.matcher_compile_stdout),
-        ctx.attr.pattern_compile_stdout,
+    marker_compile_stdout = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.compile_stdout,
+        matcher = get_executable_file(ctx.attr.matcher_compile_stdout),
+        pattern = ctx.attr.pattern_compile_stdout,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
-    marker_link_stderr = _check_each_message(
-        ctx,
-        cc_build_error_info.link_stderr,
-        get_executable_file(ctx.attr.matcher_link_stderr),
-        ctx.attr.pattern_link_stderr,
+    marker_link_stderr = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.link_stderr,
+        matcher = get_executable_file(ctx.attr.matcher_link_stderr),
+        pattern = ctx.attr.pattern_link_stderr,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
-    marker_link_stdout = _check_each_message(
-        ctx,
-        cc_build_error_info.link_stdout,
-        get_executable_file(ctx.attr.matcher_link_stdout),
-        ctx.attr.pattern_link_stdout,
+    marker_link_stdout = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.link_stdout,
+        matcher = get_executable_file(ctx.attr.matcher_link_stdout),
+        pattern = ctx.attr.pattern_link_stdout,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
     markers = [
         marker_compile_stderr,
