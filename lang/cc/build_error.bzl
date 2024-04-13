@@ -412,12 +412,6 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
 _try_build = rule(
     implementation = _try_build_impl,
     attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
-        "_cc_toolchain": attr.label(
-            default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
-        ),
-        "_check_emptiness": attr.label(
-            default = Label("//build_script:check_emptiness"),
-        ),
         "os": attr.string(
             doc = (
                 "OS of the build environment. " +
@@ -429,6 +423,12 @@ _try_build = rule(
                 "windows",
             ],
             mandatory = True,
+        ),
+        "_cc_toolchain": attr.label(
+            default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
+        ),
+        "_check_emptiness": attr.label(
+            default = Label("//build_script:check_emptiness"),
         ),
         "_try_build": attr.label(
             default = Label("//build_script:try_build"),
