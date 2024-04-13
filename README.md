@@ -54,7 +54,7 @@ Note that some unit test cases with `tags = ["manual"]` are for checking the fai
 
 Execute [`scripts/validate_example.bash`](scripts/validate_example.bash). It performs `bazelisk test` inside the [examples](examples) directory.
 
-#### Formating and linting
+#### Formatting and linting
 
 Execute [`scripts/style_check.bash`](scripts/style_check.bash).
 
