@@ -74,6 +74,8 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
+        with:
+          bazel-version: 7.1.1
       - name: Run formatters and linters
         shell: bash
         run: ./scripts/style_check.bash

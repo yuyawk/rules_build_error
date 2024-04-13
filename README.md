@@ -42,9 +42,21 @@ In order to specify how to validate the error message, a struct `matcher` is ava
 
 ### How to test
 
-Execute [`scripts/execute_tests.bash`](scripts/execute_tests.bash) after installing [`bazelisk`](https://github.com/bazelbuild/bazelisk). It executes `bazelisk test` and `bazelisk build` commands under the hood.
+Each test script requires the installation of [`bazelisk`](https://github.com/bazelbuild/bazelisk) in advance.
 
-When writing tests, in principle, use `tags = ["manual"]` if a test case target must fail with `bazelisk test`. In such a test case, confirm its failure in [`scripts/execute_tests.bash`](scripts/execute_tests.bash) one by one.
+#### Unit tests
+
+Execute [`scripts/execute_tests.bash`](scripts/execute_tests.bash). It performs `bazelisk test` and `bazelisk build` commands under the hood.
+
+Note that some unit test cases with `tags = ["manual"]` are for checking the failure of `bazel build`, by executing the build command one by one.
+
+#### Example
+
+Execute [`scripts/validate_example.bash`](scripts/validate_example.bash). It performs `bazelisk test` inside the [examples](examples) directory.
+
+#### Formating and linting
+
+Execute [`scripts/style_check.bash`](scripts/style_check.bash).
 
 ## CI
 

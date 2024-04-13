@@ -10,6 +10,13 @@ load(
     "CPP_TOOLCHAIN_TYPE",
     "find_cpp_toolchain",
 )
+load(
+    "//lang/private:general_build_actions.bzl",
+    "DEFAULT_MATCHER",
+    "check_build_error",
+    "check_each_message",
+    "get_executable_file",
+)
 
 visibility("private")
 
@@ -35,19 +42,6 @@ _EXTENSIONS_CPP = [
     ".cxx",
     ".c++",
 ]
-
-def _get_executable_file(label):
-    """Get executable file if the label is not None.
-
-    Args:
-        label(label or None): Executable label
-
-    Returns:
-        File: Executable file.
-    """
-    if not label:
-        return None
-    return label.files_to_run.executable
 
 def _is_c(src_file):
     """Whether the source file is for C.
@@ -168,7 +162,7 @@ def _try_compile(ctx):
     ctx.actions.run(
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
-        executable = _get_executable_file(ctx.attr._try_build),
+        executable = get_executable_file(ctx.attr._try_build),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -278,7 +272,7 @@ def _try_link(ctx, compile_output):
     ctx.actions.run(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
-        executable = _get_executable_file(ctx.attr._try_build),
+        executable = get_executable_file(ctx.attr._try_build),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -288,43 +282,6 @@ def _try_link(ctx, compile_output):
         stdout = link_stdout,
         stderr = link_stderr,
     )
-
-def _check_build_error(ctx, compile_output, link_output):
-    """Check if the C/C++ build failed.
-
-    Force internal `ctx.actions.run` execution to fail if the C/C++ build error
-    did NOT occur, otherwise, create an empty text file.
-
-    Args:
-        ctx(ctx): The rule's context.
-        compile_output: Output of the previous compilation action.
-        link_output: Output of the previous linking action.
-
-    Returns:
-        File: An empty text file.
-    """
-
-    # Marker file for the check
-    marker_check_build_error = ctx.actions.declare_file(
-        ctx.label.name + "/marker_check_build_error",
-    )
-
-    # Arguments for `check_emptiness`
-    args = ctx.actions.args()
-
-    args.add("-f", compile_output)
-    args.add("-f", link_output)
-    args.add("-m", "ERROR: C/C++ build error didn't occur")
-    args.add("-n", marker_check_build_error)
-
-    ctx.actions.run(
-        outputs = [marker_check_build_error],
-        inputs = [compile_output, link_output],
-        executable = _get_executable_file(ctx.attr._check_emptiness),
-        arguments = [args],
-    )
-
-    return marker_check_build_error
 
 def _try_build_impl(ctx):
     """Implementation of the rule `try_cc_build`
@@ -337,10 +294,14 @@ def _try_build_impl(ctx):
     """
     compile_result = _try_compile(ctx)
     link_result = _try_link(ctx, compile_result.output)
-    marker_check_build_error = _check_build_error(
-        ctx,
-        compile_result.output,
-        link_result.output,
+    marker_check_build_error = check_build_error(
+        ctx = ctx,
+        files_to_check = [
+            compile_result.output,
+            link_result.output,
+        ],
+        error_message = "ERROR: C/C++ build error didn't occur",
+        check_emptiness = get_executable_file(ctx.attr._check_emptiness),
     )
 
     markers = [marker_check_build_error]
@@ -358,41 +319,45 @@ def _try_build_impl(ctx):
         ),
     ]
 
+# Explicit attributes for `_try_build`
+_TRY_BUILD_EXPLICIT_ATTRS = {
+    "additional_linker_inputs": attr.label_list(
+        doc = "Pass these files to the linker command",
+        allow_empty = True,
+        allow_files = True,
+        mandatory = False,
+    ),
+    "copts": attr.string_list(
+        doc = "Add these options to the compilation command",
+        allow_empty = True,
+        mandatory = False,
+    ),
+    "deps": attr.label_list(
+        doc = "The list of CcInfo libraries to be linked in to the target",
+        allow_empty = True,
+        mandatory = False,
+        providers = [CcInfo],
+    ),
+    "linkopts": attr.string_list(
+        doc = "Add these options to the linker command",
+        allow_empty = True,
+        mandatory = False,
+    ),
+    "local_defines": attr.string_list(
+        doc = "List of pre-processor macro definitions to add to the compilation command",
+        allow_empty = True,
+        mandatory = False,
+    ),
+    "src": attr.label(
+        doc = "C/C++ file to be processed",
+        mandatory = True,
+        allow_single_file = _EXTENSIONS_C + _EXTENSIONS_CPP,
+    ),
+}
+
 _try_build = rule(
     implementation = _try_build_impl,
-    attrs = {
-        "additional_linker_inputs": attr.label_list(
-            doc = "Pass these files to the linker command",
-            allow_empty = True,
-            allow_files = True,
-            mandatory = False,
-        ),
-        "copts": attr.string_list(
-            doc = "Add these options to the compilation command",
-            allow_empty = True,
-            mandatory = False,
-        ),
-        "deps": attr.label_list(
-            doc = "The list of CcInfo libraries to be linked in to the target",
-            allow_empty = True,
-            mandatory = False,
-            providers = [CcInfo],
-        ),
-        "linkopts": attr.string_list(
-            doc = "Add these options to the linker command",
-            allow_empty = True,
-            mandatory = False,
-        ),
-        "local_defines": attr.string_list(
-            doc = "List of pre-processor macro definitions to add to the compilation command",
-            allow_empty = True,
-            mandatory = False,
-        ),
-        "src": attr.label(
-            doc = "C/C++ file to be processed",
-            mandatory = True,
-            allow_single_file = _EXTENSIONS_C + _EXTENSIONS_CPP,
-        ),
+    attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
         "_cc_toolchain": attr.label(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
@@ -408,62 +373,6 @@ _try_build = rule(
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
-def _check_each_message(ctx, message_file, matcher, pattern):
-    """Check each message with a matcher and a pattern string.
-
-    Args:
-        ctx(ctx): The rule's context.
-        message_file(File): A text file containing message.
-        matcher(File): A matcher executable.
-        pattern(str): A pattern string.
-
-    Returns:
-        File: Marker file for the check.
-    """
-    marker_file = ctx.actions.declare_file(
-        ctx.label.name +
-        "/marker_check_message__" +
-        message_file.basename + "__" +
-        (matcher.path if matcher else "NONE") + "__" +
-        (pattern if pattern else "NONE") + "__",
-    )
-
-    if not matcher:
-        if pattern:
-            fail(
-                "When not specifying the matcher, " +
-                "pattern string must be empty",
-            )
-
-        ctx.actions.run(
-            outputs = [marker_file],
-            executable = "touch",
-            arguments = [
-                marker_file.path,
-            ],
-        )
-    else:
-        if not pattern:
-            fail(
-                "When specifying the matcher, " +
-                "pattern string must not be empty",
-            )
-
-        ctx.actions.run(
-            outputs = [marker_file],
-            inputs = [message_file],
-            executable = _get_executable_file(ctx.attr._check_each_message),
-            arguments = [
-                matcher.path,
-                pattern,
-                message_file.path,
-                marker_file.path,
-            ],
-            tools = [matcher],
-        )
-
-    return marker_file
-
 def _check_messages_impl(ctx):
     """Implementation of `_check_messages`.
 
@@ -475,29 +384,33 @@ def _check_messages_impl(ctx):
     """
 
     cc_build_error_info = ctx.attr.build_trial[CcBuildErrorInfo]
-    marker_compile_stderr = _check_each_message(
-        ctx,
-        cc_build_error_info.compile_stderr,
-        _get_executable_file(ctx.attr.matcher_compile_stderr),
-        ctx.attr.pattern_compile_stderr,
+    marker_compile_stderr = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.compile_stderr,
+        matcher = get_executable_file(ctx.attr.matcher_compile_stderr),
+        pattern = ctx.attr.pattern_compile_stderr,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
-    marker_compile_stdout = _check_each_message(
-        ctx,
-        cc_build_error_info.compile_stdout,
-        _get_executable_file(ctx.attr.matcher_compile_stdout),
-        ctx.attr.pattern_compile_stdout,
+    marker_compile_stdout = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.compile_stdout,
+        matcher = get_executable_file(ctx.attr.matcher_compile_stdout),
+        pattern = ctx.attr.pattern_compile_stdout,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
-    marker_link_stderr = _check_each_message(
-        ctx,
-        cc_build_error_info.link_stderr,
-        _get_executable_file(ctx.attr.matcher_link_stderr),
-        ctx.attr.pattern_link_stderr,
+    marker_link_stderr = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.link_stderr,
+        matcher = get_executable_file(ctx.attr.matcher_link_stderr),
+        pattern = ctx.attr.pattern_link_stderr,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
-    marker_link_stdout = _check_each_message(
-        ctx,
-        cc_build_error_info.link_stdout,
-        _get_executable_file(ctx.attr.matcher_link_stdout),
-        ctx.attr.pattern_link_stdout,
+    marker_link_stdout = check_each_message(
+        ctx = ctx,
+        message_file = cc_build_error_info.link_stdout,
+        matcher = get_executable_file(ctx.attr.matcher_link_stdout),
+        pattern = ctx.attr.pattern_link_stdout,
+        checker = get_executable_file(ctx.attr._check_each_message),
     )
     markers = [
         marker_compile_stderr,
@@ -566,18 +479,13 @@ _check_messages = rule(
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
-_DEFAULT_MATCHER = struct(
-    matcher = None,
-    pattern = None,
-)
-
 def cc_build_error(
         *,
         name,
-        compile_stderr = _DEFAULT_MATCHER,
-        compile_stdout = _DEFAULT_MATCHER,
-        link_stderr = _DEFAULT_MATCHER,
-        link_stdout = _DEFAULT_MATCHER,
+        compile_stderr = DEFAULT_MATCHER,
+        compile_stdout = DEFAULT_MATCHER,
+        link_stderr = DEFAULT_MATCHER,
+        link_stdout = DEFAULT_MATCHER,
         **kwargs):
     """Check a C/C++ build error.
 
@@ -587,12 +495,24 @@ def cc_build_error(
         compile_stdout(matcher struct): Matcher for stdout during compilation.
         link_stderr(matcher struct): Matcher for stderr while linking.
         link_stdout(matcher struct): Matcher for stdout while linking.
-        **kwargs(dict): Passed to `_try_build`.
+        **kwargs(dict): Passed to internal rules.
     """
 
     testonly = kwargs.pop("testonly", False)
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", None)
+
+    kwargs_try_build = {
+        key: kwargs[key]
+        for key in kwargs
+        if key in _TRY_BUILD_EXPLICIT_ATTRS
+    }
+    kwargs_check_messages = {
+        key: kwargs[key]
+        for key in kwargs
+        if key not in _TRY_BUILD_EXPLICIT_ATTRS
+    }
+    kwargs.clear()
 
     try_build_target = name + "__try_build"
     _try_build(
@@ -600,7 +520,7 @@ def cc_build_error(
         tags = ["manual"] + tags,
         visibility = ["//visibility:private"],
         testonly = testonly,
-        **kwargs
+        **kwargs_try_build
     )
 
     _check_messages(
@@ -617,4 +537,5 @@ def cc_build_error(
         visibility = visibility,
         tags = tags,
         testonly = testonly,
+        **kwargs_check_messages
     )
