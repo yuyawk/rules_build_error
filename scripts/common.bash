@@ -25,7 +25,7 @@ BAZEL_EXECUTABLE=(
 BAZEL_VERSION_DEFAULT="7.1.1"
 
 if [[ ! -f "${REPO_ROOT_DIR}/.bazeliskrc" ]]; then
-    if [[ "${CI:-}" != "true" ]]; then
+    if [[ "${CI:-}" == "true" ]]; then
         echo "ERROR: Explicitly specify Bazel version on CI" >&2
         exit 1
     fi
