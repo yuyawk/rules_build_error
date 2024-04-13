@@ -11,7 +11,7 @@ cc_build_error(
 cc_build_error(
     name = "link_error",
     src = "link_error.cpp",
-    link_stderr = matcher.contains_basic_regex(".*"),
+    link_stderr = matcher.contains_basic_regex("Declared.*Undefined"),
 )
 
 build_test(
