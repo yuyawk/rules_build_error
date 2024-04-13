@@ -10,7 +10,7 @@ git archive --format=tar "--prefix=${PREFIX}/" "${TAG}" | \
     gzip \
     > "${ARCHIVE}"
 
-# StdOut of this sript is used for release description
+# StdOut of this script is used for release description
 cat << EOF
 ## Using Bzlmod with Bazel 6 or greater
 

@@ -48,7 +48,7 @@ Each test script requires the installation of [`bazelisk`](https://github.com/ba
 
 Execute [`scripts/execute_tests.bash`](scripts/execute_tests.bash). It performs `bazelisk test` and `bazelisk build` commands under the hood.
 
-Note that some unit test cases with `tags = ["manual"]` are checking the failure of `bazel build`, by executing the build command one by one.
+Note that some unit test cases with `tags = ["manual"]` are for checking the failure of `bazel build`, by executing the build command one by one.
 
 #### Example
 
