@@ -34,3 +34,11 @@ build_test(
         ":with_extended_regex_matcher",
     ],
 )
+
+# Test case which should fail to build
+cc_build_error(
+    name = "incorrect_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.has_substr("Incorrect matcher"),
+    tags = ["manual"],
+)

@@ -41,3 +41,4 @@ check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:plain
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_basic_regex_matcher
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_extended_regex_matcher
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_substr_matcher
+check_bazel_build_error //tests/cc/cpp_compile_error:incorrect_matcher
