@@ -386,6 +386,7 @@ def _check_messages_impl(ctx):
     cc_build_error_info = ctx.attr.build_trial[CcBuildErrorInfo]
     marker_compile_stderr = check_each_message(
         ctx = ctx,
+        id = "compile_stderr",
         message_file = cc_build_error_info.compile_stderr,
         matcher = get_executable_file(ctx.attr.matcher_compile_stderr),
         pattern = ctx.attr.pattern_compile_stderr,
@@ -393,6 +394,7 @@ def _check_messages_impl(ctx):
     )
     marker_compile_stdout = check_each_message(
         ctx = ctx,
+        id = "compile_stdout",
         message_file = cc_build_error_info.compile_stdout,
         matcher = get_executable_file(ctx.attr.matcher_compile_stdout),
         pattern = ctx.attr.pattern_compile_stdout,
@@ -400,6 +402,7 @@ def _check_messages_impl(ctx):
     )
     marker_link_stderr = check_each_message(
         ctx = ctx,
+        id = "link_stderr",
         message_file = cc_build_error_info.link_stderr,
         matcher = get_executable_file(ctx.attr.matcher_link_stderr),
         pattern = ctx.attr.pattern_link_stderr,
@@ -407,6 +410,7 @@ def _check_messages_impl(ctx):
     )
     marker_link_stdout = check_each_message(
         ctx = ctx,
+        id = "link_stdout",
         message_file = cc_build_error_info.link_stdout,
         matcher = get_executable_file(ctx.attr.matcher_link_stdout),
         pattern = ctx.attr.pattern_link_stdout,
