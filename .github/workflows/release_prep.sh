@@ -14,7 +14,7 @@ git archive --format=tar "--prefix=${PREFIX}/" "${TAG}" | \
 cat << EOF
 ## Using Bzlmod with Bazel 6 or greater
 
-1. Enable Bzlmod with \`common --enable_bzlmod\`.
+1. Enable Bzlmod with \`common --enable_bzlmod\` in \`.bazelrc\`.
 2. Add to your \`MODULE.bazel\` file:
 
 \`\`\`starlark
