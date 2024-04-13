@@ -1,3 +1,5 @@
+"""Test cases which should fail to build are marked with `tags = ["manual"]`."""
+
 load("//lang/cc:defs.bzl", "cc_build_error")
 load("//matcher:defs.bzl", "matcher")
 
