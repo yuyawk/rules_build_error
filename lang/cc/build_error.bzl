@@ -319,41 +319,45 @@ def _try_build_impl(ctx):
         ),
     ]
 
+# Explicit attributes for `_try_build`
+_TRY_BUILD_EXPLICIT_ATTRS = {
+    "additional_linker_inputs": attr.label_list(
+        doc = "Pass these files to the linker command",
+        allow_empty = True,
+        allow_files = True,
+        mandatory = False,
+    ),
+    "copts": attr.string_list(
+        doc = "Add these options to the compilation command",
+        allow_empty = True,
+        mandatory = False,
+    ),
+    "deps": attr.label_list(
+        doc = "The list of CcInfo libraries to be linked in to the target",
+        allow_empty = True,
+        mandatory = False,
+        providers = [CcInfo],
+    ),
+    "linkopts": attr.string_list(
+        doc = "Add these options to the linker command",
+        allow_empty = True,
+        mandatory = False,
+    ),
+    "local_defines": attr.string_list(
+        doc = "List of pre-processor macro definitions to add to the compilation command",
+        allow_empty = True,
+        mandatory = False,
+    ),
+    "src": attr.label(
+        doc = "C/C++ file to be processed",
+        mandatory = True,
+        allow_single_file = _EXTENSIONS_C + _EXTENSIONS_CPP,
+    ),
+}
+
 _try_build = rule(
     implementation = _try_build_impl,
-    attrs = {
-        "additional_linker_inputs": attr.label_list(
-            doc = "Pass these files to the linker command",
-            allow_empty = True,
-            allow_files = True,
-            mandatory = False,
-        ),
-        "copts": attr.string_list(
-            doc = "Add these options to the compilation command",
-            allow_empty = True,
-            mandatory = False,
-        ),
-        "deps": attr.label_list(
-            doc = "The list of CcInfo libraries to be linked in to the target",
-            allow_empty = True,
-            mandatory = False,
-            providers = [CcInfo],
-        ),
-        "linkopts": attr.string_list(
-            doc = "Add these options to the linker command",
-            allow_empty = True,
-            mandatory = False,
-        ),
-        "local_defines": attr.string_list(
-            doc = "List of pre-processor macro definitions to add to the compilation command",
-            allow_empty = True,
-            mandatory = False,
-        ),
-        "src": attr.label(
-            doc = "C/C++ file to be processed",
-            mandatory = True,
-            allow_single_file = _EXTENSIONS_C + _EXTENSIONS_CPP,
-        ),
+    attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
         "_cc_toolchain": attr.label(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
@@ -491,12 +495,24 @@ def cc_build_error(
         compile_stdout(matcher struct): Matcher for stdout during compilation.
         link_stderr(matcher struct): Matcher for stderr while linking.
         link_stdout(matcher struct): Matcher for stdout while linking.
-        **kwargs(dict): Passed to `_try_build`.
+        **kwargs(dict): Passed to internal rules.
     """
 
     testonly = kwargs.pop("testonly", False)
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", None)
+
+    kwargs_try_build = {
+        key: kwargs[key]
+        for key in kwargs
+        if key in _TRY_BUILD_EXPLICIT_ATTRS
+    }
+    kwargs_check_messages = {
+        key: kwargs[key]
+        for key in kwargs
+        if key not in _TRY_BUILD_EXPLICIT_ATTRS
+    }
+    kwargs.clear()
 
     try_build_target = name + "__try_build"
     _try_build(
@@ -504,7 +520,7 @@ def cc_build_error(
         tags = ["manual"] + tags,
         visibility = ["//visibility:private"],
         testonly = testonly,
-        **kwargs
+        **kwargs_try_build
     )
 
     _check_messages(
@@ -521,4 +537,5 @@ def cc_build_error(
         visibility = visibility,
         tags = tags,
         testonly = testonly,
+        **kwargs_check_messages
     )
