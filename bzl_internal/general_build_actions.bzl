@@ -3,6 +3,12 @@
 
 visibility("//lang/...")
 
+# Default value of matcher struct passed to each message assertion.
+DEFAULT_MATCHER = struct(
+    matcher = None,
+    pattern = None,
+)
+
 def get_executable_file(label):
     """Get executable file if the label is not None.
 

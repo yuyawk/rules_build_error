@@ -12,6 +12,7 @@ load(
 )
 load(
     "//bzl_internal:general_build_actions.bzl",
+    "DEFAULT_MATCHER",
     "check_build_error",
     "check_each_message",
     "get_executable_file",
@@ -474,18 +475,13 @@ _check_messages = rule(
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
-_DEFAULT_MATCHER = struct(
-    matcher = None,
-    pattern = None,
-)
-
 def cc_build_error(
         *,
         name,
-        compile_stderr = _DEFAULT_MATCHER,
-        compile_stdout = _DEFAULT_MATCHER,
-        link_stderr = _DEFAULT_MATCHER,
-        link_stdout = _DEFAULT_MATCHER,
+        compile_stderr = DEFAULT_MATCHER,
+        compile_stdout = DEFAULT_MATCHER,
+        link_stderr = DEFAULT_MATCHER,
+        link_stdout = DEFAULT_MATCHER,
         **kwargs):
     """Check a C/C++ build error.
 
