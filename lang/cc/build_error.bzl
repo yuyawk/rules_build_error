@@ -11,7 +11,7 @@ load(
     "find_cpp_toolchain",
 )
 load(
-    "//bzl_internal:general_build_actions.bzl",
+    "//lang/private:general_build_actions.bzl",
     "DEFAULT_MATCHER",
     "check_build_error",
     "check_each_message",
