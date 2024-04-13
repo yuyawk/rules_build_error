@@ -3,14 +3,21 @@ load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error")
 load("@rules_build_error//matcher:defs.bzl", "matcher")
 
 cc_build_error(
-    name = "example",
+    name = "compile_error",
     src = "compile_error.cpp",
     compile_stderr = matcher.has_substr("Example compile error"),
+)
+
+cc_build_error(
+    name = "link_error",
+    src = "link_error.cpp",
+    link_stderr = matcher.contains_basic_regex(".*"),
 )
 
 build_test(
     name = "build_test",
     targets = [
-        ":example",
+        ":compile_error",
+        ":link_error",
     ],
 )
