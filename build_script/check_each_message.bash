@@ -8,13 +8,13 @@ Check each message file.
 
 Exits with an error if the pattern is not found in the message file.
 
-Usage: $0 MATCHER PATTERN MESSAGE_FILE [MARKER_FILE ...]
+Usage: $0 MATCHER PATTERN_FILE MESSAGE_FILE [MARKER_FILE ...]
 
 MATCHER
     Executable to check if the pattern string is inside the message file
 
-PATTERN
-    Pattern string
+PATTERN_FILE
+    Text file containing a pattern string
 
 MESSAGE_FILE
     Text file containing a message
@@ -31,7 +31,7 @@ if [ "$#" -lt 3 ]; then
 fi
 
 matcher=$1
-pattern=$2
+pattern_file=$2
 message_file=$3
 shift 3
 
@@ -42,8 +42,8 @@ if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
     trap 'touch "${files_to_touch[@]}"' EXIT
 fi
 
-if ! "${matcher}" "${pattern}" "${message_file}" ; then
-    echo "Pattern '${pattern}' is not found in the message file '${message_file}' with the matcher '${matcher}'." >&2
+if ! "${matcher}" "${pattern_file}" "${message_file}" ; then
+    echo "Pattern '$(cat "${pattern_file}")' is not found in the message file '${message_file}' with the matcher '${matcher}'." >&2
     echo "" >&2
     echo "---------- Message: BEGIN ----------" >&2
     cat "${message_file}" >&2
