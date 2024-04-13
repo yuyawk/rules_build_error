@@ -10,6 +10,11 @@ load(
     "CPP_TOOLCHAIN_TYPE",
     "find_cpp_toolchain",
 )
+load(
+    "//bzl_internal:general_build_actions.bzl",
+    "check_build_error",
+    "get_executable_file",
+)
 
 visibility("private")
 
@@ -35,19 +40,6 @@ _EXTENSIONS_CPP = [
     ".cxx",
     ".c++",
 ]
-
-def _get_executable_file(label):
-    """Get executable file if the label is not None.
-
-    Args:
-        label(label or None): Executable label
-
-    Returns:
-        File: Executable file.
-    """
-    if not label:
-        return None
-    return label.files_to_run.executable
 
 def _is_c(src_file):
     """Whether the source file is for C.
@@ -168,7 +160,7 @@ def _try_compile(ctx):
     ctx.actions.run(
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
-        executable = _get_executable_file(ctx.attr._try_build),
+        executable = get_executable_file(ctx.attr._try_build),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -278,7 +270,7 @@ def _try_link(ctx, compile_output):
     ctx.actions.run(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
-        executable = _get_executable_file(ctx.attr._try_build),
+        executable = get_executable_file(ctx.attr._try_build),
         arguments = [args],
         tools = cc_toolchain.all_files,
     )
@@ -288,43 +280,6 @@ def _try_link(ctx, compile_output):
         stdout = link_stdout,
         stderr = link_stderr,
     )
-
-def _check_build_error(ctx, compile_output, link_output):
-    """Check if the C/C++ build failed.
-
-    Force internal `ctx.actions.run` execution to fail if the C/C++ build error
-    did NOT occur, otherwise, create an empty text file.
-
-    Args:
-        ctx(ctx): The rule's context.
-        compile_output: Output of the previous compilation action.
-        link_output: Output of the previous linking action.
-
-    Returns:
-        File: An empty text file.
-    """
-
-    # Marker file for the check
-    marker_check_build_error = ctx.actions.declare_file(
-        ctx.label.name + "/marker_check_build_error",
-    )
-
-    # Arguments for `check_emptiness`
-    args = ctx.actions.args()
-
-    args.add("-f", compile_output)
-    args.add("-f", link_output)
-    args.add("-m", "ERROR: C/C++ build error didn't occur")
-    args.add("-n", marker_check_build_error)
-
-    ctx.actions.run(
-        outputs = [marker_check_build_error],
-        inputs = [compile_output, link_output],
-        executable = _get_executable_file(ctx.attr._check_emptiness),
-        arguments = [args],
-    )
-
-    return marker_check_build_error
 
 def _try_build_impl(ctx):
     """Implementation of the rule `try_cc_build`
@@ -337,10 +292,15 @@ def _try_build_impl(ctx):
     """
     compile_result = _try_compile(ctx)
     link_result = _try_link(ctx, compile_result.output)
-    marker_check_build_error = _check_build_error(
-        ctx,
-        compile_result.output,
-        link_result.output,
+    marker_check_build_error = check_build_error(
+        ctx = ctx,
+        marker_file_name = ctx.label.name + "/marker_check_build_error",
+        files_to_check = [
+            compile_result.output,
+            link_result.output,
+        ],
+        error_message = "ERROR: C/C++ build error didn't occur",
+        check_emptiness = get_executable_file(ctx.attr._check_emptiness),
     )
 
     markers = [marker_check_build_error]
@@ -452,7 +412,7 @@ def _check_each_message(ctx, message_file, matcher, pattern):
         ctx.actions.run(
             outputs = [marker_file],
             inputs = [message_file],
-            executable = _get_executable_file(ctx.attr._check_each_message),
+            executable = get_executable_file(ctx.attr._check_each_message),
             arguments = [
                 matcher.path,
                 pattern,
@@ -478,25 +438,25 @@ def _check_messages_impl(ctx):
     marker_compile_stderr = _check_each_message(
         ctx,
         cc_build_error_info.compile_stderr,
-        _get_executable_file(ctx.attr.matcher_compile_stderr),
+        get_executable_file(ctx.attr.matcher_compile_stderr),
         ctx.attr.pattern_compile_stderr,
     )
     marker_compile_stdout = _check_each_message(
         ctx,
         cc_build_error_info.compile_stdout,
-        _get_executable_file(ctx.attr.matcher_compile_stdout),
+        get_executable_file(ctx.attr.matcher_compile_stdout),
         ctx.attr.pattern_compile_stdout,
     )
     marker_link_stderr = _check_each_message(
         ctx,
         cc_build_error_info.link_stderr,
-        _get_executable_file(ctx.attr.matcher_link_stderr),
+        get_executable_file(ctx.attr.matcher_link_stderr),
         ctx.attr.pattern_link_stderr,
     )
     marker_link_stdout = _check_each_message(
         ctx,
         cc_build_error_info.link_stdout,
-        _get_executable_file(ctx.attr.matcher_link_stdout),
+        get_executable_file(ctx.attr.matcher_link_stdout),
         ctx.attr.pattern_link_stdout,
     )
     markers = [
