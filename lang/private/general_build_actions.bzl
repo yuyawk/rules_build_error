@@ -1,6 +1,8 @@
 """Implementations for non-langage-specific build actions.
 """
 
+load("@aspect_bazel_lib//lib:base64.bzl", "base64")
+
 visibility("//lang/...")
 
 # Default value of matcher struct passed to each message assertion.
@@ -91,10 +93,14 @@ def check_each_message(
     """
     marker_file = ctx.actions.declare_file(
         ctx.label.name +
-        "/marker_check_each_message__" +
-        message_file.basename + "__" +
-        (matcher.path if matcher else "NONE") + "__" +
-        (pattern if pattern else "NONE") + "__",
+        "/marker_check_each_message/" +
+        message_file.basename + "/" +
+        # Use base64-encoding to ensure valid characters
+        base64.encode(
+            data =
+                (matcher.path if matcher else "") +
+                (pattern if pattern else ""),
+        ).replace("/", "-").rstrip("="),
     )
 
     if not matcher:
