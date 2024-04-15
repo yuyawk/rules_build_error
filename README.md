@@ -46,17 +46,17 @@ Each test script requires the installation of [`bazelisk`](https://github.com/ba
 
 #### Unit tests
 
-Execute [`scripts/execute_tests.bash`](scripts/execute_tests.bash). It performs `bazelisk test` and `bazelisk build` commands under the hood.
+Execute [`development/cli/execute_tests.bash`](development/cli/execute_tests.bash). It performs `bazelisk test` and `bazelisk build` commands under the hood.
 
 Note that some unit test cases with `tags = ["manual"]` are for checking the failure of `bazel build`, by executing the build command one by one.
 
 #### Example
 
-Execute [`scripts/validate_example.bash`](scripts/validate_example.bash). It performs `bazelisk test` inside the [examples](examples) directory.
+Execute [`development/cli/validate_example.bash`](development/cli/validate_example.bash). It performs `bazelisk test` inside the [examples](examples) directory.
 
 #### Formatting and linting
 
-Execute [`scripts/style_check.bash`](scripts/style_check.bash).
+Execute [`development/cli/style_check.bash`](development/cli/style_check.bash).
 
 ## CI
 

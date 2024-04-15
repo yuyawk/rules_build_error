@@ -36,7 +36,7 @@ jobs:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Run unit tests
         shell: bash
-        run: ./scripts/execute_tests.bash
+        run: ./development/cli/execute_tests.bash
 
   example:
     strategy:
@@ -64,7 +64,7 @@ jobs:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Validate example
         shell: bash
-        run: ./scripts/validate_example.bash
+        run: ./development/cli/validate_example.bash
 
   style-check:
     runs-on: ubuntu-22.04
@@ -79,7 +79,7 @@ jobs:
           bazel-version: 7.1.1
       - name: Run formatters and linters
         shell: bash
-        run: ./scripts/style_check.bash
+        run: ./development/cli/style_check.bash
       - name: Fail if some files are changed
         shell: bash
         run: |
