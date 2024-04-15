@@ -5,3 +5,6 @@ MODULE.bazel.lock
 
 # For CI
 /bazelisk-bin-dir
+
+# For development
+/.cache
