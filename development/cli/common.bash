@@ -4,11 +4,11 @@
 
 set -euo pipefail
 
-# Absolute path of `scripts/` directory
+# Absolute path of `development/cli/` directory
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 # Absolute path of the repository root
-REPO_ROOT_DIR=$(realpath "${SCRIPT_DIR}/..")
+REPO_ROOT_DIR=$(realpath "${SCRIPT_DIR}/../..")
 
 # Bazel executable with some arguments
 BAZEL_EXECUTABLE=(
