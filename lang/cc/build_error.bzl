@@ -428,10 +428,10 @@ _try_build = rule(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
         "_check_emptiness": attr.label(
-            default = Label("//build_script:check_emptiness"),
+            default = Label("//lang/private/script:check_emptiness"),
         ),
         "_try_build": attr.label(
-            default = Label("//build_script:try_build"),
+            default = Label("//lang/private/script:try_build"),
         ),
     },
     fragments = ["cpp"],
@@ -543,7 +543,7 @@ _check_messages = rule(
             mandatory = False,
         ),
         "_check_each_message": attr.label(
-            default = Label("//build_script:check_each_message"),
+            default = Label("//lang/private/script:check_each_message"),
         ),
     },
     provides = [CcBuildErrorInfo, DefaultInfo],
