@@ -13,4 +13,4 @@ if [ "$#" -ne 2 ]; then
   exit 1
 fi
 
-grep -Fiq "$(cat "$1")" "$2"
+grep -Fq --ignore-case "$(cat "$1")" "$2"
