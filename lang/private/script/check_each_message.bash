@@ -49,7 +49,7 @@ for file_path in "${matcher}" "${pattern_file}" "${message_file}"; do
     fi
 done
 
-if [[ ! -s "${pattern_path}" ]]; then
+if [[ ! -s "${pattern_file}" ]]; then
     echo "ERROR: Cannot use an empty pattern string" >&2
     exit 1
 fi
