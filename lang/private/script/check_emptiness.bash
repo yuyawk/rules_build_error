@@ -20,22 +20,28 @@ OPTIONS
 EOS
 }
 
-exit_if_empty_file() {
-    # Exit if the argument is a empty text file
+exit_if_containing_an_empty_file() {
+    # Exit if the arguments contains an empty file
     #
     # Args:
-    #   $1: file path
+    #   $@: file paths
+    local file_paths
     local file_path
-    file_path=$1
+    file_paths=("$@")
 
-    if [[ ! -f "${file_path}" ]]; then
-        echo "ERROR: ${file_path} does not exist" >&2
-        exit 1
-    fi
-    if [[ ! -s "${file_path}" ]]; then
-        # File is empty: exit successfully
-        exit 0
-    fi
+    for file_path in "${file_paths[@]}"; do
+        if [[ ! -f "${file_path}" ]]; then
+            echo "ERROR: ${file_path} does not exist" >&2
+            exit 1
+        fi
+    done
+
+    for file_path in "${file_paths[@]}"; do
+        if [[ ! -s "${file_path}" ]]; then
+            # File is empty: exit successfully
+            exit 0
+        fi
+    done
 }
 
 files_to_check=()
@@ -67,9 +73,7 @@ if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
 fi
 
 if [[ "${#files_to_check[@]}" -gt 0 ]]; then
-    for file_to_check in "${files_to_check[@]}"; do
-        exit_if_empty_file "${file_to_check}"
-    done
+    exit_if_containing_an_empty_file "${files_to_check[@]}"
 fi
 
 # Exit with error if there's no empty file
