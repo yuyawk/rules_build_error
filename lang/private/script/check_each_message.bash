@@ -49,6 +49,11 @@ for file_path in "${matcher}" "${pattern_file}" "${message_file}"; do
     fi
 done
 
+if [[ ! -s "${pattern_file}" ]]; then
+    echo "ERROR: Cannot use an empty pattern string" >&2
+    exit 1
+fi
+
 if ! "${matcher}" "${pattern_file}" "${message_file}" ; then
     echo "Pattern '$(cat "${pattern_file}")' is not found in the message file '${message_file}' with the matcher '${matcher}'." >&2
     echo "" >&2
