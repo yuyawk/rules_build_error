@@ -26,6 +26,14 @@ cc_build_error(
 )
 
 cc_build_error(
+    name = "with_substr_matcher_ignoring_case",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.has_substr_ignoring_case("requires single argument"),
+    tags = ["manual"],
+    deps = [":library"],
+)
+
+cc_build_error(
     name = "with_basic_regex_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.contains_basic_regex("requires single argument.*argument"),

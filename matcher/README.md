@@ -6,8 +6,9 @@ Defines a struct `matcher`.
 
 The member functions of `matcher` are as follows
 
-| Member                  | Description                                                           |
-| ----------------------- | --------------------------------------------------------------------- |
-| contains_basic_regex    | Check if the message contains the basic regular expression pattern    |
-| contains_extended_regex | Check if the message contains the extended regular expression pattern |
-| has_substr              | Check if the message has the sub-string                               |
+| Member                   | Description                                                           |
+| ------------------------ | --------------------------------------------------------------------- |
+| contains_basic_regex     | Check if the message contains the basic regular expression pattern    |
+| contains_extended_regex  | Check if the message contains the extended regular expression pattern |
+| has_substr               | Check if the message has the sub-string                               |
+| has_substr_ignoring_case | Check if the message has the sub-string, ignoring case                |

@@ -17,6 +17,13 @@ cc_build_error(
 )
 
 cc_build_error(
+    name = "with_substr_matcher_ignoring_case",
+    src = "cpp_successful_build.cpp",
+    compile_stderr = matcher.has_substr_ignoring_case("FOR cpp_successful_build.cpp"),
+    tags = ["manual"],
+)
+
+cc_build_error(
     name = "with_basic_regex_matcher",
     src = "cpp_successful_build.cpp",
     compile_stderr = matcher.contains_basic_regex(r"for[[:space:]]cpp_successful_build\.\(cpp\|cxx\)"),

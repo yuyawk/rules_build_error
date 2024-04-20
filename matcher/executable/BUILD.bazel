@@ -22,3 +22,8 @@ sh_binary(
     name = "has_substr",
     srcs = ["has_substr.bash"],
 )
+
+sh_binary(
+    name = "has_substr_ignoring_case",
+    srcs = ["has_substr_ignoring_case.bash"],
+)
