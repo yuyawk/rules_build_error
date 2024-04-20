@@ -2,6 +2,13 @@
 """
 
 load("@rules_rust//rules_rust/rust:defs.bzl", "rust_common")
+load(
+    "//lang/private:general_build_actions.bzl",
+    "DEFAULT_MATCHER",
+    "check_build_error",
+    "check_each_message",
+    "get_executable_file",
+)
 
 visibility("private")
 
@@ -14,6 +21,8 @@ RustBuildErrorInfo = provider(
     },
 )
 
+_RUST_TOOLCHAIN_TYPE = Label("@rules_rust//rust:toolchain_type")
+
 def _find_rust_toolchain(ctx):
     """Find the Rust toolchain.
 
@@ -23,7 +32,7 @@ def _find_rust_toolchain(ctx):
     Returns:
         rust_toolchain: A Rust toolchain context.
     """
-    return ctx.toolchains[Label("@rules_rust//rust:toolchain_type")]
+    return ctx.toolchains[_RUST_TOOLCHAIN_TYPE]
 
 def _try_compile(ctx):
     """Try rust compilation.
@@ -58,6 +67,11 @@ def _try_compile(ctx):
 
     # From here on `args` is used for the compilation command
 
+    args.add(rust_toolchain.rustc.path)
+    args.add("--crate-name", ctx.attr.crate_name if ctx.attr.crate_name else ctx.label.name)
+    args.add("--crate-type", "bin")
+    args.add("--edition", ctx.attr.edition)
+
     ctx.actions.run(
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
@@ -71,6 +85,38 @@ def _try_compile(ctx):
         stdout = compile_stdout,
         stderr = compile_stderr,
     )
+
+def _try_build_impl(ctx):
+    """Implementation of the rule `try_cc_build`
+
+    Args:
+        ctx(ctx): The rule's context.
+
+    Returns:
+        A list of providers.
+    """
+    compile_result = _try_compile(ctx)
+    marker_check_build_error = check_build_error(
+        ctx = ctx,
+        files_to_check = [
+            compile_result.output,
+        ],
+        error_message = "ERROR: Rust build error didn't occur",
+        check_emptiness = get_executable_file(ctx.attr._check_emptiness),
+    )
+
+    markers = [marker_check_build_error]
+    return [
+        RustBuildErrorInfo(
+            compile_stderr = compile_result.stderr,
+            compile_stdout = compile_result.stdout,
+            markers = markers,
+        ),
+        DefaultInfo(
+            # Explicitly specify the markers to make sure the checking action is evaluated
+            files = depset(markers),
+        ),
+    ]
 
 # Explicit attributes for `_try_build`
 _TRY_BUILD_EXPLICIT_ATTRS = {
@@ -111,6 +157,7 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
             "Defaults to the edition specified in the rust_toolchain."
         ),
         mandatory = False,
+        default = "2021",
     ),
     "rustc_flags": attr.string_list(
         doc = "List of compiler flags passed to `rustc`.",
@@ -122,3 +169,17 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
         allow_single_file = [".rs"],
     ),
 }
+
+_try_build = rule(
+    implementation = _try_build_impl,
+    attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
+        "_check_emptiness": attr.label(
+            default = Label("//lang/private/script:check_emptiness"),
+        ),
+        "_try_build": attr.label(
+            default = Label("//lang/private/script:try_build"),
+        ),
+    },
+    toolchains = [_RUST_TOOLCHAIN_TYPE],
+    provides = [RustBuildErrorInfo, DefaultInfo],
+)
