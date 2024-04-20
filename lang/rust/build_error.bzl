@@ -1,6 +1,8 @@
 """Implement `cc_build_error`.
 """
 
+load("@rules_rust//rules_rust/rust:defs.bzl", "rust_common")
+
 visibility("private")
 
 RustBuildErrorInfo = provider(
@@ -11,6 +13,64 @@ RustBuildErrorInfo = provider(
         "markers": "list[File]: Marker files for validation actions.",
     },
 )
+
+def _find_rust_toolchain(ctx):
+    """Find the Rust toolchain.
+
+    Args:
+        ctx(ctx): The rule's context.
+
+    Returns:
+        rust_toolchain: A Rust toolchain context.
+    """
+    return ctx.toolchains[Label("@rules_rust//rust:toolchain_type")]
+
+def _try_compile(ctx):
+    """Try rust compilation.
+
+    Args:
+        ctx(ctx): The rule's context.
+
+    Returns:
+        struct with the following members:
+            output(File): Output file if the action succeeds in compiling the Rust code.
+                    Empty text file otherwise
+            stderr(File): Stderr while compiling
+            stdout(File): Stdout while compiling
+    """
+
+    compile_output = ctx.actions.declare_file(ctx.label.name + "/compile_output")
+    compile_stderr = ctx.actions.declare_file(ctx.label.name + "/compile_stderr")
+    compile_stdout = ctx.actions.declare_file(ctx.label.name + "/compile_stdout")
+
+    rust_toolchain = _find_rust_toolchain(ctx)
+
+    # Input files for executing the action
+    inputs = [ctx.file.src]
+
+    # Arguments for `try_build.bash`
+    args = ctx.actions.args()
+    args.add("-e", compile_stderr)
+    args.add("-o", compile_stdout)
+    args.add("-n", compile_output)
+    args.add("-n", compile_stderr)
+    args.add("-n", compile_stdout)
+
+    # From here on `args` is used for the compilation command
+
+    ctx.actions.run(
+        outputs = [compile_output, compile_stdout, compile_stderr],
+        inputs = inputs,
+        executable = get_executable_file(ctx.attr._try_build),
+        arguments = [args],
+        tools = rust_toolchain.all_files,
+    )
+
+    return struct(
+        output = compile_output,
+        stdout = compile_stdout,
+        stderr = compile_stderr,
+    )
 
 # Explicit attributes for `_try_build`
 _TRY_BUILD_EXPLICIT_ATTRS = {
@@ -38,7 +98,12 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
     "deps": attr.label_list(
         doc = "List of other libraries to be linked to this library target.",
         mandatory = False,
-        # TODO(soon in the PR): Specify the provider
+        # TODO(soon): Is crate_info needed?
+        providers = [
+            rust_common.crate_info,
+            rust_common.dep_info,
+            DefaultInfo,
+        ],
     ),
     "edition": attr.string(
         doc = (
