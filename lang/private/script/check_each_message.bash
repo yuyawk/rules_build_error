@@ -42,6 +42,13 @@ if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
     trap 'touch "${files_to_touch[@]}"' EXIT
 fi
 
+for file_path in "${matcher}" "${pattern_file}" "${message_file}"; do
+    if [[ ! -f "${file_path}" ]]; then
+        echo "ERROR: ${file_path} does not exist" >&2
+        exit 1
+    fi
+done
+
 if ! "${matcher}" "${pattern_file}" "${message_file}" ; then
     echo "Pattern '$(cat "${pattern_file}")' is not found in the message file '${message_file}' with the matcher '${matcher}'." >&2
     echo "" >&2
