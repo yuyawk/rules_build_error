@@ -56,6 +56,7 @@ def _try_compile(ctx):
 
     # Input files for executing the action
     inputs = [ctx.file.src]
+    tools = [rust_toolchain.rustc]
 
     # Arguments for `try_build.bash`
     args = ctx.actions.args()
