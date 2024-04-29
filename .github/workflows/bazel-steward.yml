@@ -14,3 +14,5 @@ jobs:
         with:
           fetch-depth: 0
       - uses: VirtusLab/bazel-steward@v1.5.0
+        with:
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_ACTION }}
