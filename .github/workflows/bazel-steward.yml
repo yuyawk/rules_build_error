@@ -8,6 +8,11 @@ on:
 
 jobs:
   bazel-steward:
+    strategy:
+      matrix:
+        workspace-root:
+          - "."
+          - "examples"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -16,3 +21,5 @@ jobs:
       - uses: VirtusLab/bazel-steward@v1.5.0
         with:
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN_FOR_ACTION }}
+          # Workaround for multiple workspaces (cf. https://github.com/VirtusLab/bazel-steward/issues/40)
+          additional-args: ${{ matrix.workspace-root }}
