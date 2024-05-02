@@ -58,6 +58,10 @@ Execute [`development/cli/validate_example.bash`](development/cli/validate_examp
 
 Execute [`development/cli/style_check.bash`](development/cli/style_check.bash).
 
+### How to release
+
+When the admin user pushes a tag "X.Y.Z" (where X, Y and Z are non-negative integers), the CI job automatically cuts a release, uploads a tar ball and create a corresponding PR in [BCR](https://github.com/bazelbuild/bazel-central-registry). After the PR is approved and merged, the bazel module of `rules_build_error` becomes available.
+
 ## CI
 
 [![Tests](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml)
