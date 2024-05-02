@@ -8,11 +8,6 @@ on:
 
 jobs:
   bazel-steward:
-    strategy:
-      matrix:
-        workspace-root:
-          - "."
-          - "examples"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +19,13 @@ jobs:
         with:
           app-id: ${{ secrets.BAZEL_STEWARD_APP_ID }}
           private-key: ${{ secrets.BAZEL_STEWARD_APP_PRIVATE_KEY }}
-      - uses: VirtusLab/bazel-steward@v1.5.0
+      - name: Scan root workspace
+        uses: VirtusLab/bazel-steward@v1.5.0
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+      - name: Scan example workspace
+        uses: VirtusLab/bazel-steward@v1.5.0
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           # Workaround for multiple workspaces (cf. https://github.com/VirtusLab/bazel-steward/issues/40)
-          additional-args: ${{ matrix.workspace-root }}
+          additional-args: examples
