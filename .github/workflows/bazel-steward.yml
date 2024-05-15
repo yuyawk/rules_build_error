@@ -24,6 +24,14 @@ jobs:
         with:
           app-id: ${{ secrets.BAZEL_STEWARD_APP_ID }}
           private-key: ${{ secrets.BAZEL_STEWARD_APP_PRIVATE_KEY }}
+      - name: Generate config file to modify branch name
+        shell: bash
+        run: |
+          cat << 'EOS' > bazel-steward.yaml
+          ---
+          pull-requests:
+            - branch-prefix: "bazel-steward-${{ matrix.workspace-root }}/"
+          EOS
       - uses: VirtusLab/bazel-steward@v1.5.0
         with:
           github-token: ${{ steps.app-token.outputs.token }}
