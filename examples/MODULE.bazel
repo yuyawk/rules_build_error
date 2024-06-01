@@ -13,7 +13,7 @@ local_path_override(
 )
 
 # For testing utility
-bazel_dep(name = "bazel_skylib", version = "1.6.1")
+bazel_dep(name = "bazel_skylib", version = "1.7.0")
 
 # Register toolchain for C/C++
 
