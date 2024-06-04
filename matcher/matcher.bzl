@@ -71,8 +71,24 @@ def _has_substr(pattern):
         matcher = Label("//matcher/executable:has_substr"),
     )
 
+def _has_substr_ignoring_case(pattern):
+    """Matcher to check if the target has a substring, ignoring case.
+
+    Args:
+        pattern(str): Pattern for substring.
+
+    Return:
+        struct describing the matcher
+    """
+    _validate_pattern_string(pattern)
+    return struct(
+        pattern = pattern,
+        matcher = Label("//matcher/executable:has_substr_ignoring_case"),
+    )
+
 matcher = struct(
     contains_basic_regex = _contains_basic_regex,
     contains_extended_regex = _contains_extended_regex,
     has_substr = _has_substr,
+    has_substr_ignoring_case = _has_substr_ignoring_case,
 )
