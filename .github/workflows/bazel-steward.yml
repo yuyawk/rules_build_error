@@ -34,7 +34,7 @@ jobs:
           pull-requests:
             - branch-prefix: "bazel-steward-${prefix}/"
           EOS
-      - uses: VirtusLab/bazel-steward@v1.5.0
+      - uses: VirtusLab/bazel-steward@v1.5.2
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           # Workaround for multiple workspaces (cf. https://github.com/VirtusLab/bazel-steward/issues/40)
