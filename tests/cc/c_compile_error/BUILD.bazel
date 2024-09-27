@@ -14,6 +14,12 @@ cc_build_error(
 )
 
 cc_build_error(
+    name = "with_substr_matcher_ignoring_case",
+    src = "c_compile_error.c",
+    compile_stderr = matcher.has_substr_ignoring_case("FOR c_compile_error.c"),
+)
+
+cc_build_error(
     name = "with_basic_regex_matcher",
     src = "c_compile_error.c",
     compile_stderr = matcher.contains_basic_regex(r"for[[:space:]]c_compile_error\.\(c\|C\)"),
@@ -30,6 +36,7 @@ build_test(
     targets = [
         ":plain",
         ":with_substr_matcher",
+        ":with_substr_matcher_ignoring_case",
         ":with_basic_regex_matcher",
         ":with_extended_regex_matcher",
     ],

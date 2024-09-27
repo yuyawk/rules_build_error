@@ -22,6 +22,13 @@ cc_build_error(
 )
 
 cc_build_error(
+    name = "with_substr_matcher_ignoring_case",
+    src = "c_link_error.c",
+    link_stderr = matcher.has_substr_ignoring_case("functionwithoutdefinition"),
+    deps = [":library"],
+)
+
+cc_build_error(
     name = "with_basic_regex_matcher",
     src = "c_link_error.c",
     link_stderr = matcher.contains_basic_regex(r"undefined.*FunctionWithoutDefinition"),
@@ -40,6 +47,7 @@ build_test(
     targets = [
         ":plain",
         ":with_substr_matcher",
+        ":with_substr_matcher_ignoring_case",
         ":with_basic_regex_matcher",
         ":with_extended_regex_matcher",
     ],
