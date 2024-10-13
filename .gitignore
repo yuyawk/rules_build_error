@@ -4,8 +4,5 @@ MODULE.bazel.lock
 ## Generated based on version configuration
 .bazeliskrc
 
-# For CI
-/bazelisk-bin-dir
-
 # For development
 /.cache
