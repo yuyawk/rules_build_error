@@ -27,13 +27,14 @@ jobs:
       - name: Generate config file to modify branch name
         shell: bash
         run: |
-          echo "${{ matrix.workspace-root }}" >temp_ws_root.txt
-          prefix=$(base64 < temp_ws_root.txt | sed 's/=/_/g')
+          prefix=$(echo "${WORKSPACE_ROOT}" | base64 | sed 's/=/_/g')
           cat << EOS > bazel-steward.yaml
           ---
           pull-requests:
             - branch-prefix: "bazel-steward-${prefix}/"
           EOS
+        env:
+          WORKSPACE_ROOT: ${{ matrix.workspace-root }}
       - uses: VirtusLab/bazel-steward@v1.5.2
         with:
           github-token: ${{ steps.app-token.outputs.token }}
