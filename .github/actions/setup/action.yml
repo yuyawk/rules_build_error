@@ -12,7 +12,9 @@ runs:
     - name: Generate .bazeliskrc
       shell: bash
       run: |
-        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > .bazeliskrc
-        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > examples/.bazeliskrc
+        echo "USE_BAZEL_VERSION=${BAZEL_VERSION}" > .bazeliskrc
+        echo "USE_BAZEL_VERSION=${BAZEL_VERSION}" > examples/.bazeliskrc
+      env:
+        BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk
       uses: yuyawk/github-actions/install-bazelisk@v1
