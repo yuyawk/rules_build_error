@@ -51,11 +51,9 @@ jobs:
           - ubuntu-22.04
           - macos-13
           - macos-14
-        include:
-          - bazel-version: 6.x
-            runner: windows-2019
-          - bazel-version: 6.x
-            runner: windows-2022
+          # TODO: Currently runtime error occurs on windows
+          - windows-2019
+          - windows-2022
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout

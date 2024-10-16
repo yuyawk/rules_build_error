@@ -16,18 +16,3 @@ bcr_test_module:
       bazel: ${{ bazel }}
       test_targets:
         - "//..."
-
-bcr_test_module_for_windows:
-  module_path: "examples"
-  matrix:
-    platform:
-      - "windows"
-    bazel:
-      - "6.x"
-  tasks:
-    run_tests:
-      name: "Run test module"
-      platform: ${{ platform }}
-      bazel: ${{ bazel }}
-      test_targets:
-        - "//..."
