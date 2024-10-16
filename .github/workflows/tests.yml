@@ -52,10 +52,10 @@ jobs:
           - macos-13
           - macos-14
         include:
-          - runner: windows-2019
-            bazel-version: 7.2.1
-          - runner: windows-2022
-            bazel-version: 7.2.1
+          - bazel-version: 6.x
+            runner: windows-2019
+          - bazel-version: 6.x
+            runner: windows-2022
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
