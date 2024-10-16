@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         bazel-version:
-          - 6.5.0
-          - 7.1.1
+          - 6.x
+          - 7.x
         runner:
           - ubuntu-20.04
           - ubuntu-22.04
@@ -44,14 +44,14 @@ jobs:
     strategy:
       matrix:
         bazel-version:
-          - 6.5.0
-          - 7.1.1
+          - 6.x
+          - 7.x
         runner:
           - ubuntu-20.04
           - ubuntu-22.04
           - macos-13
           - macos-14
-          # TODO: Currently OOM occurs on Windows
+          # TODO: Currently runtime error occurs on windows
           # - windows-2019
           # - windows-2022
     runs-on: ${{ matrix.runner }}
@@ -78,7 +78,7 @@ jobs:
       - name: Set up
         uses: ./.github/actions/setup
         with:
-          bazel-version: 7.1.1
+          bazel-version: 7.x
       - name: Run formatters and linters
         shell: bash
         run: ./development/cli/style_check.bash
