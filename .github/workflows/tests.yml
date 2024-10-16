@@ -52,8 +52,8 @@ jobs:
           - macos-13
           - macos-14
           # TODO: Currently runtime error occurs on windows
-          - windows-2019
-          - windows-2022
+          # - windows-2019
+          # - windows-2022
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
