@@ -135,7 +135,7 @@ def check_each_message(
 
         ctx.actions.run(
             outputs = [marker_file],
-            inputs = [matcher, message_file, pattern_file],
+            inputs = [message_file, pattern_file],
             executable = checker,
             arguments = [
                 matcher.path,
@@ -143,6 +143,7 @@ def check_each_message(
                 message_file.path,
                 marker_file.path,
             ],
+            tools = [matcher],
         )
 
     return marker_file
