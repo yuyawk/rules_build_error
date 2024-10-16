@@ -143,7 +143,7 @@ def check_each_message(
                 message_file.path,
                 marker_file.path,
             ],
-            tools = [matcher],
+            tools = [checker, matcher],
         )
 
     return marker_file
