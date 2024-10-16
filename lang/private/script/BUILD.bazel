@@ -5,17 +5,17 @@ package(
     default_visibility = ["//lang:__subpackages__"],
 )
 
-sh_binary(
+alias(
     name = "check_each_message",
-    srcs = ["check_each_message.bash"],
+    actual = "check_each_message.bash",
 )
 
-sh_binary(
+alias(
     name = "check_emptiness",
-    srcs = ["check_emptiness.bash"],
+    actual = "check_emptiness.bash",
 )
 
-sh_binary(
+alias(
     name = "try_build",
-    srcs = ["try_build.bash"],
+    actual = "try_build.bash",
 )
