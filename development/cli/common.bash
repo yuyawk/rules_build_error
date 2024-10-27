@@ -16,7 +16,6 @@ BAZEL_EXECUTABLE=(
     "-i"
     BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
     "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk"
-    "HOME=${HOME}"
     "PATH=${PATH}"
     bazelisk
 )
