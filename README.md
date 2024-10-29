@@ -12,6 +12,8 @@ When executing `bazel test`, standard Bazel testing rules, like `cc_test`, will 
 
 For more examples, see [the example module](examples).
 
+Load this module from the [Bazel Central Registry](https://registry.bazel.build/modules/rules_build_error) to use it as a Bazel module.
+
 ### C/C++ example
 
 ```bazel
