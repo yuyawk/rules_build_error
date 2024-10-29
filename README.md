@@ -1,18 +1,18 @@
 # `rules_build_error`
 
-Bazel implementations to test a build error.
+Bazel rules to test build errors.
 
 ## Description
 
-There's a situation where a developer wants to test if particular code doesn't compile. However, when using ordinary testing rules, such as `cc_test`, `bazel test` results in an error if the test code doesn't compile.
+`rules_build_error` provides Bazel implementations that let developers verify code that **should not** compile.
 
-`rules_build_error` is the repository to address such a problem. It provides some implementations to test the compilation error for each programming language. When the code written in a particular programming language **does** compile, `bazel build` should fail for the associated target.
+When executing `bazel test`, standard Bazel testing rules, like `cc_test`, will result in an error if a test code doesn’t compile. With `rules_build_error`, a `bazel build` command will instead fail when code **does** compile, indicating that the target is expected to raise a compilation error.
 
 ## Usage
 
-Also refer to [the example module](examples) for more details.
+For more examples, see [the example module](examples).
 
-### C/C++ usage
+### C/C++ example
 
 ```bazel
 load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error")
@@ -28,41 +28,19 @@ cc_build_error(
 
 ## Language-specific implementations
 
-The implementations to check the build error in a particular language is available.
+See individual language implementations:
 
-### C/C++ implementation
-
-Refer to [its readme](lang/cc/README.md)
+- [C/C++ README](lang/cc/README.md)
 
 ## Matcher
 
-In order to specify how to validate the error message, a struct `matcher` is available. Refer to [its readme](matcher/README.md) for more details.
+The `matcher` struct allows specific error message matching criteria. Learn more in [its readme](matcher/README.md).
 
-## Development
+## Contributing
 
-### How to test
+Pull requests and issues are welcome! See [DEVEL.md](DEVEL.md) for development documentation.
 
-Each test script requires the installation of [`bazelisk`](https://github.com/bazelbuild/bazelisk) in advance.
-
-#### Unit tests
-
-Execute [`development/cli/execute_tests.bash`](development/cli/execute_tests.bash). It performs `bazelisk test` and `bazelisk build` commands under the hood.
-
-Note that some unit test cases with `tags = ["manual"]` are for checking the failure of `bazel build`, by executing the build command one by one.
-
-#### Example
-
-Execute [`development/cli/validate_example.bash`](development/cli/validate_example.bash). It performs `bazelisk test` inside the [examples](examples) directory.
-
-#### Formatting and linting
-
-Execute [`development/cli/style_check.bash`](development/cli/style_check.bash).
-
-### How to release
-
-When the admin user pushes a tag "X.Y.Z" (where X, Y and Z are non-negative integers), the CI job automatically uploads a tar ball, cuts a release and creates a corresponding PR in [BCR](https://github.com/bazelbuild/bazel-central-registry). After the PR is approved and merged, the bazel module of `rules_build_error` becomes available.
-
-## CI
+## CI status
 
 [![Tests](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml/badge.svg)](https://github.com/yuyawk/rules_build_error/actions/workflows/tests.yml)
 
