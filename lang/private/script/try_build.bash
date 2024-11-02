@@ -10,7 +10,8 @@ without executing the build command.
 
 Even if the build command fails, this script won't exit with an error.
 
-Usage: $0 [OPTIONS] COMMAND
+Note that this script is supposed to be invoked by 'ctx.actions.run_shell'.
+Usage: bash -c '\$@' '' $0 [OPTIONS] COMMAND
 
 OPTIONS
     -f FILE_TO_CHECK

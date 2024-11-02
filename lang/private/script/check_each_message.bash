@@ -6,7 +6,8 @@ Check each message file.
 
 Exits with an error if the pattern is not found in the message file.
 
-Usage: $0 MATCHER PATTERN_FILE MESSAGE_FILE [MARKER_FILE ...]
+Note that this script is supposed to be invoked by 'ctx.actions.run_shell'.
+Usage: bash -c '\$@' '' $0 MATCHER PATTERN_FILE MESSAGE_FILE [MARKER_FILE ...]
 
 MATCHER
     Executable to check if the pattern string is inside the message file

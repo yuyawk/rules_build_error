@@ -4,7 +4,8 @@ usage() {
     cat <<EOS >&2
 Check if any of the files are empty.
 
-Usage: $0 [OPTIONS]
+Note that this script is supposed to be invoked by 'ctx.actions.run_shell'.
+Usage: bash -c '\$@' '' $0 [OPTIONS]
 
 OPTIONS
     -f FILE_TO_CHECK
