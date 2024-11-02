@@ -12,4 +12,4 @@ if [ "$#" -ne 2 ]; then
   exit 1
 fi
 
-grep -Fq  -i "$(cat "$1")" "$2"
+grep -Fq -i "$(cat "$1")" "$2"
