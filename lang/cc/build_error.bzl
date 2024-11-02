@@ -32,15 +32,17 @@ CcBuildErrorInfo = provider(
 )
 
 _EXTENSIONS_C = [
+    # keep sorted
     ".c",
-    ".C",
 ]
 
 _EXTENSIONS_CPP = [
+    # keep sorted
+    ".C",
+    ".c++",
     ".cc",
     ".cpp",
     ".cxx",
-    ".c++",
 ]
 
 def _is_c(src_file):
