@@ -588,7 +588,7 @@ def cc_build_error(
     }
     kwargs.clear()
 
-    try_build_target = name + "__try_build"
+    try_build_target = name + "__tb"
     _try_build(
         name = try_build_target,
         tags = ["manual"] + tags,
