@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Matcher executable for `has_substr`.
 #
