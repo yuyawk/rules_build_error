@@ -20,11 +20,6 @@ def get_executable_file(label):
     """
     if not label:
         return None
-
-    # buildifier: disable=print
-    print(label.files_to_run.executable)
-
-    # buildifier: enable=print
     return label.files_to_run.executable
 
 def check_build_error(
