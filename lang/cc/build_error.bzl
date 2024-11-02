@@ -195,6 +195,14 @@ def _get_library_link_option(ctx, library_path):
 
     # buildifier: disable=print
     print(ctx.fragments.platform.platform)
+    for attr in dir(ctx.fragments.platform.platform):
+        # buildifier: disable=print
+        print(
+            "ctx.fragments.platform.platform.",
+            attr,
+            " = ",
+            getattr(ctx.fragments.platform.platform, attr),
+        )
     os_name = ctx.fragments.platform.platform.name.lower()
 
     # buildifier: disable=print
