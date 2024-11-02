@@ -7,6 +7,7 @@ module(
 )
 
 bazel_dep(name = "aspect_bazel_lib", version = "2.9.3")
+
 host = use_extension(
     "@aspect_bazel_lib//lib:extensions.bzl",
     "host",
