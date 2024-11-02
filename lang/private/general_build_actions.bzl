@@ -46,13 +46,13 @@ def check_build_error(
 
     # Marker file for the check
     marker_check_build_error = ctx.actions.declare_file(
-        ctx.label.name + "/marker_check_build_error",
+        ctx.label.name + "/m_cbe",
     )
 
     # Create a text file to contain the error message
     # in order to easily escape its characters
     error_message_file = ctx.actions.declare_file(
-        ctx.label.name + "/error_message_file_check_build_error",
+        ctx.label.name + "/e_cbe",
     )
     ctx.actions.write(
         output = error_message_file,
@@ -107,14 +107,14 @@ def check_each_message(
     # Marker for the check
     marker_file = ctx.actions.declare_file(
         ctx.label.name +
-        "/marker_check_each_message/" +
+        "/m_cem/" +
         id,
     )
 
     # Text file containing the pattern string
     pattern_file = ctx.actions.declare_file(
         ctx.label.name +
-        "/pattern_check_each_message/" +
+        "/p_cem/" +
         id,
     )
 
