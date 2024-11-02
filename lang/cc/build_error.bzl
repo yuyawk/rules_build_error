@@ -2,10 +2,6 @@
 """
 
 load(
-    "@aspect_bazel_lib_host//:defs.bzl",
-    "host",
-)
-load(
     "@bazel_tools//tools/build_defs/cc:action_names.bzl",
     "ACTION_NAMES",
 )
@@ -186,24 +182,26 @@ def _try_compile(ctx):
         stderr = compile_stderr,
     )
 
-def _get_library_link_option(library_path):
+def _get_library_link_option(ctx, library_path):
     """Get library link option, such as `-lfoo`.
 
     Args:
+        ctx(ctx): The rule's context.
         library_path(str): Library path
 
     Returns:
         list[str]: Link option for the library.
     """
-    if host.is_linux:
+    os_name = ctx.fragments.platform.platform.name
+    if os_name == "linux":
         return _get_library_link_option_linux(library_path)
-    elif host.is_darwin:
+    elif os_name == "osx":
         return _get_library_link_option_macos(library_path)
-    elif host.is_windows:
+    elif os_name == "windows":
         return _get_library_link_option_windows(library_path)
     else:
         # This line should be unreachable
-        fail("Unsupported OS: {}".format(host.os))
+        fail("Unsupported OS: {}".format(os_name))
 
 def _get_library_link_option_linux(library_path):
     """Get library link option for linux.
@@ -333,7 +331,7 @@ def _try_link(ctx, compile_output):
                 library = library_to_link.static_library if library_to_link.static_library else library_to_link.dynamic_library
                 if library:
                     args.add("-L", library.dirname)
-                    args.add(*_get_library_link_option(library.basename))
+                    args.add(*_get_library_link_option(ctx, library.basename))
                     inputs.append(library)
 
     args.add("-o", link_output)
@@ -438,7 +436,7 @@ _try_build = rule(
             default = Label("//lang/private/script:try_build"),
         ),
     },
-    fragments = ["cpp"],
+    fragments = ["cpp", "platform"],
     toolchains = [CPP_TOOLCHAIN_TYPE],
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
