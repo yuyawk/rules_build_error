@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 #
 # Matcher executable for `contains_basic_regex`.
 #
