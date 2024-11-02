@@ -109,10 +109,10 @@ def _try_compile(ctx):
         unsupported_features = ctx.disabled_features,
     )
     ccopts = ctx.fragments.cpp.copts + ctx.attr.copts
-    if _is_cpp(ctx.file.src):
-        ccopts += ctx.fragments.cpp.cxxopts
-    elif _is_c(ctx.file.src):
+    if _is_c(ctx.file.src):
         ccopts += ctx.fragments.cpp.conlyopts
+    elif _is_cpp(ctx.file.src):
+        ccopts += ctx.fragments.cpp.cxxopts
 
     compile_variables = cc_common.create_compile_variables(
         cc_toolchain = cc_toolchain,
