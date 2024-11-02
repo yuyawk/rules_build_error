@@ -76,10 +76,10 @@ def _get_compile_action_name(src_file):
     Returns:
         str: Compilation action name
     """
-    if _is_cpp(src_file):
-        return ACTION_NAMES.cpp_compile
-    elif _is_c(src_file):
+    if _is_c(src_file):
         return ACTION_NAMES.c_compile
+    elif _is_cpp(src_file):
+        return ACTION_NAMES.cpp_compile
     else:
         fail("Unsupported file type ({})".format(src_file.path))
 
