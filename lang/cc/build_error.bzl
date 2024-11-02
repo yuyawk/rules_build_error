@@ -193,17 +193,15 @@ def _get_library_link_option(ctx, library_path):
         list[str]: Link option for the library.
     """
 
-    os_label = ctx.fragments.platform.platform
-
-    if os_label == "@platforms//os:linux":
+    if ctx.attr.os == "linux":
         return _get_library_link_option_linux(library_path)
-    elif os_label == "@platforms//os:osx":
+    elif ctx.attr.os == "macos":
         return _get_library_link_option_macos(library_path)
-    elif os_label == "@platforms//os:windows":
+    elif ctx.attr.os == "windows":
         return _get_library_link_option_windows(library_path)
     else:
         # This line should be unreachable
-        fail("Unsupported OS: {}".format(os_label))
+        fail("Unsupported OS: {}".format(ctx.attr.os))
 
 def _get_library_link_option_linux(library_path):
     """Get library link option for linux.
@@ -428,6 +426,18 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
 _try_build = rule(
     implementation = _try_build_impl,
     attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
+        "os": attr.string(
+            doc = (
+                "OS of the build environment. " +
+                "This attribute is not user-facing."
+            ),
+            values = [
+                "linux",
+                "macos",
+                "windows",
+            ],
+            mandatory = True,
+        ),
         "_cc_toolchain": attr.label(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
@@ -438,7 +448,7 @@ _try_build = rule(
             default = Label("//lang/private/script:try_build"),
         ),
     },
-    fragments = ["cpp", "platform"],
+    fragments = ["cpp"],
     toolchains = [CPP_TOOLCHAIN_TYPE],
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
@@ -592,6 +602,11 @@ def cc_build_error(
     _try_build(
         name = try_build_target,
         tags = ["manual"] + tags,
+        os = select({
+            "@platforms//os:linux": "linux",
+            "@platforms//os:macos": "macos",
+            "@platforms//os:windows": "windows",
+        }),
         visibility = ["//visibility:private"],
         testonly = testonly,
         **kwargs_try_build
