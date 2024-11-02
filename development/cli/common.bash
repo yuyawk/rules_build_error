@@ -16,13 +16,12 @@ BAZEL_EXECUTABLE=(
     "-i"
     BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
     "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk"
-    "HOME=${HOME}"
     "PATH=${PATH}"
     bazelisk
 )
 
 # Default Bazel version
-BAZEL_VERSION_DEFAULT="7.1.1"
+BAZEL_VERSION_DEFAULT="7.x"
 
 for root_dir in "${REPO_ROOT_DIR}" "${REPO_ROOT_DIR}/examples"; do
     if [[ ! -f "${root_dir}/.bazeliskrc" ]]; then

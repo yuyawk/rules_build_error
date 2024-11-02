@@ -8,17 +8,17 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
-sh_binary(
+filegroup(
     name = "contains_basic_regex",
     srcs = ["contains_basic_regex.bash"],
 )
 
-sh_binary(
+filegroup(
     name = "contains_extended_regex",
     srcs = ["contains_extended_regex.bash"],
 )
 
-sh_binary(
+filegroup(
     name = "has_substr",
     srcs = ["has_substr.bash"],
 )

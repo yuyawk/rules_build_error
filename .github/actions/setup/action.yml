@@ -12,25 +12,9 @@ runs:
     - name: Generate .bazeliskrc
       shell: bash
       run: |
-        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > .bazeliskrc
-        echo "USE_BAZEL_VERSION=${{ inputs.bazel-version }}" > examples/.bazeliskrc
+        echo "USE_BAZEL_VERSION=${BAZEL_VERSION}" > .bazeliskrc
+        echo "USE_BAZEL_VERSION=${BAZEL_VERSION}" > examples/.bazeliskrc
+      env:
+        BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk
-      shell: bash
-      run: |
-        bazelisk_dir=bazelisk-bin-dir
-        mkdir "${bazelisk_dir}"
-        if [ "${RUNNER_OS}" == "Linux" ]; then
-          bazelisk_basename="bazelisk-linux-amd64"
-        elif [ "${RUNNER_OS}" == "macOS" ]; then
-          bazelisk_basename="bazelisk-darwin-amd64"
-        elif [ "${RUNNER_OS}" == "Windows" ]; then
-          bazelisk_basename="bazelisk-windows-amd64.exe"
-        else
-          echo "${RUNNER_OS} not supported"
-          exit 1
-        fi
-
-        curl -OL "https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/${bazelisk_basename}" && \
-          mv "${bazelisk_basename}" "${bazelisk_dir}/bazelisk"
-        chmod +x "${bazelisk_dir}/bazelisk"
-        echo "${bazelisk_dir}" >> "${GITHUB_PATH}"
+      uses: yuyawk/github-actions/install-bazelisk@v1
