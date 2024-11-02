@@ -192,10 +192,16 @@ def _get_library_link_option(ctx, library_path):
     Returns:
         list[str]: Link option for the library.
     """
-    os_name = ctx.fragments.platform.platform.name
+
+    # buildifier: disable=print
+    print(providers(ctx.fragments.platform.platform))
+    os_name = ctx.fragments.platform.platform.name.lower()
+
+    # buildifier: disable=print
+    print(os_name)
     if os_name == "linux":
         return _get_library_link_option_linux(library_path)
-    elif os_name == "osx":
+    elif os_name in ["osx", "macos"]:
         return _get_library_link_option_macos(library_path)
     elif os_name == "windows":
         return _get_library_link_option_windows(library_path)
