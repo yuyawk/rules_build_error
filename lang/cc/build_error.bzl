@@ -135,7 +135,12 @@ def _try_compile(ctx):
     inputs = [ctx.file.src]
 
     # Arguments for `try_build.bash`
+    try_build_executable = get_executable_file(ctx.attr._try_build)
+    if type(try_build_executable) != "File":
+        fail("{} must correspond to an executable".format(ctx.attr._try_build))
+
     args = ctx.actions.args()
+    args.add(try_build_executable)
     args.add("-e", compile_stderr)
     args.add("-o", compile_stdout)
     args.add("-n", compile_output)
@@ -161,12 +166,12 @@ def _try_compile(ctx):
     args.add("-c", ctx.file.src)
     args.add("-o", compile_output)
 
-    ctx.actions.run(
+    ctx.actions.run_shell(
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
-        executable = get_executable_file(ctx.attr._try_build),
         arguments = [args],
-        tools = cc_toolchain.all_files,
+        command = "$@",
+        tools = cc_toolchain.all_files.to_list() + [try_build_executable],
     )
 
     return struct(
@@ -296,7 +301,11 @@ def _try_link(ctx, compile_output):
     inputs = [compile_output] + ctx.attr.additional_linker_inputs
 
     # Arguments for `try_build.bash`
+    try_build_executable = get_executable_file(ctx.attr._try_build)
+    if type(try_build_executable) != "File":
+        fail("{} must correspond to an executable".format(ctx.attr._try_build))
     args = ctx.actions.args()
+    args.add(try_build_executable)
     args.add("-e", link_stderr)
     args.add("-o", link_stdout)
     args.add("-n", link_output)
@@ -325,12 +334,12 @@ def _try_link(ctx, compile_output):
     args.add("-o", link_output)
     args.add(compile_output)
 
-    ctx.actions.run(
+    ctx.actions.run_shell(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
-        executable = get_executable_file(ctx.attr._try_build),
         arguments = [args],
-        tools = cc_toolchain.all_files,
+        command = "$@",
+        tools = cc_toolchain.all_files.to_list() + [try_build_executable],
     )
 
     return struct(

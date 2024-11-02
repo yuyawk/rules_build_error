@@ -13,8 +13,8 @@ OPTIONS
         Successfully exit if the file is empty
     -h
         Show usage and exit
-    -m MESSAGE
-        Error message when no files are empty
+    -m MESSAGE_FILE
+        Text file containing the error message when no files are empty
     -n NEW_FILE_PATH
         If specified, create a new empty file before exiting the script
 EOS
@@ -46,7 +46,6 @@ exit_if_containing_an_empty_file() {
 
 files_to_check=()
 files_to_touch=()
-error_message="ERROR: No files are empty"
 
 while getopts "f:hm:n:" opt; do
     case "${opt}" in
@@ -58,7 +57,7 @@ while getopts "f:hm:n:" opt; do
             exit 0
         ;;
         m)
-            error_message="${OPTARG}"
+            error_message_file="${OPTARG}"
         ;;
         n)
             files_to_touch+=("${OPTARG}")
@@ -66,6 +65,11 @@ while getopts "f:hm:n:" opt; do
     esac
 done
 shift $((OPTIND -1))
+
+if [[ ! -n "${error_message_file:-}" ]]; then
+    echo "ERROR: Option '-m' must be set" >&2
+    exit 1
+fi
 
 # Make sure the required files are touched before exiting
 if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
@@ -77,5 +81,5 @@ if [[ "${#files_to_check[@]}" -gt 0 ]]; then
 fi
 
 # Exit with error if there's no empty file
-echo "${error_message}" >&2
+cat "${error_message_file}" >&2
 exit 1

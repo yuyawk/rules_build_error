@@ -30,7 +30,7 @@ def check_build_error(
         check_emptiness):
     """Check if a build error occured.
 
-    Force internal `ctx.actions.run` execution to fail if the previous build error
+    Force internal `ctx.actions.run_shell` execution to fail if the previous build error
     did NOT occur, otherwise, create an empty text file as a marker for the action.
     This marker file has to be surely evaluated by the rule.
 
@@ -49,20 +49,32 @@ def check_build_error(
         ctx.label.name + "/marker_check_build_error",
     )
 
+    # Create a text file to contain the error message
+    # in order to easily escape its characters
+    error_message_file = ctx.actions.declare_file(
+        ctx.label.name + "/error_message_file_check_build_error",
+    )
+    ctx.actions.write(
+        output = error_message_file,
+        content = error_message,
+    )
+
     # Arguments for `check_emptiness`
     args = ctx.actions.args()
+    args.add(check_emptiness)
 
     for file_to_check in files_to_check:
         args.add("-f", file_to_check)
 
-    args.add("-m", error_message)
+    args.add("-m", error_message_file)
     args.add("-n", marker_check_build_error)
 
-    ctx.actions.run(
+    ctx.actions.run_shell(
         outputs = [marker_check_build_error],
-        inputs = files_to_check,
-        executable = check_emptiness,
+        inputs = files_to_check + [error_message_file],
+        command = "$@",
         arguments = [args],
+        tools = [check_emptiness],
     )
 
     return marker_check_build_error
@@ -133,17 +145,18 @@ def check_each_message(
             content = pattern,
         )
 
-        ctx.actions.run(
+        ctx.actions.run_shell(
             outputs = [marker_file],
             inputs = [message_file, pattern_file],
-            executable = checker,
+            command = "$@",
             arguments = [
+                checker.path,
                 matcher.path,
                 pattern_file.path,
                 message_file.path,
                 marker_file.path,
             ],
-            tools = [matcher],
+            tools = [checker, matcher],
         )
 
     return marker_file
