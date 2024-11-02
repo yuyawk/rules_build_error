@@ -2,6 +2,10 @@
 """
 
 load(
+    "@aspect_bazel_lib_host//:defs.bzl",
+    "host",
+)
+load(
     "@bazel_tools//tools/build_defs/cc:action_names.bzl",
     "ACTION_NAMES",
 )
@@ -182,25 +186,24 @@ def _try_compile(ctx):
         stderr = compile_stderr,
     )
 
-def _get_library_link_option(ctx, library_path):
+def _get_library_link_option(library_path):
     """Get library link option, such as `-lfoo`.
 
     Args:
-        ctx(ctx): The rule's context.
         library_path(str): Library path
 
     Returns:
         list[str]: Link option for the library.
     """
-    if ctx.attr.os == "linux":
+    if host.is_linux:
         return _get_library_link_option_linux(library_path)
-    elif ctx.attr.os == "macos":
+    elif host.is_darwin:
         return _get_library_link_option_macos(library_path)
-    elif ctx.attr.os == "windows":
+    elif host.is_windows:
         return _get_library_link_option_windows(library_path)
     else:
         # This line should be unreachable
-        fail("Unsupported OS: {}".format(ctx.attr.os))
+        fail("Unsupported OS: {}".format(host.os))
 
 def _get_library_link_option_linux(library_path):
     """Get library link option for linux.
@@ -330,7 +333,7 @@ def _try_link(ctx, compile_output):
                 library = library_to_link.static_library if library_to_link.static_library else library_to_link.dynamic_library
                 if library:
                     args.add("-L", library.dirname)
-                    args.add(*_get_library_link_option(ctx, library.basename))
+                    args.add(*_get_library_link_option(library.basename))
                     inputs.append(library)
 
     args.add("-o", link_output)
@@ -425,18 +428,6 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
 _try_build = rule(
     implementation = _try_build_impl,
     attrs = _TRY_BUILD_EXPLICIT_ATTRS | {
-        "os": attr.string(
-            doc = (
-                "OS of the build environment. " +
-                "This attribute is not user-facing."
-            ),
-            values = [
-                "linux",
-                "macos",
-                "windows",
-            ],
-            mandatory = True,
-        ),
         "_cc_toolchain": attr.label(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
@@ -603,11 +594,6 @@ def cc_build_error(
         tags = ["manual"] + tags,
         visibility = ["//visibility:private"],
         testonly = testonly,
-        os = select({
-            "@platforms//os:linux": "linux",
-            "@platforms//os:macos": "macos",
-            "@platforms//os:windows": "windows",
-        }),
         **kwargs_try_build
     )
 
