@@ -23,7 +23,7 @@ filegroup(
     srcs = ["has_substr.bash"],
 )
 
-sh_binary(
+filegroup(
     name = "has_substr_ignoring_case",
     srcs = ["has_substr_ignoring_case.bash"],
 )
