@@ -6,9 +6,8 @@ TAG="${GITHUB_REF_NAME}"
 PREFIX="rules_build_error-${TAG}"
 ARCHIVE="rules_build_error-${TAG}.tar.gz"
 
-git archive --format=tar "--prefix=${PREFIX}/" "${TAG}" | \
-    gzip \
-    > "${ARCHIVE}"
+git ls-files -z | \
+    tar --transform "s|^|${PREFIX}/|" --null -czhf "${ARCHIVE}" --files-from=-
 
 # StdOut of this script is used for release description
 cat << EOF
