@@ -34,6 +34,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+      - name: Look up cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.cache
+          key: ${{ github.repository_id }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ matrix.runner }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -63,6 +68,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+      - name: Look up cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/examples/.cache
+          key: ${{ github.repository_id }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ matrix.runner }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -78,6 +88,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+      - name: Look up cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.cache
+          key: ${{ github.repository_id }}-${{ github.job }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
