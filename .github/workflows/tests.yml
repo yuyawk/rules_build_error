@@ -37,7 +37,7 @@ jobs:
       - name: Look up cache
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/.cache/bazel
+          path: ${{ github.workspace }}/.cache
           key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel') }}
           restore-key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
       - name: Set up
@@ -72,7 +72,7 @@ jobs:
       - name: Look up cache
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/examples/.cache/bazel
+          path: ${{ github.workspace }}/examples/.cache
           key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'examples/WORKSPACE', 'examples/MODULE.bazel') }}
           restore-key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
       - name: Set up
@@ -85,6 +85,8 @@ jobs:
 
   style-check:
     runs-on: ubuntu-latest
+    env:
+      bazel-version: 7.x
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -93,13 +95,13 @@ jobs:
       - name: Look up cache
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/.cache/bazel
+          path: ${{ github.workspace }}/.cache
           key: ${{ github.repository }}-${{ github.job }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel') }}
-          restore-key: ${{ github.repository }}-${{ github.job }}-
+          restore-key: ${{ github.repository }}-${{ github.job }}-${{ env.bazel-version }}-${{ runner.os }}-
       - name: Set up
         uses: ./.github/actions/setup
         with:
-          bazel-version: 7.x
+          bazel-version: ${{ env.bazel-version }}
       - name: Run formatters and linters
         shell: bash
         run: ./development/cli/style_check.bash
