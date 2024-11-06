@@ -96,7 +96,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.cache
-          key: ${{ github.repository }}-${{ github.job }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel') }}
+          key: ${{ github.repository }}-${{ github.job }}-${{ env.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel') }}
           restore-key: ${{ github.repository }}-${{ github.job }}-${{ env.bazel-version }}-${{ runner.os }}-
       - name: Set up
         uses: ./.github/actions/setup
