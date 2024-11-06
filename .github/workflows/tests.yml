@@ -39,7 +39,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/.cache
           key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel') }}
-          restore-key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
+          restore-keys: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -74,7 +74,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/examples/.cache
           key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel', 'examples/.bazelrc', 'examples/WORKSPACE', 'examples/MODULE.bazel') }}
-          restore-key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
+          restore-keys: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -97,7 +97,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/.cache
           key: ${{ github.repository }}-${{ github.job }}-${{ env.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel') }}
-          restore-key: ${{ github.repository }}-${{ github.job }}-${{ env.bazel-version }}-${{ runner.os }}-
+          restore-keys: ${{ github.repository }}-${{ github.job }}-${{ env.bazel-version }}-${{ runner.os }}-
       - name: Set up
         uses: ./.github/actions/setup
         with:
