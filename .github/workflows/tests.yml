@@ -73,7 +73,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/examples/.cache
-          key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel', 'examples/WORKSPACE', 'examples/MODULE.bazel') }}
+          key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-${{ hashFiles('.bazelrc', 'WORKSPACE', 'MODULE.bazel', 'examples/.bazelrc', 'examples/WORKSPACE', 'examples/MODULE.bazel') }}
           restore-key: ${{ github.repository }}-${{ github.job }}-${{ matrix.bazel-version }}-${{ runner.os }}-
       - name: Set up
         uses: ./.github/actions/setup
