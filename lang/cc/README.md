@@ -19,8 +19,8 @@ In addition to the common rule attributes listed [here](https://bazel.build/refe
 | local_defines            | Pre-processor macro definitions                                    | list of str      | No (defaults to `[]`)       |                                                     |
 | compile_stderr           | Matcher for the stderr message while compiling                     | specific matcher | No (defaults to no-op)      |                                                     |
 | compile_stdout           | Matcher for the stdout message while compiling                     | specific matcher | No (defaults to no-op)      |                                                     |
-| link_stderr              | Matcher for the stderr message while compiling                     | specific matcher | No (defaults to no-op)      |                                                     |
-| link_stdout              | Matcher for the stdout message while compiling                     | specific matcher | No (defaults to no-op)      |                                                     |
+| link_stderr              | Matcher for the stderr message while linking                       | specific matcher | No (defaults to no-op)      |                                                     |
+| link_stdout              | Matcher for the stdout message while linking                       | specific matcher | No (defaults to no-op)      |                                                     |
 
 ## `CcBuildErrorInfo`
 
