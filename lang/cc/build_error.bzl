@@ -7,7 +7,6 @@ load(
 )
 load(
     "@bazel_tools//tools/cpp:toolchain_utils.bzl",
-    "CPP_TOOLCHAIN_TYPE",
     "find_cpp_toolchain",
 )
 load(
@@ -449,7 +448,7 @@ _try_build = rule(
         ),
     },
     fragments = ["cpp"],
-    toolchains = [CPP_TOOLCHAIN_TYPE],
+    toolchains = ["@bazel_tools//tools/cpp:toolchain_type"],
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
