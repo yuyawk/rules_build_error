@@ -602,9 +602,9 @@ def cc_build_error(
         name = try_build_target,
         tags = ["manual"] + tags,
         os = select({
-            "@platforms//os:linux": "linux",
-            "@platforms//os:macos": "macos",
-            "@platforms//os:windows": "windows",
+            Label("//platforms/os:linux"): "linux",
+            Label("//platforms/os:macos"): "macos",
+            Label("//platforms/os:windows"): "windows",
         }),
         visibility = ["//visibility:private"],
         testonly = testonly,
