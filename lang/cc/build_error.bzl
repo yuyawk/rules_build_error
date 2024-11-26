@@ -7,7 +7,6 @@ load(
 )
 load(
     "@bazel_tools//tools/cpp:toolchain_utils.bzl",
-    "CPP_TOOLCHAIN_TYPE",
     "find_cpp_toolchain",
 )
 load(
@@ -449,7 +448,7 @@ _try_build = rule(
         ),
     },
     fragments = ["cpp"],
-    toolchains = [CPP_TOOLCHAIN_TYPE],
+    toolchains = ["@bazel_tools//tools/cpp:toolchain_type"],
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
@@ -603,9 +602,9 @@ def cc_build_error(
         name = try_build_target,
         tags = ["manual"] + tags,
         os = select({
-            "@platforms//os:linux": "linux",
-            "@platforms//os:macos": "macos",
-            "@platforms//os:windows": "windows",
+            Label("//platforms/os:linux"): "linux",
+            Label("//platforms/os:macos"): "macos",
+            Label("//platforms/os:windows"): "windows",
         }),
         visibility = ["//visibility:private"],
         testonly = testonly,
