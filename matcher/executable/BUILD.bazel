@@ -22,3 +22,8 @@ filegroup(
     name = "has_substr",
     srcs = ["has_substr.bash"],
 )
+
+filegroup(
+    name = "has_substr_ignoring_case",
+    srcs = ["has_substr_ignoring_case.bash"],
+)
