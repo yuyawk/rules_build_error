@@ -18,6 +18,6 @@ def check_build_and_test(name, **kwargs):
     )
 
     cc_build_error_test(
-        name = name + ".test",
+        name = name + "_as_test",
         **kwargs
     )
