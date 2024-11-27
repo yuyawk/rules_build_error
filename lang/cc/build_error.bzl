@@ -598,7 +598,7 @@ def cc_build_error(
     }
     kwargs.clear()
 
-    try_build_target = name + "__tb"
+    try_build_target = name + ".internal"
     _try_build(
         name = try_build_target,
         tags = ["manual"] + tags,
@@ -636,7 +636,7 @@ def cc_build_error_test(*, name, **kwargs):
         name(str): Name of the test target.
         **kwargs(dict): Receives the same keyword arguments as `cc_build_error`.
     """
-    build_target_name = name + "__rule"
+    build_target_name = name + ".rule"
 
     # `testonly` is always true.
     kwargs["testonly"] = True

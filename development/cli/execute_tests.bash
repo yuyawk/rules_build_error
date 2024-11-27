@@ -34,20 +34,20 @@ echo "Executing the test cases which should succeed in straightforward 'bazel te
 
 echo "Executing the test cases which should fail at 'bazel build'"
 check_bazel_build_error //tests/cc/cpp_successful_build:plain
-check_bazel_build_error //tests/cc/cpp_successful_build:plain_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build:plain.test
 check_bazel_build_error //tests/cc/cpp_successful_build:with_basic_regex_matcher
-check_bazel_build_error //tests/cc/cpp_successful_build:with_basic_regex_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build:with_basic_regex_matcher.test
 check_bazel_build_error //tests/cc/cpp_successful_build:with_extended_regex_matcher
-check_bazel_build_error //tests/cc/cpp_successful_build:with_extended_regex_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build:with_extended_regex_matcher.test
 check_bazel_build_error //tests/cc/cpp_successful_build:with_substr_matcher
-check_bazel_build_error //tests/cc/cpp_successful_build:with_substr_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build:with_substr_matcher.test
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:plain
-check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:plain_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:plain.test
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_basic_regex_matcher
-check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_basic_regex_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_basic_regex_matcher.test
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_extended_regex_matcher
-check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_extended_regex_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_extended_regex_matcher.test
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_substr_matcher
-check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_substr_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_substr_matcher.test
 check_bazel_build_error //tests/cc/cpp_compile_error:incorrect_matcher
-check_bazel_build_error //tests/cc/cpp_compile_error:incorrect_matcher_as_test
+check_bazel_build_error //tests/cc/cpp_compile_error:incorrect_matcher.test
