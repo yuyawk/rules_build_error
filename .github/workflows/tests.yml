@@ -19,7 +19,7 @@ jobs:
         bazel-version:
           - 6.x
           - 7.x
-          - 8.0.0rc4
+          - 8.*
         runner:
           - ubuntu-20.04
           - ubuntu-22.04
@@ -56,7 +56,7 @@ jobs:
         bazel-version:
           - 6.x
           - 7.x
-          - 8.0.0rc4
+          - 8.*
         runner:
           - ubuntu-20.04
           - ubuntu-22.04
