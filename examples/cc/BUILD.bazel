@@ -1,6 +1,13 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
-load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error")
+load(
+    "@rules_build_error//lang/cc:defs.bzl",
+    "cc_build_error",
+    "cc_build_error_test",
+)
 load("@rules_build_error//matcher:defs.bzl", "matcher")
+
+# `cc_build_error` targets are designed to build successfully
+# only when the expected compilation or linking error occurs.
 
 cc_build_error(
     name = "compile_error",
@@ -20,4 +27,20 @@ build_test(
         ":compile_error",
         ":link_error",
     ],
+)
+
+# `cc_build_error_test` is a test rule for `cc_build_error` that succeeds
+# only when `cc_build_error` builds successfully,
+# meaning the expected compilation or linking error occurs.
+
+cc_build_error_test(
+    name = "compile_error_test",
+    src = "compile_error.cpp",
+    compile_stderr = matcher.has_substr("Example compile error"),
+)
+
+cc_build_error_test(
+    name = "link_error_test",
+    src = "link_error.cpp",
+    link_stderr = matcher.contains_basic_regex("Declared.*Undefined"),
 )

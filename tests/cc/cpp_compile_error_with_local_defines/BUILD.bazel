@@ -1,28 +1,28 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
-load("//lang/cc:defs.bzl", "cc_build_error")
 load("//matcher:defs.bzl", "matcher")
+load("//tests/cc:utils.bzl", "check_build_and_test")
 
-cc_build_error(
+check_build_and_test(
     name = "plain",
     src = "cpp_compile_error.cpp",
     local_defines = ["MACRO_IN_LOCAL_DEFINES"],
 )
 
-cc_build_error(
+check_build_and_test(
     name = "with_substr_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.has_substr("With local_defines, "),
     local_defines = ["MACRO_IN_LOCAL_DEFINES"],
 )
 
-cc_build_error(
+check_build_and_test(
     name = "with_basic_regex_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.contains_basic_regex("With local_defines, this.*"),
     local_defines = ["MACRO_IN_LOCAL_DEFINES"],
 )
 
-cc_build_error(
+check_build_and_test(
     name = "with_extended_regex_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.contains_extended_regex("With local_defines, this.*"),

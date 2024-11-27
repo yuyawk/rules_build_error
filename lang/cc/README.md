@@ -4,7 +4,7 @@ Defines some implementations to check build error in C/C++.
 
 ## `cc_build_error`
 
-`cc_build_error` is a wrapper macro for rules, providing [`CcBuildErrorInfo`](#ccbuilderrorinfo).
+`cc_build_error` is a rule providing [`CcBuildErrorInfo`](#ccbuilderrorinfo).
 
 In addition to the common rule attributes listed [here](https://bazel.build/reference/be/common-definitions#common-attributes), it can receive the following attributes (regarding the specific matcher, please refer to [its readme](../../matcher/README.md)):
 
@@ -22,6 +22,10 @@ In addition to the common rule attributes listed [here](https://bazel.build/refe
 | link_stderr              | Matcher for the stderr message while linking                       | specific matcher | No (defaults to no-op)      |                                                     |
 | link_stdout              | Matcher for the stdout message while linking                       | specific matcher | No (defaults to no-op)      |                                                     |
 
-## `CcBuildErrorInfo`
+### `CcBuildErrorInfo`
 
 `CcBuildErrorInfo` is a provider describing the build error in C/C++. See its definition in [its bzl file](./build_error.bzl) for its details.
+
+## `cc_build_error_test`
+
+`cc_build_error_test` is a test rule used to verify that `cc_build_error` builds successfully. It accepts the same set of arguments as `cc_build_error`.

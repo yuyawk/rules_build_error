@@ -17,10 +17,10 @@ Load this module from the [Bazel Central Registry](https://registry.bazel.build/
 ### C/C++ example
 
 ```bazel
-load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error")
+load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error_test")
 load("@rules_build_error//matcher:defs.bzl", "matcher")
 
-cc_build_error(
+cc_build_error_test(
     name = "cause_compile_error",
     src = "cause_compile_error.cpp",
     deps = [":library_to_successfully_link"], # `:library_to_successfully_link` must provide `CcInfo`, like `cc_library`
