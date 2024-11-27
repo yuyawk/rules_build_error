@@ -452,14 +452,14 @@ _try_build = rule(
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
-def _check_messages_common_detail(ctx):
-    """Implementation of `_check_messages_impl` and `_check_messages_and_prepare_test_impl`.
+def _check_messages_impl(ctx):
+    """Implementation of `_check_messages`.
 
     Args:
         ctx(ctx): The rule's context.
 
     Returns:
-        `CcBuildErrorInfo` for the compilation error.
+        A list of providers.
     """
 
     cc_build_error_info = ctx.attr.build_trial[CcBuildErrorInfo]
@@ -501,78 +501,135 @@ def _check_messages_common_detail(ctx):
         marker_link_stderr,
         marker_link_stdout,
     ] + cc_build_error_info.markers
-
-    return CcBuildErrorInfo(
-        compile_stderr = cc_build_error_info.compile_stderr,
-        compile_stdout = cc_build_error_info.compile_stdout,
-        link_stderr = cc_build_error_info.compile_stderr,
-        link_stdout = cc_build_error_info.compile_stdout,
-        markers = markers,
-    )
-
-def _check_messages_impl(ctx):
-    """Implementation of `_check_messages`.
-
-    Args:
-        ctx(ctx): The rule's context.
-
-    Returns:
-        A list of providers.
-    """
-    cc_build_error_info = _check_messages_common_detail(ctx)
     return [
-        cc_build_error_info,
+        CcBuildErrorInfo(
+            compile_stderr = cc_build_error_info.compile_stderr,
+            compile_stdout = cc_build_error_info.compile_stdout,
+            link_stderr = cc_build_error_info.compile_stderr,
+            link_stdout = cc_build_error_info.compile_stdout,
+            markers = markers,
+        ),
         DefaultInfo(
             # Explicitly specify the markers to make sure the checking action is evaluated
-            files = depset(cc_build_error_info.markers),
+            files = depset(markers),
         ),
     ]
 
-_CHECK_MESSAGES_ATTRS = {
-    "build_trial": attr.label(
-        doc = "`_try_build` target",
-        mandatory = True,
-        providers = [CcBuildErrorInfo],
-    ),
-    "matcher_compile_stderr": attr.label(
-        doc = "Matcher executable for stderr while compiling",
-        mandatory = False,
-    ),
-    "matcher_compile_stdout": attr.label(
-        doc = "Matcher executable for stdout while compiling",
-        mandatory = False,
-    ),
-    "matcher_link_stderr": attr.label(
-        doc = "Matcher executable for stderr while linking",
-        mandatory = False,
-    ),
-    "matcher_link_stdout": attr.label(
-        doc = "Matcher executable for stdout while linking",
-        mandatory = False,
-    ),
-    "pattern_compile_stderr": attr.string(
-        doc = "Pattern string for stderr while compiling",
-        mandatory = False,
-    ),
-    "pattern_compile_stdout": attr.string(
-        doc = "Pattern string for stdout while compiling",
-        mandatory = False,
-    ),
-    "pattern_link_stderr": attr.string(
-        doc = "Pattern string for stderr while linking",
-        mandatory = False,
-    ),
-    "pattern_link_stdout": attr.string(
-        doc = "Pattern string for stdout while linking",
-        mandatory = False,
-    ),
-    "_check_each_message": attr.label(
-        default = Label("//lang/private/script:check_each_message"),
-    ),
-}
+_check_messages = rule(
+    implementation = _check_messages_impl,
+    attrs = {
+        "build_trial": attr.label(
+            doc = "`_try_build` target",
+            mandatory = True,
+            providers = [CcBuildErrorInfo],
+        ),
+        "matcher_compile_stderr": attr.label(
+            doc = "Matcher executable for stderr while compiling",
+            mandatory = False,
+        ),
+        "matcher_compile_stdout": attr.label(
+            doc = "Matcher executable for stdout while compiling",
+            mandatory = False,
+        ),
+        "matcher_link_stderr": attr.label(
+            doc = "Matcher executable for stderr while linking",
+            mandatory = False,
+        ),
+        "matcher_link_stdout": attr.label(
+            doc = "Matcher executable for stdout while linking",
+            mandatory = False,
+        ),
+        "pattern_compile_stderr": attr.string(
+            doc = "Pattern string for stderr while compiling",
+            mandatory = False,
+        ),
+        "pattern_compile_stdout": attr.string(
+            doc = "Pattern string for stdout while compiling",
+            mandatory = False,
+        ),
+        "pattern_link_stderr": attr.string(
+            doc = "Pattern string for stderr while linking",
+            mandatory = False,
+        ),
+        "pattern_link_stdout": attr.string(
+            doc = "Pattern string for stdout while linking",
+            mandatory = False,
+        ),
+        "_check_each_message": attr.label(
+            default = Label("//lang/private/script:check_each_message"),
+        ),
+    },
+    provides = [CcBuildErrorInfo, DefaultInfo],
+)
 
-def _check_messages_and_prepare_test_impl(ctx):
-    """Implementation of `_check_messages_and_prepare_test`.
+def cc_build_error(
+        *,
+        name,
+        compile_stderr = DEFAULT_MATCHER,
+        compile_stdout = DEFAULT_MATCHER,
+        link_stderr = DEFAULT_MATCHER,
+        link_stdout = DEFAULT_MATCHER,
+        **kwargs):
+    """Check a C/C++ build error.
+
+    Args:
+        name(str): Name of the target.
+        compile_stderr(matcher struct): Matcher for stderr during compilation.
+        compile_stdout(matcher struct): Matcher for stdout during compilation.
+        link_stderr(matcher struct): Matcher for stderr while linking.
+        link_stdout(matcher struct): Matcher for stdout while linking.
+        **kwargs(dict): Passed to internal rules.
+    """
+
+    testonly = kwargs.pop("testonly", False)
+    tags = kwargs.pop("tags", [])
+    visibility = kwargs.pop("visibility", None)
+
+    kwargs_try_build = {
+        key: kwargs[key]
+        for key in kwargs
+        if key in _TRY_BUILD_EXPLICIT_ATTRS
+    }
+    kwargs_check_messages = {
+        key: kwargs[key]
+        for key in kwargs
+        if key not in _TRY_BUILD_EXPLICIT_ATTRS
+    }
+    kwargs.clear()
+
+    try_build_target = name + ".internal"
+    _try_build(
+        name = try_build_target,
+        tags = ["manual"] + tags,
+        os = select({
+            Label("//platforms/os:linux"): "linux",
+            Label("//platforms/os:macos"): "macos",
+            Label("//platforms/os:windows"): "windows",
+        }),
+        visibility = ["//visibility:private"],
+        testonly = testonly,
+        **kwargs_try_build
+    )
+
+    _check_messages(
+        name = name,
+        build_trial = ":" + try_build_target,
+        matcher_compile_stderr = compile_stderr.matcher,
+        matcher_compile_stdout = compile_stdout.matcher,
+        matcher_link_stderr = link_stderr.matcher,
+        matcher_link_stdout = link_stdout.matcher,
+        pattern_compile_stderr = compile_stderr.pattern,
+        pattern_compile_stdout = compile_stdout.pattern,
+        pattern_link_stderr = link_stderr.pattern,
+        pattern_link_stdout = link_stdout.pattern,
+        visibility = visibility,
+        tags = tags,
+        testonly = testonly,
+        **kwargs_check_messages
+    )
+
+def _create_test_impl(ctx):
+    """Implementation of `_create_test`.
 
     Args:
         ctx(ctx): The rule's context.
@@ -580,7 +637,7 @@ def _check_messages_and_prepare_test_impl(ctx):
     Returns:
         A list of providers.
     """
-    cc_build_error_info = _check_messages_common_detail(ctx)
+    cc_build_error_info = ctx.attr.cc_build_error[CcBuildErrorInfo]
     extension = ".bat" if ctx.attr.is_windows else ".sh"
     content = "exit 0" if ctx.attr.is_windows else "#!/usr/bin/env bash\nexit 0"
     executable_template = ctx.actions.declare_file(ctx.label.name + "/exe_tpl")
@@ -606,15 +663,14 @@ def _check_messages_and_prepare_test_impl(ctx):
         ),
     ]
 
-_check_messages = rule(
-    implementation = _check_messages_impl,
-    attrs = _CHECK_MESSAGES_ATTRS,
-    provides = [CcBuildErrorInfo, DefaultInfo],
-)
-
-_check_messages_and_prepare_test = rule(
-    implementation = _check_messages_and_prepare_test_impl,
-    attrs = _CHECK_MESSAGES_ATTRS | {
+_create_test = rule(
+    implementation = _create_test_impl,
+    attrs = {
+        "cc_build_error": attr.label(
+            doc = "Target for `CcBuildErrorInfo`",
+            mandatory = True,
+            providers = [CcBuildErrorInfo],
+        ),
         "is_windows": attr.bool(
             doc = "Whether the runtime environment is windows or not. " +
                   "This attribute is not user-facing.",
@@ -624,101 +680,36 @@ _check_messages_and_prepare_test = rule(
     test = True,
 )
 
-def _rule_impl(
-        *,
-        check_message_rule,
-        name,
-        compile_stderr = DEFAULT_MATCHER,
-        compile_stdout = DEFAULT_MATCHER,
-        link_stderr = DEFAULT_MATCHER,
-        link_stdout = DEFAULT_MATCHER,
-        **kwargs):
-    """Implementation of `cc_build_error` and `cc_build_error_test`.
-
-    Args:
-        check_message_rule: Rule for the final step to check error messages.
-        name(str): Name of the target.
-        compile_stderr(matcher struct): Matcher for stderr during compilation.
-        compile_stdout(matcher struct): Matcher for stdout during compilation.
-        link_stderr(matcher struct): Matcher for stderr while linking.
-        link_stdout(matcher struct): Matcher for stdout while linking.
-        **kwargs(dict): Passed to internal rules.
-    """
-
-    testonly = kwargs.pop("testonly", False)
-    tags = kwargs.pop("tags", [])
-    visibility = kwargs.pop("visibility", None)
-
-    kwargs_try_build = {
-        key: kwargs[key]
-        for key in kwargs
-        if key in _TRY_BUILD_EXPLICIT_ATTRS
-    }
-    kwargs_check_messages = {
-        key: kwargs[key]
-        for key in kwargs
-        if key not in _TRY_BUILD_EXPLICIT_ATTRS
-    }
-    kwargs.clear()
-
-    try_build_target = name + ".try_build"
-    _try_build(
-        name = try_build_target,
-        tags = ["manual"] + tags,
-        os = select({
-            Label("//platforms/os:linux"): "linux",
-            Label("//platforms/os:macos"): "macos",
-            Label("//platforms/os:windows"): "windows",
-        }),
-        visibility = ["//visibility:private"],
-        testonly = testonly,
-        **kwargs_try_build
-    )
-
-    check_message_rule(
-        name = name,
-        build_trial = ":" + try_build_target,
-        matcher_compile_stderr = compile_stderr.matcher,
-        matcher_compile_stdout = compile_stdout.matcher,
-        matcher_link_stderr = link_stderr.matcher,
-        matcher_link_stdout = link_stdout.matcher,
-        pattern_compile_stderr = compile_stderr.pattern,
-        pattern_compile_stdout = compile_stdout.pattern,
-        pattern_link_stderr = link_stderr.pattern,
-        pattern_link_stdout = link_stdout.pattern,
-        visibility = visibility,
-        tags = tags,
-        testonly = testonly,
-        **kwargs_check_messages
-    )
-
-def cc_build_error(**kwargs):
-    """Check a C/C++ build error.
-
-    Args:
-        **kwargs(dict): See readme for its arguments.
-    """
-    _rule_impl(
-        check_message_rule = _check_messages,
-        **kwargs
-    )
-
-def cc_build_error_test(**kwargs):
+def cc_build_error_test(*, name, **kwargs):
     """Test rule checking `cc_build_error` builds.
 
     Args:
-        **kwargs(dict): See readme for its arguments.
+        name(str): Name of the test target.
+        **kwargs(dict): Receives the same keyword arguments as `cc_build_error`.
     """
+    build_target_name = name + ".rule"
 
     # `testonly` is always true.
     kwargs["testonly"] = True
 
-    _rule_impl(
-        check_message_rule = _check_messages_and_prepare_test,
+    # Arguments passed to the test target.
+    tags = kwargs.pop("tags", [])
+    visibility = kwargs.pop("visibility", None)
+
+    cc_build_error(
+        name = build_target_name,
+        tags = tags + ["manual"],
+        visibility = ["//visibility:private"],
+        **kwargs
+    )
+
+    _create_test(
+        name = name,
+        cc_build_error = ":" + build_target_name,
         is_windows = select({
             "@bazel_tools//src/conditions:host_windows": True,
             "//conditions:default": False,
         }),
-        timeout = "short",
-        **kwargs
+        tags = tags,
+        visibility = visibility,
     )
