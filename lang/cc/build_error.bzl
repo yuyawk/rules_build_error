@@ -1,6 +1,7 @@
 """Implement `cc_build_error`.
 """
 
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load(
     "@bazel_tools//tools/build_defs/cc:action_names.bzl",
     "ACTION_NAMES",
@@ -597,7 +598,7 @@ def cc_build_error(
     }
     kwargs.clear()
 
-    try_build_target = name + "__tb"
+    try_build_target = name + ".internal"
     _try_build(
         name = try_build_target,
         tags = ["manual"] + tags,
@@ -626,4 +627,36 @@ def cc_build_error(
         tags = tags,
         testonly = testonly,
         **kwargs_check_messages
+    )
+
+def cc_build_error_test(*, name, **kwargs):
+    """Test rule checking `cc_build_error` builds.
+
+    Args:
+        name(str): Name of the test target.
+        **kwargs(dict): Receives the same keyword arguments as `cc_build_error`.
+    """
+    build_target_name = name + ".rule"
+
+    # `testonly` is always true.
+    kwargs["testonly"] = True
+
+    # Arguments passed to the test target.
+    tags = kwargs.pop("tags", [])
+    visibility = kwargs.pop("visibility", None)
+
+    cc_build_error(
+        name = build_target_name,
+        tags = tags + ["manual"],
+        visibility = ["//visibility:private"],
+        **kwargs
+    )
+
+    build_test(
+        name = name,
+        targets = [
+            ":" + build_target_name,
+        ],
+        tags = tags,
+        visibility = visibility,
     )

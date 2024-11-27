@@ -1,25 +1,25 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
-load("//lang/cc:defs.bzl", "cc_build_error")
 load("//matcher:defs.bzl", "matcher")
+load("//tests/cc:utils.bzl", "check_build_and_test")
 
-cc_build_error(
+check_build_and_test(
     name = "plain",
     src = "cpp_compile_error.cpp",
 )
 
-cc_build_error(
+check_build_and_test(
     name = "with_substr_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.has_substr("for cpp_compile_error.cpp"),
 )
 
-cc_build_error(
+check_build_and_test(
     name = "with_basic_regex_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.contains_basic_regex(r"for[[:space:]]cpp_compile_error\.\(cpp\|cxx\)"),
 )
 
-cc_build_error(
+check_build_and_test(
     name = "with_extended_regex_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.contains_extended_regex(r"for[[:space:]]cpp_compile_error\.(cpp|cxx)"),
@@ -36,7 +36,7 @@ build_test(
 )
 
 # Test case which should fail to build
-cc_build_error(
+check_build_and_test(
     name = "incorrect_matcher",
     src = "cpp_compile_error.cpp",
     compile_stderr = matcher.has_substr("Incorrect matcher"),
