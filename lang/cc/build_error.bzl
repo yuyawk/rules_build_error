@@ -591,7 +591,7 @@ def _check_messages_and_prepare_test_impl(ctx):
     )
     return [
         DefaultInfo(
-            files = depset([executable]),
+            files = depset([executable] + cc_build_error_info.markers),
             executable = executable,
             runfiles = ctx.runfiles(files = cc_build_error_info.markers),
         ),
