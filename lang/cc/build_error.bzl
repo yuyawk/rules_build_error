@@ -583,15 +583,25 @@ def _check_messages_and_prepare_test_impl(ctx):
     cc_build_error_info = _check_messages_common_detail(ctx)
     extension = ".bat" if ctx.attr.is_windows else ".sh"
     content = "exit 0" if ctx.attr.is_windows else "#!/usr/bin/env bash\nexit 0"
+    executable_template = ctx.actions.declare_file(ctx.label.name + "/exe_tpl")
     executable = ctx.actions.declare_file(ctx.label.name + extension)
     ctx.actions.write(
-        output = executable,
+        output = executable_template,
         is_executable = True,
         content = content,
     )
+    ctx.actions.run_shell(
+        outputs = [executable],
+        inputs = cc_build_error_info.markers + [executable_template],
+        command = "cp $1 $2",
+        arguments = [
+            executable_template.path,
+            executable.path,
+        ],
+    )
     return [
         DefaultInfo(
-            files = depset([executable] + cc_build_error_info.markers),
+            files = depset([executable]),
             executable = executable,
         ),
     ]
