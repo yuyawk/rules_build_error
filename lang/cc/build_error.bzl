@@ -712,4 +712,5 @@ def cc_build_error_test(*, name, **kwargs):
         }),
         tags = tags,
         visibility = visibility,
+        timeout = "short",
     )
