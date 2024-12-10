@@ -605,6 +605,7 @@ def cc_build_error(
             Label("//platforms/os:linux"): "linux",
             Label("//platforms/os:macos"): "macos",
             Label("//platforms/os:windows"): "windows",
+            "//conditions:default": "linux",
         }),
         visibility = ["//visibility:private"],
         testonly = testonly,
