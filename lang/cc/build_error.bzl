@@ -114,10 +114,27 @@ def _try_compile(ctx):
     elif _is_cpp(ctx.file.src):
         ccopts += ctx.fragments.cpp.cxxopts
 
+    compilation_context = cc_common.merge_compilation_contexts(
+        compilation_contexts = [
+            dep[CcInfo].compilation_context
+            for dep in ctx.attr.deps
+        ],
+    )
+
     compile_variables = cc_common.create_compile_variables(
         cc_toolchain = cc_toolchain,
         feature_configuration = features,
         user_compile_flags = ccopts,
+        include_directories = compilation_context.includes,
+        quote_include_directories = compilation_context.quote_includes,
+        system_include_directories = compilation_context.system_includes,
+        framework_include_directories = compilation_context.framework_includes,
+        preprocessor_defines = depset(
+            direct = ctx.attr.local_defines,
+            transitive = [compilation_context.defines],
+        ),
+        source_file = ctx.file.src.path,
+        output_file = compile_output.path,
     )
 
     compile_action_name = _get_compile_action_name(ctx.file.src)
@@ -133,8 +150,14 @@ def _try_compile(ctx):
         variables = compile_variables,
     )
 
+    env = cc_common.get_environment_variables(
+        feature_configuration = features,
+        action_name = compile_action_name,
+        variables = compile_variables,
+    )
+
     # Input files for executing the action
-    inputs = [ctx.file.src]
+    inputs = [ctx.file.src] + compilation_context.headers.to_list()
 
     # Arguments for `try_build.bash`
     try_build_executable = get_executable_file(ctx.attr._try_build)
@@ -151,22 +174,7 @@ def _try_compile(ctx):
 
     # From here on `args` is used for the compilation command
     args.add(compiler)
-
-    for dep in ctx.attr.deps:
-        compilation_context = dep[CcInfo].compilation_context
-        args.add_all(compilation_context.defines, before_each = "-D")
-        args.add_all(compilation_context.framework_includes, before_each = "-F")
-        args.add_all(compilation_context.includes, before_each = "-I")
-        args.add_all(compilation_context.quote_includes, before_each = "-iquote")
-        args.add_all(compilation_context.system_includes, before_each = "-isystem")
-        inputs += compilation_context.headers.to_list()
-
     args.add_all(compiler_options)
-
-    args.add_all(ctx.attr.local_defines, before_each = "-D")
-
-    args.add("-c", ctx.file.src)
-    args.add("-o", compile_output)
 
     ctx.actions.run_shell(
         outputs = [compile_output, compile_stdout, compile_stderr],
@@ -174,6 +182,8 @@ def _try_compile(ctx):
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
+        use_default_shell_env = True,
+        env = env,
     )
 
     return struct(
@@ -337,12 +347,20 @@ def _try_link(ctx, compile_output):
     args.add("-o", link_output)
     args.add(compile_output)
 
+    env = cc_common.get_environment_variables(
+        feature_configuration = features,
+        action_name = ACTION_NAMES.cpp_link_executable,
+        variables = link_variables,
+    )
+
     ctx.actions.run_shell(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
+        use_default_shell_env = True,
+        env = env,
     )
 
     return struct(
