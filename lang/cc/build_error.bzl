@@ -133,6 +133,12 @@ def _try_compile(ctx):
         variables = compile_variables,
     )
 
+    env = cc_common.get_environment_variables(
+        feature_configuration = features,
+        action_name = compile_action_name,
+        variables = compile_variables,
+    )
+
     # Input files for executing the action
     inputs = [ctx.file.src]
 
@@ -174,6 +180,8 @@ def _try_compile(ctx):
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
+        use_default_shell_env = True,
+        env = env,
     )
 
     return struct(
@@ -337,12 +345,20 @@ def _try_link(ctx, compile_output):
     args.add("-o", link_output)
     args.add(compile_output)
 
+    env = cc_common.get_environment_variables(
+        feature_configuration = features,
+        action_name = ACTION_NAMES.cpp_link_executable,
+        variables = link_variables,
+    )
+
     ctx.actions.run_shell(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
+        use_default_shell_env = True,
+        env = env,
     )
 
     return struct(
