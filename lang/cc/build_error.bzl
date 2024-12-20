@@ -12,6 +12,7 @@ load(
 load(
     "//lang/private:general_build_actions.bzl",
     "DEFAULT_MATCHER",
+    "LIST_ALL_ARGS",
     "check_build_error",
     "check_each_message",
     "get_executable_file",
@@ -171,7 +172,7 @@ def _try_compile(ctx):
         outputs = [compile_output, compile_stdout, compile_stderr],
         inputs = inputs,
         arguments = [args],
-        command = "$@",
+        command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
     )
 
@@ -340,7 +341,7 @@ def _try_link(ctx, compile_output):
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
         arguments = [args],
-        command = "$@",
+        command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
     )
 
@@ -651,7 +652,7 @@ def _create_test_impl(ctx):
     ctx.actions.run_shell(
         outputs = [executable],
         inputs = cc_build_error_info.markers + [executable_template],
-        command = "cp $1 $2",
+        command = 'cp "$1" "$2"',
         arguments = [
             executable_template.path,
             executable.path,
