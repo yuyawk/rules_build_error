@@ -9,6 +9,8 @@ DEFAULT_MATCHER = struct(
     pattern = None,
 )
 
+LIST_ALL_ARGS = '"$@"'
+
 def get_executable_file(label):
     """Get executable file if the label is not None.
 
@@ -72,7 +74,7 @@ def check_build_error(
     ctx.actions.run_shell(
         outputs = [marker_check_build_error],
         inputs = files_to_check + [error_message_file],
-        command = "$@",
+        command = LIST_ALL_ARGS,
         arguments = [args],
         tools = [check_emptiness],
     )
@@ -148,7 +150,7 @@ def check_each_message(
         ctx.actions.run_shell(
             outputs = [marker_file],
             inputs = [message_file, pattern_file],
-            command = "$@",
+            command = LIST_ALL_ARGS,
             arguments = [
                 checker.path,
                 matcher.path,
