@@ -678,10 +678,10 @@ def _create_test_impl(ctx):
     executable = ctx.actions.declare_file(ctx.label.name + "/" + dummy_test.basename)
     ctx.actions.run_shell(
         outputs = [executable],
-        inputs = cc_build_error_info.markers + [ctx.attr._dummy_test],
+        inputs = cc_build_error_info.markers + [dummy_test],
         command = 'cp "$1" "$2"',
         arguments = [
-            ctx.attr._dummy_test.path,
+            dummy_test.path,
             executable.path,
         ],
     )
