@@ -674,7 +674,7 @@ def _create_test_impl(ctx):
         A list of providers.
     """
     cc_build_error_info = ctx.attr.cc_build_error[CcBuildErrorInfo]
-    executable = ctx.actions.declare_file(ctx.label.name + extension)
+    executable = ctx.actions.declare_file(ctx.label.name + "/" + ctx.attr._dummy_test.basename)
     ctx.actions.run_shell(
         outputs = [executable],
         inputs = cc_build_error_info.markers + [ctx.attr._dummy_test],
