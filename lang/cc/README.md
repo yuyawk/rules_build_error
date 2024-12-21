@@ -32,4 +32,4 @@ In addition to the common rule attributes listed [here](https://bazel.build/refe
 
 ## `inline_src`
 
-Using `inline_src`, you can provide source code as an inline string. The function `inline_src.c` generates a C source file, while `inline_src.cpp` generates a C++ source file. Both functions accept a string containing the source code as their argument.
+Using a struct `inline_src`, you can provide source code as an inline string, like `src = inline_src.c("int main(void) { return 0; }")`. The function `inline_src.c` generates a C source file, while `inline_src.cpp` generates a C++ source file. Both functions accept a string containing the source code as their argument.
