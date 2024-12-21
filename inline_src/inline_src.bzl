@@ -83,18 +83,20 @@ _generate_inline_src_rule = rule(
     provides = [DefaultInfo],
 )
 
-def generate_inline_src(*, name, inline_src):
+def generate_inline_src(*, name, inline_src, **kwargs):
     """Rule to generate inline source.
 
     Args:
         name(str): The name of the target.
         inline_src(inline source object): The inline source object to generate.
+        **kwargs(dict): Passed to internal rules.
     """
     if not is_inline_src(inline_src):
-        fail("`inline_src` must be an inline source object.")
+        fail("Precondition: `inline_src` must be an inline source object.")
 
     _generate_inline_src_rule(
         name = name,
         content = inline_src.content,
         extension = inline_src.extension,
+        **kwargs
     )
