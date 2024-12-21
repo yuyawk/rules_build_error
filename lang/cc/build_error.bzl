@@ -156,6 +156,9 @@ def _try_compile(ctx):
         variables = compile_variables,
     )
 
+    # For compatibility with bazel 6, explicitly set `use_default_shell_env=True` only when there's no user-given environment variable.
+    use_default_shell_env = not bool(env)
+
     # Input files for executing the action
     inputs = [ctx.file.src] + compilation_context.headers.to_list()
 
@@ -183,6 +186,7 @@ def _try_compile(ctx):
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
         env = env,
+        use_default_shell_env = use_default_shell_env,
     )
 
     return struct(
@@ -352,6 +356,9 @@ def _try_link(ctx, compile_output):
         variables = link_variables,
     )
 
+    # For compatibility with bazel 6, explicitly set `use_default_shell_env=True` only when there's no user-given environment variable.
+    use_default_shell_env = not bool(env)
+
     ctx.actions.run_shell(
         outputs = [link_output, link_stdout, link_stderr],
         inputs = inputs,
@@ -359,6 +366,7 @@ def _try_link(ctx, compile_output):
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
         env = env,
+        use_default_shell_env = use_default_shell_env,
     )
 
     return struct(
