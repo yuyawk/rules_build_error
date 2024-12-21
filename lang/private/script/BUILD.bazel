@@ -23,7 +23,7 @@ filegroup(
 filegroup(
     name = "dummy_test",
     srcs = select({
-        "@bazel_tools//src/conditions:host_windows": "dummy_test_windows.bat",
-        "//conditions:default": "dummy_test.bash",
+        "@bazel_tools//src/conditions:host_windows": ["dummy_test_windows.bat"],
+        "//conditions:default": ["dummy_test.bash"],
     }),
 )
