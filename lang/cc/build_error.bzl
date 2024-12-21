@@ -182,7 +182,6 @@ def _try_compile(ctx):
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
-        use_default_shell_env = True,
         env = env,
     )
 
@@ -359,7 +358,6 @@ def _try_link(ctx, compile_output):
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
-        use_default_shell_env = True,
         env = env,
     )
 
