@@ -674,21 +674,13 @@ def _create_test_impl(ctx):
         A list of providers.
     """
     cc_build_error_info = ctx.attr.cc_build_error[CcBuildErrorInfo]
-    extension = ".bat" if ctx.attr.is_windows else ".sh"
-    content = "exit 0" if ctx.attr.is_windows else "#!/usr/bin/env bash\nexit 0"
-    executable_template = ctx.actions.declare_file(ctx.label.name + "/exe_tpl")
     executable = ctx.actions.declare_file(ctx.label.name + extension)
-    ctx.actions.write(
-        output = executable_template,
-        is_executable = True,
-        content = content,
-    )
     ctx.actions.run_shell(
         outputs = [executable],
-        inputs = cc_build_error_info.markers + [executable_template],
+        inputs = cc_build_error_info.markers + [ctx.attr._dummy_test],
         command = 'cp "$1" "$2"',
         arguments = [
-            executable_template.path,
+            ctx.attr._dummy_test.path,
             executable.path,
         ],
     )
@@ -707,10 +699,9 @@ _create_test = rule(
             mandatory = True,
             providers = [CcBuildErrorInfo],
         ),
-        "is_windows": attr.bool(
-            doc = "Whether the runtime environment is windows or not. " +
-                  "This attribute is not user-facing.",
-            mandatory = True,
+        "_dummy_test": attr.label(
+            default = Label("//lang/private/script:dummy_test"),
+            doc = "Dummy test script which always succeeds.",
         ),
     },
     test = True,
@@ -742,10 +733,6 @@ def cc_build_error_test(*, name, **kwargs):
     _create_test(
         name = name,
         cc_build_error = ":" + build_target_name,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         tags = tags,
         visibility = visibility,
         timeout = "short",
