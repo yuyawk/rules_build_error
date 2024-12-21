@@ -1,6 +1,6 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
-load("//matcher:defs.bzl", "matcher")
 load("//lang/cc:defs.bzl", "inline_src")
+load("//matcher:defs.bzl", "matcher")
 load("//tests/cc:utils.bzl", "check_build_and_test")
 
 check_build_and_test(
