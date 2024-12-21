@@ -51,3 +51,9 @@ check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_substr_ma
 check_bazel_build_error //tests/cc/cpp_successful_build_with_deps:with_substr_matcher.test
 check_bazel_build_error //tests/cc/cpp_compile_error:incorrect_matcher
 check_bazel_build_error //tests/cc/cpp_compile_error:incorrect_matcher.test
+check_bazel_build_error //tests/cc/cpp_inline_src:incorrect_matcher
+check_bazel_build_error //tests/cc/cpp_inline_src:incorrect_matcher.test
+check_bazel_build_error //tests/cc/cpp_inline_src:incorrect_extension
+check_bazel_build_error //tests/cc/cpp_inline_src:incorrect_extension.test
+check_bazel_build_error //tests/cc/c_inline_src:incorrect_extension
+check_bazel_build_error //tests/cc/c_inline_src:incorrect_extension.test

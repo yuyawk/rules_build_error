@@ -10,6 +10,11 @@ load(
     "find_cpp_toolchain",
 )
 load(
+    "//inline_src:inline_src.bzl",
+    "generate_inline_src",
+    "is_inline_src",
+)
+load(
     "//lang/private:general_build_actions.bzl",
     "DEFAULT_MATCHER",
     "LIST_ALL_ARGS",
@@ -614,9 +619,22 @@ def cc_build_error(
     }
     kwargs.clear()
 
+    src = kwargs_try_build.pop("src")
+    if is_inline_src(src):
+        inline_src_target = name + "__i"
+        generate_inline_src(
+            name = inline_src_target,
+            inline_src = src,
+            tags = ["manual"] + tags,
+            testonly = testonly,
+            visibility = ["//visibility:private"],
+        )
+        src = ":" + inline_src_target
+
     try_build_target = name + "__0"
     _try_build(
         name = try_build_target,
+        src = src,
         tags = ["manual"] + tags,
         os = select({
             Label("//platforms/os:linux"): "linux",
