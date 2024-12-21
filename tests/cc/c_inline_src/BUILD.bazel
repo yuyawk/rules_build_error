@@ -5,24 +5,68 @@ load("//tests/cc:utils.bzl", "check_build_and_test")
 
 check_build_and_test(
     name = "plain",
-    src = inline_src.c('#include <assert.h> \n int main(void) { static_assert(0, "Compile error message for inline src"); }'),
+    src = inline_src.c("""
+    #include <assert.h>
+
+    int main(void) {
+
+    #ifndef __cplusplus
+        static_assert(0, "Compile error message for inline src");
+    #endif
+
+        return 0;
+    }
+    """),
 )
 
 check_build_and_test(
     name = "with_substr_matcher",
-    src = inline_src.c('#include <assert.h> \n int main(void) { static_assert(0, "Compile error message for inline src"); }'),
+    src = inline_src.c("""
+    #include <assert.h>
+
+    int main(void) {
+
+    #ifndef __cplusplus
+        static_assert(0, "Compile error message for inline src");
+    #endif
+
+        return 0;
+    }
+    """),
     compile_stderr = matcher.has_substr("static assertion failed"),
 )
 
 check_build_and_test(
     name = "with_basic_regex_matcher",
-    src = inline_src.c('#include <assert.h> \n int main(void) { static_assert(0, "Compile error message for inline src"); }'),
+    src = inline_src.c("""
+    #include <assert.h>
+
+    int main(void) {
+
+    #ifndef __cplusplus
+        static_assert(0, "Compile error message for inline src");
+    #endif
+
+        return 0;
+    }
+    """),
     compile_stderr = matcher.contains_basic_regex(r"static[[:space:]]assertion \(failed\|error\)"),
 )
 
 check_build_and_test(
     name = "with_extended_regex_matcher",
-    src = inline_src.c('#include <assert.h> \n int main(void) { static_assert(0, "Compile error message for inline src"); }'),
+    src = inline_src.c("""
+    #include <assert.h>
+
+    int main(void) {
+
+    #ifndef __cplusplus
+        static_assert(0, "Compile error message for inline src");
+    #endif
+
+        return 0;
+    }
+    """),
     compile_stderr = matcher.contains_extended_regex(r"static[[:space:]]assertion (failed|error)"),
 )
 
@@ -34,4 +78,23 @@ build_test(
         ":with_basic_regex_matcher",
         ":with_extended_regex_matcher",
     ],
+)
+
+# Test case which should fail to build
+check_build_and_test(
+    name = "incorrect_extension",
+    src = inline_src.cpp("""
+    #include <assert.h>
+
+    int main(void) {
+
+    #ifndef __cplusplus
+        static_assert(0, "Compile error message for inline src");
+    #endif
+
+        return 0;
+    }
+    """),
+    compile_stderr = matcher.has_substr("static assertion failed"),
+    tags = ["manual"],
 )
