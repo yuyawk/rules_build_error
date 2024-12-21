@@ -625,6 +625,9 @@ def cc_build_error(
         generate_inline_src(
             name = inline_src_target,
             inline_src = src,
+            tags = ["manual"] + tags,
+            testonly = testonly,
+            visibility = ["//visibility:private"],
         )
         src = ":" + inline_src_target
 
