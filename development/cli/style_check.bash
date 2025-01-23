@@ -15,4 +15,11 @@ buildifier_targets="$(
         xargs -I{} echo "$(pwd)/{}"
 )"
 
-"${BAZEL_EXECUTABLE[@]}" run -- @buildifier_prebuilt//:buildifier -lint=fix ${buildifier_targets}
+# Regarding native-cc:
+#   It's not required to load rules_cc at this moment.
+#   https://github.com/bazelbuild/buildtools/issues/923
+"${BAZEL_EXECUTABLE[@]}" run -- \
+    @buildifier_prebuilt//:buildifier \
+        --lint=fix \
+        --warnings=-native-cc \
+        ${buildifier_targets}
