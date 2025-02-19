@@ -17,7 +17,7 @@ bazel_dep(name = "platforms", version = "0.0.11")
 bazel_dep(name = "bazel_skylib", version = "1.7.1", dev_dependency = True)
 bazel_dep(
     name = "hermetic_cc_toolchain",
-    version = "3.1.1",
+    version = "3.2.0",
     dev_dependency = True,
 )
 
