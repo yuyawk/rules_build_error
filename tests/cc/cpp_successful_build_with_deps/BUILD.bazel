@@ -1,5 +1,6 @@
 """Test cases which should fail to build are marked with `tags = ["manual"]`."""
 
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("//matcher:defs.bzl", "matcher")
 load("//tests/cc:utils.bzl", "check_build_and_test")
 

@@ -1,4 +1,5 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("//matcher:defs.bzl", "matcher")
 load("//tests/cc:utils.bzl", "check_build_and_test")
 
