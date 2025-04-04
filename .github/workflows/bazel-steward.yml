@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Generate GitHub Apps token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.BAZEL_STEWARD_APP_ID }}
