@@ -19,7 +19,7 @@ bazel_dep(name = "bazel_skylib", version = "1.7.1")
 
 bazel_dep(
     name = "hermetic_cc_toolchain",
-    version = "4.0.0",
+    version = "4.0.1",
 )
 
 cc_toolchains = use_extension(
