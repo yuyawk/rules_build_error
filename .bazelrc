@@ -1,5 +1,6 @@
 # Set the cache location to local
-startup --output_user_root=.cache/bazel
+# FIXME: Commenting out this line as a workaround for https://github.com/bazelbuild/bazel/issues/26384
+# startup --output_user_root=.cache/bazel
 
 # Use bzlmod
 common --enable_bzlmod
