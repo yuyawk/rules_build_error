@@ -50,6 +50,6 @@ while IFS= read -r line; do
     fi
 done <<< "${INCOMPATIBILITY_FLAGS_AND_VERSION}"
 
-echo "INFO: Incompatibility flags enabled: ${incompatibility_flags[@]}"
+echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
 
 "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
