@@ -23,12 +23,13 @@ BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
 # and normalize it into a flat list alternating between flags and versions.
 #
 # The meaning of each sed option:
-#   (1) Remove comment lines
-#   (2) Remove list item markers to extract versions
-#   (3) Extract flag names from quoted YAML keys
+#   (1, 2) Remove comments
+#   (3) Remove list item markers to extract versions
+#   (4) Extract flag names from quoted YAML keys
 INCOMPATIBILITY_FLAGS_AND_VERSION=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null  \
     | sed \
         -e '/^\s*#/d' \
+        -e 's/#.*$//' \
         -e 's/^\s*- //' \
         -e 's/^\s*"\([^"]*\)":/\1/'
 )
