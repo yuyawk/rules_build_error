@@ -9,29 +9,26 @@ source "${SCRIPT_DIR}/common.bash"
 
 cd "${REPO_ROOT_DIR}/examples"
 
-bazel_version="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
-bazel_major_version="$(echo "${bazel_version}" | cut -d. -f1)"
 
-# Incompatibility flags to raise early warnings for potential migration blockers.
-# https://github.com/bazelbuild/bazel-central-registry/blob/main/incompatible_flags.yml
-incompatibility_flags=(
-    "--incompatible_config_setting_private_default_visibility"
-    "--incompatible_disable_starlark_host_transitions"
+# Collect incompatibility flags to raise early warnings for potential migration blockers.
+INCOMPATIBILITY_FLAGS_URL="https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/incompatible_flags.yml"
+BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
+INCOMPATIBILITY_FLAGS_AND_VERSION=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null  \
+    | sed \
+        -e '/^\s*#/d' \
+        -e 's/^\s*- //' \
+        -e 's/^\s*"\([^"]*\)":/\1/'
 )
+incompatibility_flags=()
+current_flag=""
+while IFS= read -r line; do
+    if [[ "${line}" == --* ]]; then
+        current_flag="${line}"
+    elif [[ "${line}" == "${BAZEL_VERSION}" ]]; then
+        incompatibility_flags+=("${current_flag}")
+    fi
+done <<< "${INCOMPATIBILITY_FLAGS_AND_VERSION}"
 
-# Version-dependent incompatibility flags
-if [[ "${bazel_major_version}" =~ ^[0-9]+$ ]]; then
-    if [[ "${bazel_major_version}" -ge 7 ]]; then
-        incompatibility_flags+=(
-            "--incompatible_disable_native_repo_rules"
-            "--incompatible_autoload_externally="
-        )
-    fi
-    if [[ "${bazel_major_version}" -ge 8 ]]; then
-        incompatibility_flags+=(
-            "--incompatible_disable_autoloads_in_main_repo"
-        )
-    fi
-fi
+echo "INFO: Incompatibility flags enabled: ${incompatibility_flags[@]}"
 
 "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
