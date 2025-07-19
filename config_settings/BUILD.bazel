@@ -1,0 +1,23 @@
+# Configuration setting that matches when the host CPU is x64 running on Windows.
+config_setting(
+    name = "host_windows_x64_constraint",
+    values = {"host_cpu": "x64_windows"},
+)
+
+# Configuration setting that matches when the host CPU is ARM64 running on Windows.
+config_setting(
+    name = "host_windows_arm64_constraint",
+    values = {"host_cpu": "arm64_windows"},
+)
+
+# Alias that selects the appropriate host constraint based on the detected host CPU.
+# Defaults to x64 if the ARM64 constraint does not match.
+# This alias can be used by other rules or macros to uniformly reference the host platform constraint.
+alias(
+    name = "host_windows",
+    actual = select({
+        ":host_windows_arm64_constraint": ":host_windows_arm64_constraint",
+        "//conditions:default": ":host_windows_x64_constraint",
+    }),
+    visibility = ["//lang:__subpackages__"],
+)
