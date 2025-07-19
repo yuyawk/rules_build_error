@@ -28,7 +28,7 @@ INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}" \
         next if /^\s*#/;                        # Skip full-line comments
         s/#.*$//;                               # Remove trailing comments
         s/^\s*-\s+//;                           # Remove leading dash and spaces from list items
-        s/^\s*"\s*([^"]+)\s*"\s*:\s*/$1/;       # Extract key from quoted key: value
+        s/^\s*"\s*([^"]+)\s*"\s*:*$/$1/;        # Extract key from quoted key: value
         print if /\S/;                          # Skip empty lines
     '
 )
@@ -60,4 +60,5 @@ if [[ "${#incompatibility_flags[@]}" -eq 0 ]]; then
 fi
 
 echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
+exit 1
 "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
