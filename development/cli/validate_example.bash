@@ -60,5 +60,4 @@ if [[ "${#incompatibility_flags[@]}" -eq 0 ]]; then
 fi
 
 echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
-exit 1
 "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
