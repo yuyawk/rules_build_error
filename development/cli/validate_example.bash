@@ -19,19 +19,18 @@ INCOMPATIBILITY_FLAGS_URL="https://raw.githubusercontent.com/bazelbuild/bazel-ce
 # It assumes a line in the format: USE_BAZEL_VERSION=8.x
 BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
 
-# Download the YAML content, strip comments and formatting using `sed`,
-# and normalize it into a flat list alternating between flags and versions.
-#
-# The meaning of each sed option:
-#   (1, 2) Remove comments
-#   (3) Remove list item markers to extract versions
-#   (4) Extract flag names from quoted YAML keys
-INCOMPATIBILITY_FLAGS_AND_VERSION=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null  \
-    | sed \
-        -e '/^\s*#/d' \
-        -e 's/#.*$//' \
-        -e 's/^\s*- //' \
-        -e 's/^\s*"\([^"]*\)":/\1/'
+# Download the YAML content
+INCOMPATIBILITY_FLAGS_YAML=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null)
+
+# Normalize the YAML into a flat list containing flags and versions.
+INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}" \
+    | perl -ne '
+        next if /^\s*#/;                        # Skip full-line comments
+        s/#.*$//;                               # Remove trailing comments
+        s/^\s*-\s+//;                           # Remove leading dash and spaces from list items (i.e. Bazel versions)
+        s/^\s*"\s*([^"]+)\s*"\s*:*$/$1/;        # Extract key (i.e. incompatibility flag) from quoted key
+        print if /\S/;                          # Skip empty lines
+    '
 )
 
 # Initialize array to collect incompatibility flags supported for the current Bazel version.
@@ -49,11 +48,16 @@ while IFS= read -r line; do
     elif [[ "${line}" == "${BAZEL_VERSION}" ]]; then
         incompatibility_flags+=("${current_flag}")
     fi
-done <<< "${INCOMPATIBILITY_FLAGS_AND_VERSION}"
+done <<< "${INCOMPATIBILITY_FLAGS_FLATTENED}"
 
-if [[ "${#incompatibility_flags[@]}" -gt 0 ]]; then
-    echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
-    "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
-else
-    "${BAZEL_EXECUTABLE[@]}" test //...
+if [[ "${#incompatibility_flags[@]}" -eq 0 ]]; then
+    echo "ERROR: Failed to obtain the incompatibility flags." >&2
+    echo "The content of the YAML file:"  >&2
+    echo "${INCOMPATIBILITY_FLAGS_YAML}"  >&2
+    echo "The content of the flattened list:"  >&2
+    echo "${INCOMPATIBILITY_FLAGS_FLATTENED}"  >&2
+    exit 1
 fi
+
+echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
+"${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
