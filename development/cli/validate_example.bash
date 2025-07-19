@@ -19,14 +19,16 @@ INCOMPATIBILITY_FLAGS_URL="https://raw.githubusercontent.com/bazelbuild/bazel-ce
 # It assumes a line in the format: USE_BAZEL_VERSION=8.x
 BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
 
-# Download the YAML content, strip comments and formatting using `sed`,
-# and normalize it into a flat list alternating between flags and versions.
+# Download the YAML content
+INCOMPATIBILITY_FLAGS_YAML=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null)
+
+# Normalize it into a flat list alternating between flags and versions.
 #
 # The meaning of each sed option:
 #   (1, 2) Remove comments
 #   (3) Remove list item markers to extract versions
 #   (4) Extract flag names from quoted YAML keys
-INCOMPATIBILITY_FLAGS_AND_VERSION=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null  \
+INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}"
     | sed \
         -e '/^\s*#/d' \
         -e 's/#.*$//' \
@@ -49,12 +51,14 @@ while IFS= read -r line; do
     elif [[ "${line}" == "${BAZEL_VERSION}" ]]; then
         incompatibility_flags+=("${current_flag}")
     fi
-done <<< "${INCOMPATIBILITY_FLAGS_AND_VERSION}"
+done <<< "${INCOMPATIBILITY_FLAGS_FLATTENED}"
 
 if [[ "${#incompatibility_flags[@]}" -eq 0 ]]; then
     echo "ERROR: Failed to obtain the incompatibility flags." >&2
-    echo "Flattened list:"  >&2
-    echo "${INCOMPATIBILITY_FLAGS_AND_VERSION}"  >&2
+    echo "The content of the YAML file:"  >&2
+    echo "${INCOMPATIBILITY_FLAGS_YAML}"  >&2
+    echo "The content of the flattened list:"  >&2
+    echo "${INCOMPATIBILITY_FLAGS_FLATTENED}"  >&2
     exit 1
 fi
 
