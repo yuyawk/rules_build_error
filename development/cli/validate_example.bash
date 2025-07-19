@@ -51,9 +51,12 @@ while IFS= read -r line; do
     fi
 done <<< "${INCOMPATIBILITY_FLAGS_AND_VERSION}"
 
-if [[ "${#incompatibility_flags[@]}" -gt 0 ]]; then
-    echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
-    "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
-else
-    "${BAZEL_EXECUTABLE[@]}" test //...
+if [[ "${#incompatibility_flags[@]}" -eq 0 ]]; then
+    echo "ERROR: Failed to obtain the incompatibility flags." >&2
+    echo "Flattened list:"  >&2
+    echo "${INCOMPATIBILITY_FLAGS_AND_VERSION}"  >&2
+    exit 1
 fi
+
+echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
+"${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
