@@ -745,7 +745,7 @@ def cc_build_error_test(*, name, **kwargs):
         name = name,
         cc_build_error = ":" + build_target_name,
         is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
+            str(Label("//config_settings:host_windows")): True,
             "//conditions:default": False,
         }),
         tags = tags,

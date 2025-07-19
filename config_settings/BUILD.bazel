@@ -1,0 +1,18 @@
+config_setting(
+    name = "host_windows_x64_constraint",
+    values = {"host_cpu": "x64_windows"},
+)
+
+config_setting(
+    name = "host_windows_arm64_constraint",
+    values = {"host_cpu": "arm64_windows"},
+)
+
+alias(
+    name = "host_windows",
+    actual = select({
+        ":host_windows_arm64_constraint": ":host_windows_arm64_constraint",
+        "//conditions:default": ":host_windows_x64_constraint",
+    }),
+    visibility = ["//lang:__subpackages__"],
+)
