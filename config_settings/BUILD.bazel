@@ -19,5 +19,5 @@ alias(
         ":host_windows_arm64_constraint": ":host_windows_arm64_constraint",
         "//conditions:default": ":host_windows_x64_constraint",
     }),
-    visibility = ["//lang:__subpackages__"],
+    visibility = ["//visibility:public"],
 )
