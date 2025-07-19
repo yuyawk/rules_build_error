@@ -27,8 +27,8 @@ INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}" \
     | perl -ne '
         next if /^\s*#/;                        # Skip full-line comments
         s/#.*$//;                               # Remove trailing comments
-        s/^\s*-\s+//;                           # Remove leading dash and spaces from list items
-        s/^\s*"\s*([^"]+)\s*"\s*:*$/$1/;        # Extract key from quoted key: value
+        s/^\s*-\s+//;                           # Remove leading dash and spaces from list items (i.e. Bazel versions)
+        s/^\s*"\s*([^"]+)\s*"\s*:*$/$1/;        # Extract key (i.e. incompatibility flag) from quoted key
         print if /\S/;                          # Skip empty lines
     '
 )
