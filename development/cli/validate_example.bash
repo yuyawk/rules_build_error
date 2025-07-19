@@ -9,29 +9,51 @@ source "${SCRIPT_DIR}/common.bash"
 
 cd "${REPO_ROOT_DIR}/examples"
 
-bazel_version="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
-bazel_major_version="$(echo "${bazel_version}" | cut -d. -f1)"
 
-# Incompatibility flags to raise early warnings for potential migration blockers.
-# https://github.com/bazelbuild/bazel-central-registry/blob/main/incompatible_flags.yml
-incompatibility_flags=(
-    "--incompatible_config_setting_private_default_visibility"
-    "--incompatible_disable_starlark_host_transitions"
+# Collect incompatibility flags to raise early warnings for potential migration blockers.
+
+# URL of the YAML file containing a mapping of Bazel incompatibility flags to affected Bazel versions.
+INCOMPATIBILITY_FLAGS_URL="https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/incompatible_flags.yml"
+
+# Extract the Bazel version in use from the `.bazeliskrc` file.
+# It assumes a line in the format: USE_BAZEL_VERSION=8.x
+BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
+
+# Download the YAML content, strip comments and formatting using `sed`,
+# and normalize it into a flat list alternating between flags and versions.
+#
+# The meaning of each sed option:
+#   (1, 2) Remove comments
+#   (3) Remove list item markers to extract versions
+#   (4) Extract flag names from quoted YAML keys
+INCOMPATIBILITY_FLAGS_AND_VERSION=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null  \
+    | sed \
+        -e '/^\s*#/d' \
+        -e 's/#.*$//' \
+        -e 's/^\s*- //' \
+        -e 's/^\s*"\([^"]*\)":/\1/'
 )
 
-# Version-dependent incompatibility flags
-if [[ "${bazel_major_version}" =~ ^[0-9]+$ ]]; then
-    if [[ "${bazel_major_version}" -ge 7 ]]; then
-        incompatibility_flags+=(
-            "--incompatible_disable_native_repo_rules"
-            "--incompatible_autoload_externally="
-        )
-    fi
-    if [[ "${bazel_major_version}" -ge 8 ]]; then
-        incompatibility_flags+=(
-            "--incompatible_disable_autoloads_in_main_repo"
-        )
-    fi
-fi
+# Initialize array to collect incompatibility flags supported for the current Bazel version.
+incompatibility_flags=()
 
-"${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
+# Track the current flag while iterating over the flattened lines.
+current_flag=""
+
+# Read the lines one by one.
+# If the line is a flag (starts with "--"), update `current_flag`.
+# If the line matches the Bazel version, add the current_flag to the results.
+while IFS= read -r line; do
+    if [[ "${line}" == --* ]]; then
+        current_flag="${line}"
+    elif [[ "${line}" == "${BAZEL_VERSION}" ]]; then
+        incompatibility_flags+=("${current_flag}")
+    fi
+done <<< "${INCOMPATIBILITY_FLAGS_AND_VERSION}"
+
+if [[ "${#incompatibility_flags[@]}" -gt 0 ]]; then
+    echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
+    "${BAZEL_EXECUTABLE[@]}" test "${incompatibility_flags[@]}" //...
+else
+    "${BAZEL_EXECUTABLE[@]}" test //...
+fi
