@@ -24,7 +24,7 @@ BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
 #
 # The meaning of each sed option:
 #   (1) Remove comment lines
-#   (2) Remove list item markers (e.g., '- 8.x')
+#   (2) Remove list item markers to extract versions
 #   (3) Extract flag names from quoted YAML keys
 INCOMPATIBILITY_FLAGS_AND_VERSION=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null  \
     | sed \
