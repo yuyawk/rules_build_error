@@ -22,18 +22,15 @@ BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
 # Download the YAML content
 INCOMPATIBILITY_FLAGS_YAML=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null)
 
-# Normalize it into a flat list alternating between flags and versions.
-#
-# The meaning of each sed option:
-#   (1, 2) Remove comments
-#   (3) Remove list item markers to extract versions
-#   (4) Extract flag names from quoted YAML keys
-INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}"
-    | sed \
-        -e '/^\s*#/d' \
-        -e 's/#.*$//' \
-        -e 's/^\s*- //' \
-        -e 's/^\s*"\([^"]*\)":/\1/'
+# Normalize it into a flat list containing flags and versions.
+INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}" \
+    | perl -ne '
+        next if /^\s*#/;                        # Skip full-line comments
+        s/#.*$//;                               # Remove trailing comments
+        s/^\s*-\s+//;                           # Remove leading dash and spaces from list items
+        s/^\s*"\s*([^"]+)\s*"\s*:\s*/$1/;       # Extract key from quoted key: value
+        print if /\S/;                          # Skip empty lines
+    '
 )
 
 # Initialize array to collect incompatibility flags supported for the current Bazel version.
