@@ -22,7 +22,7 @@ BAZEL_VERSION="$(grep -E '^USE_BAZEL_VERSION=' .bazeliskrc | cut -d= -f2)"
 # Download the YAML content
 INCOMPATIBILITY_FLAGS_YAML=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null)
 
-# Normalize it into a flat list containing flags and versions.
+# Normalize the YAML into a flat list containing flags and versions.
 INCOMPATIBILITY_FLAGS_FLATTENED=$(echo "${INCOMPATIBILITY_FLAGS_YAML}" \
     | perl -ne '
         next if /^\s*#/;                        # Skip full-line comments
