@@ -16,10 +16,10 @@ check_bazel_build_error() {
     label=$1
 
     # Before executing `bazel build`, check if the target exists with `bazel query`
-    "${BAZEL_EXECUTABLE[@]}" query "${label}"
+    bazel query "${label}"
 
     # Check build error
-    if "${BAZEL_EXECUTABLE[@]}" build "${label}"; then
+    if bazel build "${label}"; then
         echo "Target '${label}' must fail to build, but succeeded" >&2
         exit 1
     else
@@ -30,7 +30,7 @@ check_bazel_build_error() {
 cd "${REPO_ROOT_DIR}"
 
 echo "Executing the test cases which should succeed in straightforward 'bazel test'"
-"${BAZEL_EXECUTABLE[@]}" test //...
+bazel test //...
 
 echo "Executing the test cases which should fail at 'bazel build'"
 check_bazel_build_error //tests/cc/cpp_successful_build:plain

@@ -11,14 +11,18 @@ SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 REPO_ROOT_DIR=$(realpath "${SCRIPT_DIR}/../..")
 
 # Bazel executable with some arguments
-BAZEL_EXECUTABLE=(
-    "env"
-    "-i"
-    BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
-    "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk"
-    "PATH=${PATH}"
-    bazelisk
-)
+bazel() {
+    # Execute bazelisk
+    #
+    # Args:
+    #   $@: Arguments for bazelisk
+    env \
+        -i \
+        BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1 \
+        "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk" \
+        "PATH=${PATH}" \
+        bazelisk "${@}"
+}
 
 # Default Bazel version
 BAZEL_VERSION_DEFAULT="7.x"
