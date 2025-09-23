@@ -15,7 +15,7 @@ bazel() {
     # Execute bazelisk
     #
     # Args:
-    #   $@: Arguments for bazel
+    #   $@: Arguments for bazelisk
     env \
         -i \
         BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1 \
