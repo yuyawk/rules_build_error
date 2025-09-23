@@ -15,7 +15,7 @@ buildifier_targets="$(
         xargs -I{} echo "$(pwd)/{}"
 )"
 
-"${BAZEL_EXECUTABLE[@]}" run -- \
+bazel run -- \
     @buildifier_prebuilt//:buildifier \
         --lint=fix \
         ${buildifier_targets}
