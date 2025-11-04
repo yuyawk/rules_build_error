@@ -19,7 +19,8 @@ jobs:
         bazel-version:
           - 7.x
           - 8.x
-          - 9.*
+          - rolling
+          - last_green
         runner:
           - ubuntu-22.04
           - ubuntu-24.04
@@ -47,7 +48,8 @@ jobs:
         bazel-version:
           - 7.x
           - 8.x
-          - 9.*
+          - rolling
+          - last_green
         runner:
           - ubuntu-22.04
           - ubuntu-24.04
