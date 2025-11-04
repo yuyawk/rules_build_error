@@ -25,7 +25,7 @@ bazel() {
 }
 
 # Default Bazel version
-BAZEL_VERSION_DEFAULT="7.x"
+BAZEL_VERSION_DEFAULT="8.x"
 
 for root_dir in "${REPO_ROOT_DIR}" "${REPO_ROOT_DIR}/examples"; do
     if [[ ! -f "${root_dir}/.bazeliskrc" ]]; then
