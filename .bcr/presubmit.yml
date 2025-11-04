@@ -3,14 +3,15 @@ bcr_test_module:
   module_path: "examples"
   matrix:
     platform:
-      - "debian10"
-      - "ubuntu2004"
+      - "debian11"
+      - "ubuntu2404"
       - "macos_arm64"
       - "windows"
     bazel:
-      - "6.x"
       - "7.x"
       - "8.x"
+      - "rolling"
+      - "last_green"
   tasks:
     run_tests:
       name: "Run test module"
