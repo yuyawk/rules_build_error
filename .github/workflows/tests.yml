@@ -15,6 +15,7 @@ concurrency:
 jobs:
   unit-test:
     strategy:
+      fail-fast: ${{ github.event_name != 'schedule' }}
       matrix:
         bazel-version:
           - 7.x
