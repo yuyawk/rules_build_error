@@ -98,8 +98,8 @@ def check_each_message(
         ctx(ctx): The rule's context.
         id(str): Identifier string to distinguish different checks corresponding to the same label.
         message_file(File): A text file containing message.
-        matcher(File): A matcher executable.
-        pattern(str): A pattern string.
+        matcher(File or None): A matcher executable.
+        pattern(str or None): A pattern string.
         checker(File): Executable file object for `check_each_message.bash`
 
     Returns:
