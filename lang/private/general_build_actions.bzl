@@ -113,13 +113,6 @@ def check_each_message(
         id,
     )
 
-    # Text file containing the pattern string
-    pattern_file = ctx.actions.declare_file(
-        ctx.label.name +
-        "/p_cem/" +
-        id,
-    )
-
     if not matcher:
         if pattern:
             fail(
@@ -128,11 +121,10 @@ def check_each_message(
             )
 
         ctx.actions.run(
-            outputs = [marker_file, pattern_file],
+            outputs = [marker_file],
             executable = "touch",
             arguments = [
                 marker_file.path,
-                pattern_file.path,
             ],
         )
     else:
@@ -141,6 +133,13 @@ def check_each_message(
                 "When specifying the matcher, " +
                 "pattern string must not be empty",
             )
+
+        # Text file containing the pattern string
+        pattern_file = ctx.actions.declare_file(
+            ctx.label.name +
+            "/p_cem/" +
+            id,
+        )
 
         ctx.actions.write(
             output = pattern_file,
