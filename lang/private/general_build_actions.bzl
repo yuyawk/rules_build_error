@@ -98,8 +98,8 @@ def check_each_message(
         ctx(ctx): The rule's context.
         id(str): Identifier string to distinguish different checks corresponding to the same label.
         message_file(File): A text file containing message.
-        matcher(File): A matcher executable.
-        pattern(str): A pattern string.
+        matcher(File or None): A matcher executable.
+        pattern(str or None): A pattern string.
         checker(File): Executable file object for `check_each_message.bash`
 
     Returns:
@@ -113,13 +113,6 @@ def check_each_message(
         id,
     )
 
-    # Text file containing the pattern string
-    pattern_file = ctx.actions.declare_file(
-        ctx.label.name +
-        "/p_cem/" +
-        id,
-    )
-
     if not matcher:
         if pattern:
             fail(
@@ -128,11 +121,10 @@ def check_each_message(
             )
 
         ctx.actions.run(
-            outputs = [marker_file, pattern_file],
+            outputs = [marker_file],
             executable = "touch",
             arguments = [
                 marker_file.path,
-                pattern_file.path,
             ],
         )
     else:
@@ -141,6 +133,13 @@ def check_each_message(
                 "When specifying the matcher, " +
                 "pattern string must not be empty",
             )
+
+        # Text file containing the pattern string
+        pattern_file = ctx.actions.declare_file(
+            ctx.label.name +
+            "/p_cem/" +
+            id,
+        )
 
         ctx.actions.write(
             output = pattern_file,
