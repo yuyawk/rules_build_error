@@ -31,6 +31,7 @@ cd "${REPO_ROOT_DIR}"
 
 echo "Executing the test cases which should succeed in straightforward 'bazel test'"
 for option in "" "--features=external_include_paths"; do
+    echo "bazel test with option: ${option}"
     bazel test ${option} //...
     bazel clean --expunge
 done
