@@ -1,4 +1,4 @@
-"""Test case reproducing https://github.com/yuyawk/rules_build_error/issues/145"""
+"""Test case reproducing https://github.com/yuyawk/rules_build_error/issues/145."""
 
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("//lang/cc:defs.bzl", "inline_src")
