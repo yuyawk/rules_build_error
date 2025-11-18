@@ -30,7 +30,10 @@ check_bazel_build_error() {
 cd "${REPO_ROOT_DIR}"
 
 echo "Executing the test cases which should succeed in straightforward 'bazel test'"
-bazel test //...
+for option in "" "--features=external_include_paths"; do
+    bazel test ${option} //...
+    bazel clean --expunge
+done
 
 echo "Executing the test cases which should fail at 'bazel build'"
 check_bazel_build_error //tests/cc/cpp_successful_build:plain

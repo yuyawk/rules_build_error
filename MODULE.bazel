@@ -40,3 +40,6 @@ register_toolchains(
 )
 
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.1", dev_dependency = True)
+
+# For tests/cc/github_issues/145
+bazel_dep(name = "boost.config", version = "1.88.0", dev_dependency = True)

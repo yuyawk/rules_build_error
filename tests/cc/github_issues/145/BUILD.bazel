@@ -1,0 +1,25 @@
+"""Test case reproducing https://github.com/yuyawk/rules_build_error/issues/145"""
+
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//lang/cc:defs.bzl", "inline_src")
+load("//matcher:defs.bzl", "matcher")
+load("//tests/cc:utils.bzl", "check_build_and_test")
+
+check_build_and_test(
+    name = "library",
+    src = inline_src.cpp("""
+        #include <boost/config.hpp>
+        constexpr int value = test();
+    """),
+    compile_stderr = matcher.has_substr("use of undeclared identifier 'test'"),
+    deps = [
+        "@boost.config",
+    ],
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":library",
+    ],
+)
