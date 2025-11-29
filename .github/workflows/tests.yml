@@ -48,7 +48,6 @@ jobs:
         bazel-version:
           - 7.x
           - 8.x
-          - rolling
         runner:
           - ubuntu-22.04
           - ubuntu-24.04
