@@ -2,15 +2,18 @@
 """
 
 load(
-    "@bazel_tools//tools/build_defs/cc:action_names.bzl",
+    "@rules_cc//cc:action_names.bzl",
     "ACTION_NAMES",
 )
 load(
-    "@bazel_tools//tools/cpp:toolchain_utils.bzl",
-    "find_cpp_toolchain",
+    "@rules_cc//cc:defs.bzl",
+    "CcInfo",
+    "cc_common",
 )
-load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
-load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
+load(
+    "@rules_cc//cc:find_cc_toolchain.bzl",
+    "find_cc_toolchain",
+)
 load(
     "//inline_src:inline_src.bzl",
     "generate_inline_src",
@@ -108,7 +111,7 @@ def _try_compile(ctx):
     compile_stderr = ctx.actions.declare_file(ctx.label.name + "/compile_stderr")
     compile_stdout = ctx.actions.declare_file(ctx.label.name + "/compile_stdout")
 
-    cc_toolchain = find_cpp_toolchain(ctx)
+    cc_toolchain = find_cc_toolchain(ctx)
     features = cc_common.configure_features(
         ctx = ctx,
         cc_toolchain = cc_toolchain,
@@ -294,7 +297,7 @@ def _try_link(ctx, compile_output):
     link_stderr = ctx.actions.declare_file(ctx.label.name + "/link_stderr")
     link_stdout = ctx.actions.declare_file(ctx.label.name + "/link_stdout")
 
-    cc_toolchain = find_cpp_toolchain(ctx)
+    cc_toolchain = find_cc_toolchain(ctx)
     features = cc_common.configure_features(
         ctx = ctx,
         cc_toolchain = cc_toolchain,
@@ -469,7 +472,7 @@ _try_build = rule(
             mandatory = True,
         ),
         "_cc_toolchain": attr.label(
-            default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
+            default = Label("@rules_cc//cc:current_cc_toolchain"),
         ),
         "_check_emptiness": attr.label(
             default = Label("//lang/private/script:check_emptiness"),
@@ -479,7 +482,7 @@ _try_build = rule(
         ),
     },
     fragments = ["cpp"],
-    toolchains = ["@bazel_tools//tools/cpp:toolchain_type"],
+    toolchains = ["@rules_cc//cc:toolchain_type"],
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
