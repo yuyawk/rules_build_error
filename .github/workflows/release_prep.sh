@@ -11,10 +11,7 @@ git ls-files -z | \
 
 # StdOut of this script is used for release description
 cat << EOF
-## Using Bzlmod with Bazel 6 or greater
-
-1. Enable Bzlmod with \`common --enable_bzlmod\` in \`.bazelrc\`.
-2. Add to your \`MODULE.bazel\` file:
+Add to your \`MODULE.bazel\` file:
 
 \`\`\`starlark
 bazel_dep(name = "rules_build_error", version = "${TAG}")
