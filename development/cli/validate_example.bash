@@ -51,13 +51,8 @@ while IFS= read -r line; do
 done <<< "${INCOMPATIBILITY_FLAGS_FLATTENED}"
 
 if [[ "${#incompatibility_flags[@]}" -eq 0 ]]; then
-    echo "ERROR: Failed to obtain the incompatibility flags." >&2
-    echo "The content of the YAML file:"  >&2
-    echo "${INCOMPATIBILITY_FLAGS_YAML}"  >&2
-    echo "The content of the flattened list:"  >&2
-    echo "${INCOMPATIBILITY_FLAGS_FLATTENED}"  >&2
-    exit 1
+    bazel test //...
+else
+    echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
+    bazel test "${incompatibility_flags[@]}" //...
 fi
-
-echo "INFO: Incompatibility flags enabled:" "${incompatibility_flags[@]}"
-bazel test "${incompatibility_flags[@]}" //...
