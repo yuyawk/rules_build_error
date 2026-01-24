@@ -21,7 +21,7 @@ def _contains_basic_regex(pattern):
     """Get a MatchCondition to check if the target contains a basic regular expression.
 
     Args:
-        pattern(str): Pattern for substring.
+        pattern(str): Pattern string. Supposed to be provided by users.
 
     Return:
         MatchCondition for the check.
@@ -35,7 +35,7 @@ def _contains_extended_regex(pattern):
     """Get a MatchCondition to check if the target contains a extended regular expression.
 
     Args:
-        pattern(str): Pattern for substring.
+        pattern(str): Pattern string. Supposed to be provided by users.
 
     Return:
         MatchCondition for the check.
@@ -49,7 +49,7 @@ def _has_substr(pattern):
     """Get a MatchCondition to check if the target has a substring.
 
     Args:
-        pattern(str): Pattern for substring.
+        pattern(str): Pattern string. Supposed to be provided by users.
 
     Return:
         MatchCondition for the check.
