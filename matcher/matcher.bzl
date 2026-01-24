@@ -18,13 +18,13 @@ load(":match_condition.bzl", "MatchCondition")
 visibility("private")
 
 def _contains_basic_regex(pattern):
-    """Matcher to check if the target contains a basic regular expression.
+    """Get a MatchCondition to check if the target contains a basic regular expression.
 
     Args:
-        pattern(str): Pattern for substring.
+        pattern(str): Pattern string. Supposed to be provided by users.
 
     Return:
-        struct describing the matcher
+        MatchCondition for the check.
     """
     return MatchCondition(
         pattern = pattern,
@@ -32,13 +32,13 @@ def _contains_basic_regex(pattern):
     )
 
 def _contains_extended_regex(pattern):
-    """Matcher to check if the target contains a extended regular expression.
+    """Get a MatchCondition to check if the target contains a extended regular expression.
 
     Args:
-        pattern(str): Pattern for substring.
+        pattern(str): Pattern string. Supposed to be provided by users.
 
     Return:
-        struct describing the matcher
+        MatchCondition for the check.
     """
     return MatchCondition(
         pattern = pattern,
@@ -46,13 +46,13 @@ def _contains_extended_regex(pattern):
     )
 
 def _has_substr(pattern):
-    """Matcher to check if the target has a substring.
+    """Get a MatchCondition to check if the target has a substring.
 
     Args:
-        pattern(str): Pattern for substring.
+        pattern(str): Pattern string. Supposed to be provided by users.
 
     Return:
-        struct describing the matcher
+        MatchCondition for the check.
     """
     return MatchCondition(
         pattern = pattern,

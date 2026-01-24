@@ -13,7 +13,7 @@ def MatchCondition(*, pattern, matcher):
     """MatchCondition constructor.
 
     Args:
-        pattern(str): Pattern string
+        pattern(str): Pattern string. Supposed to be provided by users.
         matcher(label): Label to the matcher executable.
 
     Return:
