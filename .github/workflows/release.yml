@@ -20,7 +20,7 @@ jobs:
 
   publish:
     needs: release
-    uses: ./.github/workflows/publish.yaml
+    uses: ./.github/workflows/publish.yml
     with:
       tag_name: ${{ github.ref_name }}
     secrets:
