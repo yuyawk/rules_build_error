@@ -3,12 +3,6 @@
 
 visibility("//lang/...")
 
-# Default value of matcher struct passed to each message assertion.
-DEFAULT_MATCHER = struct(
-    matcher = None,
-    pattern = None,
-)
-
 LIST_ALL_ARGS = '"$@"'
 
 def get_executable_file(label):
