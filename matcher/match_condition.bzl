@@ -3,7 +3,7 @@
 
 visibility("//lang/...")
 
-# Default value of match condition passed to each message assertion. Indicates no-op.
+# Default value of MatchCondition passed to each message assertion. Indicates no-op.
 DEFAULT_MATCH_CONDITION = struct(
     matcher = None,
     pattern = None,
