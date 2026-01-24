@@ -2,6 +2,10 @@
 """
 
 load(
+    "@bazel_skylib//rules:build_test.bzl",
+    "build_test",
+)
+load(
     "@rules_cc//cc:action_names.bzl",
     "ACTION_NAMES",
 )
@@ -676,58 +680,6 @@ def cc_build_error(
         **kwargs_check_messages
     )
 
-def _create_test_impl(ctx):
-    """Implementation of `_create_test`.
-
-    Args:
-        ctx(ctx): The rule's context.
-
-    Returns:
-        A list of providers.
-    """
-    cc_build_error_info = ctx.attr.cc_build_error[CcBuildErrorInfo]
-    extension = ".bat" if ctx.attr.is_windows else ".sh"
-    content = "exit 0" if ctx.attr.is_windows else "#!/usr/bin/env bash\nexit 0"
-    executable_template = ctx.actions.declare_file(ctx.label.name + "/exe_tpl")
-    executable = ctx.actions.declare_file(ctx.label.name + extension)
-    ctx.actions.write(
-        output = executable_template,
-        is_executable = True,
-        content = content,
-    )
-    ctx.actions.run_shell(
-        outputs = [executable],
-        inputs = cc_build_error_info.markers + [executable_template],
-        command = 'cp "$1" "$2"',
-        arguments = [
-            executable_template.path,
-            executable.path,
-        ],
-    )
-    return [
-        DefaultInfo(
-            files = depset([executable]),
-            executable = executable,
-        ),
-    ]
-
-_create_test = rule(
-    implementation = _create_test_impl,
-    attrs = {
-        "cc_build_error": attr.label(
-            doc = "Target for `CcBuildErrorInfo`",
-            mandatory = True,
-            providers = [CcBuildErrorInfo],
-        ),
-        "is_windows": attr.bool(
-            doc = "Whether the runtime environment is windows or not. " +
-                  "This attribute is not user-facing.",
-            mandatory = True,
-        ),
-    },
-    test = True,
-)
-
 def cc_build_error_test(*, name, **kwargs):
     """Test rule checking `cc_build_error` builds.
 
@@ -751,13 +703,9 @@ def cc_build_error_test(*, name, **kwargs):
         **kwargs
     )
 
-    _create_test(
+    build_test(
         name = name,
-        cc_build_error = ":" + build_target_name,
-        is_windows = select({
-            str(Label("//config_settings:host_windows")): True,
-            "//conditions:default": False,
-        }),
+        targets = [":" + build_target_name],
         tags = tags,
         visibility = visibility,
         timeout = "short",
