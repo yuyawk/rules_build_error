@@ -9,17 +9,6 @@ DEFAULT_MATCH_CONDITION = struct(
     pattern = None,
 )
 
-def _validate_pattern_string(pattern):
-    """Validate pattern string.
-
-    Args:
-        pattern(str): Pattern string
-    """
-    if not pattern:
-        fail(
-            "Empty pattern string is not allowed for the matcher",
-        )
-
 def MatchCondition(pattern, matcher):
     """MatchCondition constructor.
 
@@ -30,7 +19,11 @@ def MatchCondition(pattern, matcher):
     Return:
         struct describing the match condition
     """
-    _validate_pattern_string(pattern)
+    if not pattern:
+        fail(
+            "Empty pattern string is not allowed for the MatchCondition",
+        )
+
     return struct(
         pattern = pattern,
         matcher = matcher,
