@@ -447,7 +447,7 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
         allow_single_file = _EXTENSIONS_C + _EXTENSIONS_CPP,
     ),
     "use_default_shell_env": attr.bool(
-        doc = "Whether to use the default shell environment during source builds.",
+        doc = "Whether to use the default shell environment during source builds",
         mandatory = False,
         default = False,
     ),
