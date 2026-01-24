@@ -190,6 +190,7 @@ def _try_compile(ctx):
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
         env = env,
+        use_default_shell_env = ctx.attr.use_default_shell_env,
     )
 
     return struct(
@@ -366,6 +367,7 @@ def _try_link(ctx, compile_output):
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
         env = env,
+        use_default_shell_env = ctx.attr.use_default_shell_env,
     )
 
     return struct(
@@ -443,6 +445,11 @@ _TRY_BUILD_EXPLICIT_ATTRS = {
         doc = "C/C++ file to be processed",
         mandatory = True,
         allow_single_file = _EXTENSIONS_C + _EXTENSIONS_CPP,
+    ),
+    "use_default_shell_env": attr.bool(
+        doc = "Whether to use the default shell environment during source builds.",
+        mandatory = False,
+        default = False,
     ),
 }
 
