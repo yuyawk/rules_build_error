@@ -9,7 +9,7 @@ DEFAULT_MATCH_CONDITION = struct(
     pattern = None,
 )
 
-def MatchCondition(pattern, matcher):
+def MatchCondition(*, pattern, matcher):
     """MatchCondition constructor.
 
     Args:
