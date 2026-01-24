@@ -25,11 +25,14 @@ load(
 )
 load(
     "//lang/private:general_build_actions.bzl",
-    "DEFAULT_MATCHER",
     "LIST_ALL_ARGS",
     "check_build_error",
     "check_each_message",
     "get_executable_file",
+)
+load(
+    "//matcher:match_condition.bzl",
+    "DEFAULT_MATCH_CONDITION",
 )
 
 visibility("private")
@@ -603,19 +606,19 @@ _check_messages = rule(
 def cc_build_error(
         *,
         name,
-        compile_stderr = DEFAULT_MATCHER,
-        compile_stdout = DEFAULT_MATCHER,
-        link_stderr = DEFAULT_MATCHER,
-        link_stdout = DEFAULT_MATCHER,
+        compile_stderr = DEFAULT_MATCH_CONDITION,
+        compile_stdout = DEFAULT_MATCH_CONDITION,
+        link_stderr = DEFAULT_MATCH_CONDITION,
+        link_stdout = DEFAULT_MATCH_CONDITION,
         **kwargs):
     """Check a C/C++ build error.
 
     Args:
         name(str): Name of the target.
-        compile_stderr(matcher struct): Matcher for stderr during compilation.
-        compile_stdout(matcher struct): Matcher for stdout during compilation.
-        link_stderr(matcher struct): Matcher for stderr while linking.
-        link_stdout(matcher struct): Matcher for stdout while linking.
+        compile_stderr(MatchCondition): MatchCondition for stderr during compilation.
+        compile_stdout(MatchCondition): MatchCondition for stdout during compilation.
+        link_stderr(MatchCondition): MatchCondition for stderr while linking.
+        link_stdout(MatchCondition): MatchCondition for stdout while linking.
         **kwargs(dict): Passed to internal rules.
     """
 

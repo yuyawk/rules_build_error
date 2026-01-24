@@ -1,7 +1,7 @@
 """Defines `matcher`.
 
 Each matcher function must receive a positional string argument,
-and return a struct with the following members:
+and return a struct `MatchCondition` with the following members:
     pattern(str): Argument of the matcher function
     matcher(label): Label to the matcher executable.
                     Matcher executable is an executable which receives two arguments
@@ -13,18 +13,9 @@ As a side note, the reason the matcher executable doesn't directly receive a pat
 Shell in Windows lacks of the ability to sufficiently quote command line arguments. (https://github.com/bazelbuild/bazel/issues/17487)
 """
 
+load(":match_condition.bzl", "MatchCondition")
+
 visibility("private")
-
-def _validate_pattern_string(pattern):
-    """Validate pattern string.
-
-    Args:
-        pattern(str): Pattern string
-    """
-    if not pattern:
-        fail(
-            "Empty pattern string is not allowed for the matcher",
-        )
 
 def _contains_basic_regex(pattern):
     """Matcher to check if the target contains a basic regular expression.
@@ -35,8 +26,7 @@ def _contains_basic_regex(pattern):
     Return:
         struct describing the matcher
     """
-    _validate_pattern_string(pattern)
-    return struct(
+    return MatchCondition(
         pattern = pattern,
         matcher = Label("//matcher/executable:contains_basic_regex"),
     )
@@ -50,8 +40,7 @@ def _contains_extended_regex(pattern):
     Return:
         struct describing the matcher
     """
-    _validate_pattern_string(pattern)
-    return struct(
+    return MatchCondition(
         pattern = pattern,
         matcher = Label("//matcher/executable:contains_extended_regex"),
     )
@@ -65,8 +54,7 @@ def _has_substr(pattern):
     Return:
         struct describing the matcher
     """
-    _validate_pattern_string(pattern)
-    return struct(
+    return MatchCondition(
         pattern = pattern,
         matcher = Label("//matcher/executable:has_substr"),
     )
