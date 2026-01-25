@@ -40,3 +40,15 @@ build_test(
         ":with_extended_regex_matcher",
     ],
 )
+
+# Test case which should fail to build
+check_build_and_test(
+    name = "incorrect_matcher",
+    src = "c_compile_error.c",
+    compile_stderr = matcher.has_substr("The target platform is " + select({
+        "@platforms//os:linux": "Windows",
+        "@platforms//os:windows": "macOS",
+        "@platforms//os:macos": "linux",
+    })),
+    tags = ["manual"],
+)
