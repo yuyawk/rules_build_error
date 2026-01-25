@@ -9,6 +9,7 @@ check_build_and_test(
         "@platforms//os:linux": "linux",
         "@platforms//os:windows": "Windows",
         "@platforms//os:macos": "macOS",
+        "//conditions:default": "unknown",
     })),
 )
 
@@ -19,6 +20,7 @@ check_build_and_test(
         "@platforms//os:linux": "linux",
         "@platforms//os:windows": "Windows",
         "@platforms//os:macos": "macOS",
+        "//conditions:default": "unknown",
     })),
 )
 
@@ -29,6 +31,7 @@ check_build_and_test(
         "@platforms//os:linux": "linux",
         "@platforms//os:windows": "Windows",
         "@platforms//os:macos": "macOS",
+        "//conditions:default": "unknown",
     })),
 )
 
@@ -49,6 +52,7 @@ check_build_and_test(
         "@platforms//os:linux": "Windows",
         "@platforms//os:windows": "macOS",
         "@platforms//os:macos": "linux",
+        "//conditions:default": "known",
     })),
     tags = ["manual"],
 )
