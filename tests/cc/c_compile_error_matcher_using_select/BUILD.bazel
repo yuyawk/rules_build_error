@@ -52,7 +52,7 @@ check_build_and_test(
         "@platforms//os:linux": "Windows",
         "@platforms//os:windows": "macOS",
         "@platforms//os:macos": "linux",
-        "//conditions:default": "known",
+        "//conditions:default": "well-known",
     })),
     tags = ["manual"],
 )
