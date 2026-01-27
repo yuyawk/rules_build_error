@@ -18,15 +18,8 @@ bazel_dep(name = "rules_cc", version = "0.2.16")
 
 bazel_dep(
     name = "hermetic_cc_toolchain",
-    version = "4.0.1",
+    version = "4.1.0",
     dev_dependency = True,
-)
-
-# TODO: Remove this override and the patch once uber/hermetic_cc_toolchain#233 is released.
-single_version_override(
-    module_name = "hermetic_cc_toolchain",
-    patch_strip = 1,
-    patches = ["hermetic_cc_toolchain_bazel9.patch"],
 )
 
 cc_toolchains = use_extension(
