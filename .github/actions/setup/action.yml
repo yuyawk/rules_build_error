@@ -5,15 +5,30 @@ inputs:
   bazel-version:
     description: Bazel version
     required: true
+  use-local-config-cc:
+    description: Whether to use local_config_cc for C++ toolchain
+    required: false
+    default: "false"
 
 runs:
   using: composite
   steps:
+    - name: Install Visual C++ Build Tools
+      if: ${{ runner.os == 'Windows' && inputs.use-local-config-cc == 'true' }}
+      uses: ilammy/msvc-dev-cmd@v1
+    - name: Set environment variables to use Visual C++ in Bazel
+      if: ${{ runner.os == 'Windows' && inputs.use-local-config-cc == 'true' }}
+      shell: bash
+      run: |
+        echo "BAZEL_VC=${VCINSTALLDIR}" >> "${GITHUB_ENV}"
     - name: Generate .bazelversion
       shell: bash
       run: |
         echo "${BAZEL_VERSION}" > .bazelversion
         echo "${BAZEL_VERSION}" > examples/.bazelversion
+        for integration_dir in $(find tests/integration -mindepth 1 -maxdepth 1 -type d); do
+          echo "${BAZEL_VERSION}" > "${integration_dir}/.bazelversion"
+        done
       env:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk

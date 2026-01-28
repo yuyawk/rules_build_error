@@ -1,0 +1,14 @@
+"""Verifies the usage with the default C/C++ toolchain."""
+
+module(
+    name = "test_module",
+    version = "0.0.0",
+)
+
+bazel_dep(name = "rules_build_error", version = "0.0.0")
+local_path_override(
+    module_name = "rules_build_error",
+    path = "../../..",
+)
+
+bazel_dep(name = "platforms", version = "1.0.0")

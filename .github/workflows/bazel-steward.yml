@@ -7,12 +7,25 @@ on:
     - cron: "30 5 * * *" # runs every day at 5:30 am
 
 jobs:
+  fetch-workspace-roots:
+    runs-on: ubuntu-latest
+    outputs:
+      workspace_roots: ${{ steps.set-matrix.outputs.workspace_roots }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: set-matrix
+        uses: ./.github/actions/fetch_integration_directories
+      - name: Append root workspace
+        shell: bash
+        run: |
+          workspace_roots=$(echo '${{ steps.set-matrix.outputs.integ_test_dirs }}' | jq '. + [".", "examples"]')
+          echo "workspace_roots=${workspace_roots}" >> "${GITHUB_OUTPUT}"
+
   bazel-steward:
+    needs: fetch-workspace-roots
     strategy:
       matrix:
-        workspace-root:
-          - "."
-          - "examples"
+        workspace-root: ${{ fromJson(needs.fetch-workspace-roots.outputs.workspace_roots) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

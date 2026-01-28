@@ -38,7 +38,7 @@ files_to_touch=("$@")
 
 # Make sure the required files are touched before exiting
 if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
-    trap 'touch "${files_to_touch[@]}"' EXIT
+    trap 'for file_to_touch in "${files_to_touch[@]}"; do [[ ! -f "${file_to_touch}" ]] && > "${file_to_touch}"; done' EXIT
 fi
 
 for file_path in "${matcher}" "${pattern_file}" "${message_file}"; do
