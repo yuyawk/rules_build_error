@@ -47,11 +47,8 @@ jobs:
     outputs:
       integ_test_dirs: ${{ steps.set-matrix.outputs.integ_test_dirs }}
     steps:
-      - uses: actions/checkout@v4
       - id: set-matrix
-        run: |
-          integ_test_dirs=$(find tests/integration -mindepth 1 -maxdepth 1 -type d | jq -R -s -c 'split("\n")[:-1]')
-          echo "integ_test_dirs=${integ_test_dirs}" >> "${GITHUB_OUTPUT}"
+        uses: ./.github/actions/fetch_integration_directories
 
   integration-test:
     needs: fetch-integration-test-directories

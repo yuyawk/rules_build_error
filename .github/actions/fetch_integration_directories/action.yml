@@ -1,0 +1,16 @@
+---
+name: Fetch integration test directories
+outputs:
+  integ_test_dirs:
+    description: JSON array of integration test directories
+    value: ${{ steps.set-matrix.outputs.integ_test_dirs }}
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+    - id: set-matrix
+      shell: bash
+      run: |
+        integ_test_dirs=$(find tests/integration -mindepth 1 -maxdepth 1 -type d | jq -R -s -c 'split("\n")[:-1]')
+        echo "integ_test_dirs=${integ_test_dirs}" >> "${GITHUB_OUTPUT}"
