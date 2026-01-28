@@ -84,7 +84,7 @@ shift $((OPTIND -1))
 
 # Make sure the required files are touched before exiting
 if [[ "${#files_to_touch[@]}" -gt 0 ]]; then
-    trap 'for file in "${files_to_touch[@]}"; do [[ ! -f "${file}" ]] && > "${file}"; done' EXIT
+    trap 'for file_to_touch in "${files_to_touch[@]}"; do [[ ! -f "${file_to_touch}" ]] && > "${file_to_touch}"; done' EXIT
 fi
 
 if [[ "${#files_to_check[@]}" -gt 0 ]]; then
