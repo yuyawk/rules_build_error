@@ -47,6 +47,7 @@ jobs:
     outputs:
       integ_test_dirs: ${{ steps.set-matrix.outputs.integ_test_dirs }}
     steps:
+      - uses: actions/checkout@v6
       - id: set-matrix
         uses: ./.github/actions/fetch_integration_directories
 

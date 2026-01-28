@@ -12,6 +12,7 @@ jobs:
     outputs:
       workspace_roots: ${{ steps.set-matrix.outputs.workspace_roots }}
     steps:
+      - uses: actions/checkout@v6
       - id: set-matrix
         uses: ./.github/actions/fetch_integration_directories
       - name: Append root workspace
