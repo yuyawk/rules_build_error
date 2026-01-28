@@ -56,7 +56,8 @@ jobs:
   integration-test:
     needs: fetch-integration-test-directories
     strategy:
-      fail-fast: ${{ github.event_name != 'schedule' }}
+      # fail-fast: ${{ github.event_name != 'schedule' }}
+      fail-fast: false
       matrix:
         bazel-version:
           - 7.x
