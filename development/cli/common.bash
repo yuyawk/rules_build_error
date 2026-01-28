@@ -16,11 +16,19 @@ bazel() {
     #
     # Args:
     #   $@: Arguments for bazelisk
+    environment_variables_to_set=(
+        BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+        "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk"
+        "PATH=${PATH}"
+    )
+    # Also set BAZEL_VC if defined in the environment
+    # https://bazel.build/configure/windows#build_cpp
+    if [[ -n "${BAZEL_VC:-}" ]]; then
+        environment_variables_to_set+=("BAZEL_VC=${BAZEL_VC}")
+    fi
     env \
         -i \
-        BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1 \
-        "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk" \
-        "PATH=${PATH}" \
+        "${environment_variables_to_set[@]}" \
         bazelisk "${@}"
 }
 

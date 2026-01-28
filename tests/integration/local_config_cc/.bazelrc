@@ -11,6 +11,6 @@ test --test_verbose_timeout_warnings
 common --heap_dump_on_oom
 test --test_output=errors
 
-# Turn off BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN to test with local C/C++ toolchain
+# Turn off BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN to test with local_config_cc
 build --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0
 build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0

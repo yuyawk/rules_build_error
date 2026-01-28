@@ -15,9 +15,11 @@ runs:
   steps:
     - name: Install Visual C++ Build Tools
       if: ${{ runner.os == 'Windows' && inputs.use-local-config-cc == 'true' }}
-      shell: powershell
+      uses: ilammy/msvc-dev-cmd@v1
+    - name: Set environment variables to use Visual C++ in Bazel
+      if: ${{ runner.os == 'Windows' && inputs.use-local-config-cc == 'true' }}
       run: |
-        choco install visualcpp-build-tools -y
+        echo "BAZEL_VC=${VCINSTALLDIR}" >> "${GITHUB_ENV}"
     - name: Generate .bazelversion
       shell: bash
       run: |
