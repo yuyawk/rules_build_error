@@ -80,6 +80,9 @@ jobs:
         uses: ./.github/actions/setup
         with:
           bazel-version: ${{ matrix.bazel-version }}
+      - name: Install VC++ build tools (Windows only)
+        if: ${{ runner.os == 'Windows' && contains(matrix.integ_test_dir, 'local_config_cc') }}
+        uses: ilammy/msvc-dev-cmd@v1
       - name: Run integration tests
         shell: bash
         run: ./development/cli/execute_integration_tests.bash "${INTEG_TEST_DIR}"
