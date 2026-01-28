@@ -2,7 +2,7 @@
 /bazel-*
 MODULE.bazel.lock
 ## Generated based on version configuration
-.bazeliskrc
+.bazelversion
 
 # For development
 /.cache

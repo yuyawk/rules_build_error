@@ -9,11 +9,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Generate .bazeliskrc
+    - name: Generate .bazelversion
       shell: bash
       run: |
-        echo "USE_BAZEL_VERSION=${BAZEL_VERSION}" > .bazeliskrc
-        echo "USE_BAZEL_VERSION=${BAZEL_VERSION}" > examples/.bazeliskrc
+        echo "${BAZEL_VERSION}" > .bazelversion
+        echo "${BAZEL_VERSION}" > examples/.bazelversion
       env:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk

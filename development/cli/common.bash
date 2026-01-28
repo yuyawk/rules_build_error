@@ -28,14 +28,14 @@ bazel() {
 BAZEL_VERSION_DEFAULT="8.x"
 
 for root_dir in "${REPO_ROOT_DIR}" "${REPO_ROOT_DIR}/examples"; do
-    if [[ ! -f "${root_dir}/.bazeliskrc" ]]; then
+    if [[ ! -f "${root_dir}/.bazelversion" ]]; then
         if [[ "${CI:-}" == "true" ]]; then
             echo "ERROR: Explicitly specify Bazel version on CI" >&2
             exit 1
         fi
 
-        echo "WARN: ${root_dir}/.bazeliskrc not found." >&2
+        echo "WARN: ${root_dir}/.bazelversion not found." >&2
         echo "WARN: Creating it with a default version ${BAZEL_VERSION_DEFAULT}." >&2
-        echo "USE_BAZEL_VERSION=${BAZEL_VERSION_DEFAULT}" > "${root_dir}/.bazeliskrc"
+        echo "${BAZEL_VERSION_DEFAULT}" > "${root_dir}/.bazelversion"
     fi
 done

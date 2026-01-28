@@ -1,5 +1,5 @@
 # Generated based on version configuration
-.bazeliskrc
+.bazelversion
 
 # Bazel
 /bazel-*
