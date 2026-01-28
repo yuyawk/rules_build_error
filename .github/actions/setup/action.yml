@@ -21,14 +21,10 @@ runs:
       shell: bash
       run: |
         echo "BAZEL_VC=${VCINSTALLDIR}" >> "${GITHUB_ENV}"
-    - name: Generate .bazelversion
+    - name: Set DEVELOPMENT_BAZEL_VERSION
       shell: bash
       run: |
-        echo "${BAZEL_VERSION}" > .bazelversion
-        echo "${BAZEL_VERSION}" > examples/.bazelversion
-        for integration_dir in $(find tests/integration -mindepth 1 -maxdepth 1 -type d); do
-          echo "${BAZEL_VERSION}" > "${integration_dir}/.bazelversion"
-        done
+        echo "DEVELOPMENT_BAZEL_VERSION=${BAZEL_VERSION}" >> "${GITHUB_ENV}"
       env:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk

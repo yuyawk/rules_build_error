@@ -1,9 +1,0 @@
-# Generated based on version configuration
-.bazelversion
-
-# Bazel
-/bazel-*
-MODULE.bazel.lock
-
-# For development
-/.cache

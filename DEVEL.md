@@ -6,6 +6,8 @@ Ensure [`bazelisk`](https://github.com/bazelbuild/bazelisk) is installed before 
 
 ## Testing
 
+The Bazel executable version can be specified by either setting the `DEVELOPMENT_BAZEL_VERSION` environment variable when running the test script, or by placing a `.bazelversion` file at the workspace root.
+
 ### Unit tests
 
 To run unit tests, execute [`development/cli/execute_unit_tests.bash`](development/cli/execute_unit_tests.bash). This script runs `bazelisk test` and `bazelisk build` commands.

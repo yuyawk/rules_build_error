@@ -15,8 +15,8 @@ cd "${REPO_ROOT_DIR}/examples"
 # URL of the YAML file containing a mapping of Bazel incompatibility flags to affected Bazel versions.
 INCOMPATIBILITY_FLAGS_URL="https://raw.githubusercontent.com/bazelbuild/bazel-central-registry/main/incompatible_flags.yml"
 
-# Extract the Bazel version in use from the `.bazelversion` file.
-BAZEL_VERSION="$(cat .bazelversion)"
+# Extract the Bazel version in use.
+BAZEL_VERSION="$(bazel --version | cut -d' ' -f2)"
 
 # Download the YAML content
 INCOMPATIBILITY_FLAGS_YAML=$(curl "${INCOMPATIBILITY_FLAGS_URL}" 2>/dev/null)
