@@ -10,9 +10,6 @@ SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 # Absolute path of the repository root
 REPO_ROOT_DIR=$(realpath "${SCRIPT_DIR}/../..")
 
-# Default Bazel version
-BAZEL_VERSION_DEFAULT="9.x"
-
 # Bazel executable with some arguments
 bazel() {
     # Execute bazelisk
@@ -27,10 +24,12 @@ bazel() {
             echo "ERROR: Explicitly specify Bazel version on CI" >&2
             exit 1
         fi
+        local bazel_version_default
+        bazel_version_default="9.x"
 
         echo "WARN: .bazelversion not found." >&2
-        echo "WARN: Creating it with a default version ${BAZEL_VERSION_DEFAULT}." >&2
-        echo "${BAZEL_VERSION_DEFAULT}" > .bazelversion
+        echo "WARN: Creating it with a default version ${bazel_version_default}." >&2
+        echo "${bazel_version_default}" > .bazelversion
     fi
 
     local environment_variables_to_set
