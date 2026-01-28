@@ -5,10 +5,19 @@ inputs:
   bazel-version:
     description: Bazel version
     required: true
+  use-local-config-cc:
+    description: Whether to use local_config_cc for C++ toolchain
+    required: false
+    default: "false"
 
 runs:
   using: composite
   steps:
+    - name: Install Visual C++ Build Tools
+      if: ${{ runner.os == 'Windows' && inputs.use-local-config-cc == 'true' }}
+      shell: powershell
+      run: |
+        choco install visualcpp-build-tools -y
     - name: Generate .bazelversion
       shell: bash
       run: |

@@ -13,17 +13,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  generate-integration-test-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      integ_test_dirs: ${{ steps.set-matrix.outputs.integ_test_dirs }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: set-matrix
-        run: |
-          integ_test_dirs=$(find tests/integration -mindepth 1 -maxdepth 1 -type d | jq -R -s -c 'split("\n")[:-1]')
-          echo "integ_test_dirs=${integ_test_dirs}" >> "${GITHUB_OUTPUT}"
-
   unit-test:
     strategy:
       fail-fast: ${{ github.event_name != 'schedule' }}
@@ -53,8 +42,19 @@ jobs:
         shell: bash
         run: ./development/cli/execute_unit_tests.bash
 
+  fetch-integration-test-directories:
+    runs-on: ubuntu-latest
+    outputs:
+      integ_test_dirs: ${{ steps.set-matrix.outputs.integ_test_dirs }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-matrix
+        run: |
+          integ_test_dirs=$(find tests/integration -mindepth 1 -maxdepth 1 -type d | jq -R -s -c 'split("\n")[:-1]')
+          echo "integ_test_dirs=${integ_test_dirs}" >> "${GITHUB_OUTPUT}"
+
   integration-test:
-    needs: generate-integration-test-matrix
+    needs: fetch-integration-test-directories
     strategy:
       fail-fast: ${{ github.event_name != 'schedule' }}
       matrix:
@@ -69,7 +69,7 @@ jobs:
           - macos-15
           - windows-2022
           - windows-2025
-        integ_test_dir: ${{ fromJSON(needs.generate-integration-test-matrix.outputs.integ_test_dirs) }}
+        integ_test_dir: ${{ fromJSON(needs.fetch-integration-test-directories.outputs.integ_test_dirs) }}
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
@@ -80,6 +80,7 @@ jobs:
         uses: ./.github/actions/setup
         with:
           bazel-version: ${{ matrix.bazel-version }}
+          use-local-config-cc: ${{ contains(matrix.integ_test_dir, 'local_config_cc') }}
       - name: Run integration tests
         shell: bash
         run: ./development/cli/execute_integration_tests.bash "${INTEG_TEST_DIR}"
