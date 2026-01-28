@@ -15,7 +15,7 @@ cc_build_error_test(
         return 0;
     }
     """),
-    compile_stdout = matcher.has_substr("static assertion failed"),
+    compile_stderr = matcher.has_substr("static assertion failed"),
 )
 
 cc_build_error_test(
@@ -28,5 +28,5 @@ cc_build_error_test(
         return 0;
     }
     """),
-    compile_stdout = matcher.has_substr("static assertion failed"),
+    compile_stderr = matcher.has_substr("static assertion failed"),
 )
