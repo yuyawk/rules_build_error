@@ -21,7 +21,6 @@ bazel() {
     #   $@: Arguments for bazelisk
 
     if [[ -n "${DEVELOPMENT_BAZEL_VERSION:-}" ]]; then
-        echo "Using Bazel version from DEVELOPMENT_BAZEL_VERSION: ${DEVELOPMENT_BAZEL_VERSION}" >&2
         echo "${DEVELOPMENT_BAZEL_VERSION}" > .bazelversion
     elif [[ ! -f .bazelversion ]]; then
         if [[ "${CI:-}" == "true" ]]; then
