@@ -8,7 +8,7 @@ Ensure [`bazelisk`](https://github.com/bazelbuild/bazelisk) is installed before 
 
 ### Unit tests
 
-To run unit tests, execute [`development/cli/execute_tests.bash`](development/cli/execute_tests.bash). This script runs `bazelisk test` and `bazelisk build` commands.
+To run unit tests, execute [`development/cli/execute_unit_tests.bash`](development/cli/execute_unit_tests.bash). This script runs `bazelisk test` and `bazelisk build` commands.
 
 Note that some test targets are marked with `tags = ["manual"]` and are intended to individually verify that bazel build fails as expected.
 
