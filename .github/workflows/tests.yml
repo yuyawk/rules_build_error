@@ -40,7 +40,7 @@ jobs:
           bazel-version: ${{ matrix.bazel-version }}
       - name: Run unit tests
         shell: bash
-        run: ./development/cli/execute_tests.bash
+        run: ./development/cli/execute_unit_tests.bash
 
   example:
     strategy:

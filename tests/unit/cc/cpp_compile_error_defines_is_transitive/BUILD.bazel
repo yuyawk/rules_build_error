@@ -1,0 +1,46 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//matcher:defs.bzl", "matcher")
+load("//tests/unit/cc:utils.bzl", "check_build_and_test")
+
+cc_library(
+    name = "library",
+    defines = ["MACRO_IN_DEFINES"],
+)
+
+check_build_and_test(
+    name = "plain",
+    src = "cpp_compile_error.cpp",
+    deps = [":library"],
+)
+
+check_build_and_test(
+    name = "with_substr_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.has_substr("With transitive defines, "),
+    deps = [":library"],
+)
+
+check_build_and_test(
+    name = "with_basic_regex_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.contains_basic_regex("With transitive defines, this.*"),
+    deps = [":library"],
+)
+
+check_build_and_test(
+    name = "with_extended_regex_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.contains_extended_regex("With transitive defines, this.*"),
+    deps = [":library"],
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":plain",
+        ":with_substr_matcher",
+        ":with_basic_regex_matcher",
+        ":with_extended_regex_matcher",
+    ],
+)
