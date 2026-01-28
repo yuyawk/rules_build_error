@@ -14,6 +14,9 @@ runs:
       run: |
         echo "${BAZEL_VERSION}" > .bazelversion
         echo "${BAZEL_VERSION}" > examples/.bazelversion
+        for integration_dir in $(find tests/integration -mindepth 1 -maxdepth 1 -type d); do
+          echo "${BAZEL_VERSION}" > "${integration_dir}/.bazelversion"
+        done
       env:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk

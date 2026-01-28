@@ -12,6 +12,14 @@ To run unit tests, execute [`development/cli/execute_unit_tests.bash`](developme
 
 Note that some test targets are marked with `tags = ["manual"]` and are intended to individually verify that bazel build fails as expected.
 
+### Integration tests
+
+To run the integration tests, execute [`development/cli/execute_integration_tests.bash`](development/cli/execute_integration_tests.bash).
+This script executes `bazelisk test` in each integration test directory.
+
+If one or more directories are passed as arguments, only those directories are tested.
+If no arguments are provided, all directories under `tests/integration` are tested.
+
 ### Example validation
 
 To validate examples, run [`development/cli/validate_example.bash`](development/cli/validate_example.bash). This script runs `bazelisk test` inside the [examples](examples) directory.

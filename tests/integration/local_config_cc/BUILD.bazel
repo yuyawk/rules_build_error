@@ -1,0 +1,32 @@
+load(
+    "@rules_build_error//lang/cc:defs.bzl",
+    "cc_build_error_test",
+    "inline_src",
+)
+load("@rules_build_error//matcher:defs.bzl", "matcher")
+
+cc_build_error_test(
+    name = "compile_error_test_with_inline_c",
+    src = inline_src.c("""
+    #include <assert.h>
+
+    int main(void) {
+        static_assert(0, "Compile error message for inline src");
+        return 0;
+    }
+    """),
+    compile_stderr = matcher.has_substr("static assertion failed"),
+)
+
+cc_build_error_test(
+    name = "compile_error_test_with_inline_cpp",
+    src = inline_src.cpp("""
+    constexpr bool Predicate() noexcept { return false; }
+
+    int main() {
+        static_assert(Predicate(), "Compile error message for inline src");
+        return 0;
+    }
+    """),
+    compile_stderr = matcher.has_substr("static assertion failed"),
+)

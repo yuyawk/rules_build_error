@@ -25,9 +25,9 @@ bazel() {
 }
 
 # Default Bazel version
-BAZEL_VERSION_DEFAULT="8.x"
+BAZEL_VERSION_DEFAULT="9.x"
 
-for root_dir in "${REPO_ROOT_DIR}" "${REPO_ROOT_DIR}/examples"; do
+for root_dir in "${REPO_ROOT_DIR}" "${REPO_ROOT_DIR}/examples" $(find "${REPO_ROOT_DIR}/tests/integration" -mindepth 1 -maxdepth 1 -type d); do
     if [[ ! -f "${root_dir}/.bazelversion" ]]; then
         if [[ "${CI:-}" == "true" ]]; then
             echo "ERROR: Explicitly specify Bazel version on CI" >&2
