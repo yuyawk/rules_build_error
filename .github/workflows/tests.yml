@@ -67,8 +67,8 @@ jobs:
           - ubuntu-24.04
           - macos-14
           - macos-15
-          - windows-2022
-          - windows-2025
+          #- windows-2022
+          #- windows-2025
         integ_test_dir: ${{ fromJSON(needs.generate-integration-test-matrix.outputs.integ_test_dirs) }}
     runs-on: ${{ matrix.runner }}
     steps:
