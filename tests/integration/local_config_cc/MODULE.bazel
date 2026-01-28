@@ -10,3 +10,5 @@ local_path_override(
     module_name = "rules_build_error",
     path = "../../..",
 )
+
+bazel_dep(name = "platforms", version = "1.0.0")
