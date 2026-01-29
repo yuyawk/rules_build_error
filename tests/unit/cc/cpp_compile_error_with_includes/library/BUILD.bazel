@@ -1,0 +1,10 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "library",
+    hdrs = [
+        "include/foo/bar.hpp",
+    ],
+    includes = ["include"],
+    visibility = ["//tests/unit/cc/cpp_compile_error_with_includes:__pkg__"],
+)
