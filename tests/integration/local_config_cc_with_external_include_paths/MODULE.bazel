@@ -1,4 +1,7 @@
-"""Verifies the usage with `local_config_cc` combined with the `external_include_paths` feature."""
+"""Verifies the usage with `local_config_cc` combined with the `external_include_paths` feature.
+
+Based on https://github.com/yuyawk/rules_build_error/issues/145.
+"""
 
 module(
     name = "test_module",
