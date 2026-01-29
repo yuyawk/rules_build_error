@@ -192,9 +192,9 @@ def _try_compile(ctx):
     # From here on `args` is used for the compilation command
     args.add(compiler)
     args.add_all(compiler_options)
-    if hasattr(compilation_context, "external_includes"):
-        # Added in Bazel 7, see https://github.com/bazelbuild/bazel/commit/a6ef0b341a8ffe8ab27e5ace79d8eaae158c422b
-        args.add_all(compilation_context.external_includes, before_each = "-isystem")
+
+    # Added in Bazel 7, see https://github.com/bazelbuild/bazel/commit/a6ef0b341a8ffe8ab27e5ace79d8eaae158c422b
+    args.add_all(compilation_context.external_includes, before_each = "-isystem")
 
     ctx.actions.run_shell(
         outputs = [compile_output, compile_stdout, compile_stderr],
