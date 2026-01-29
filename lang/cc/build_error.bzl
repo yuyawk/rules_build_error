@@ -138,27 +138,61 @@ def _try_compile(ctx):
         ],
     )
 
-    compile_variables = cc_common.create_compile_variables(
-        cc_toolchain = cc_toolchain,
-        feature_configuration = features,
-        user_compile_flags = ccopts,
-        include_directories = compilation_context.includes,
-        quote_include_directories = compilation_context.quote_includes,
-        system_include_directories = depset(
+    def get_compile_variables():
+        """Get compile variables.
+
+        Returns:
+            cc_common.CompileVariables: Compile variables.
+        """
+
+        # Bundle system and external include directories because both are included in the same way
+        system_and_external_includes = depset(
             transitive = [
                 compilation_context.system_includes,
                 # Added in Bazel 7, see https://github.com/bazelbuild/bazel/commit/a6ef0b341a8ffe8ab27e5ace79d8eaae158c422b
                 compilation_context.external_includes,
             ],
-        ),
-        framework_include_directories = compilation_context.framework_includes,
-        preprocessor_defines = depset(
-            direct = ctx.attr.local_defines,
-            transitive = [compilation_context.defines],
-        ),
-        source_file = ctx.file.src.path,
-        output_file = compile_output.path,
-    )
+        )
+
+        # cl.exe on Windows does not support some of the include options,
+        if ctx.attr.os == "windows" and cc_toolchain.compiler_executable.path.endswith("cl.exe"):
+            return cc_common.create_compile_variables(
+                cc_toolchain = cc_toolchain,
+                feature_configuration = features,
+                user_compile_flags = ccopts,
+                include_directories = depset(
+                    transitive = [
+                        compilation_context.includes,
+                        compilation_context.quote_includes,
+                        system_and_external_includes,
+                        compilation_context.framework_includes,
+                    ],
+                ),
+                preprocessor_defines = depset(
+                    direct = ctx.attr.local_defines,
+                    transitive = [compilation_context.defines],
+                ),
+                source_file = ctx.file.src.path,
+                output_file = compile_output.path,
+            )
+
+        return cc_common.create_compile_variables(
+            cc_toolchain = cc_toolchain,
+            feature_configuration = features,
+            user_compile_flags = ccopts,
+            include_directories = compilation_context.includes,
+            quote_include_directories = compilation_context.quote_includes,
+            system_include_directories = system_and_external_includes,
+            framework_include_directories = compilation_context.framework_includes,
+            preprocessor_defines = depset(
+                direct = ctx.attr.local_defines,
+                transitive = [compilation_context.defines],
+            ),
+            source_file = ctx.file.src.path,
+            output_file = compile_output.path,
+        )
+
+    compile_variables = get_compile_variables()
 
     compile_action_name = _get_compile_action_name(ctx.file.src)
 
