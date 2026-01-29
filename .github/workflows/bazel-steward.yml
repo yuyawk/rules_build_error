@@ -18,7 +18,7 @@ jobs:
       - name: Append root workspace
         shell: bash
         run: |
-          workspace_roots=$(echo '${{ steps.set-matrix.outputs.integ_test_dirs }}' | jq '. + [".", "examples"]')
+          workspace_roots=$(echo '${{ steps.set-matrix.outputs.integ_test_dirs }}' | jq '. + [".", "examples"]' | tr -d '[:space:]')
           echo "workspace_roots=${workspace_roots}" >> "${GITHUB_OUTPUT}"
 
   bazel-steward:
