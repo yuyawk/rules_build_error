@@ -10,12 +10,11 @@ jobs:
   fetch-workspace-roots:
     runs-on: ubuntu-latest
     outputs:
-      workspace_roots: ${{ steps.set-matrix.outputs.workspace_roots }}
+      workspace_roots: ${{ steps.fetch.outputs.workspace_roots }}
     steps:
       - uses: actions/checkout@v6
-      - id: set-matrix
-        uses: ./.github/actions/fetch_integration_directories
-      - name: Append root workspace
+      - name: Fetch workspace roots
+        id: fetch
         shell: bash
         run: |
           workspace_roots=$(git ls-files | grep -E 'MODULE.bazel$' | xargs -L1 dirname | jq -R -s -c 'split("\n")[:-1]')
