@@ -19,29 +19,9 @@ cc_build_error_test(
     target_compatible_with = select({
         "@platforms//os:linux": [],
         "@platforms//os:macos": [],
+        # NOTE: Skip the test on Windows because VC++ (cl.exe) on Windows does not support external include paths.
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    deps = [
-        "@external_library",
-    ],
-)
-
-# NOTE: VC++ (cl.exe) on Windows outputs static_assert failures to stdout, not stderr.
-
-cc_build_error_test(
-    name = "compile_error_test_with_inline_cpp_windows",
-    src = inline_src.cpp("""
-    #include <foo/bar.hpp>
-
-    int main() {
-        static_assert(::foo::Bar(), "If ::foo::Bar() is correctly declared, this will fail");
-        return 0;
-    }
-    """),
-    compile_stdout = matcher.has_substr("static_assert failed"),
-    target_compatible_with = [
-        "@platforms//os:windows",
-    ],
     deps = [
         "@external_library",
     ],
