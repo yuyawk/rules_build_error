@@ -1,0 +1,40 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//matcher:defs.bzl", "matcher")
+load("//tests/unit/cc:utils.bzl", "check_build_and_test")
+
+check_build_and_test(
+    name = "plain",
+    src = "cpp_compile_error.cpp",
+    deps = ["//tests/unit/cc/cpp_compile_error_with_includes/library"],
+)
+
+check_build_and_test(
+    name = "with_substr_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.has_substr("If ::foo::Bar() is correctly declared, this will fail"),
+    deps = ["//tests/unit/cc/cpp_compile_error_with_includes/library"],
+)
+
+check_build_and_test(
+    name = "with_basic_regex_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.contains_basic_regex("If .* is correctly declared, this will fail"),
+    deps = ["//tests/unit/cc/cpp_compile_error_with_includes/library"],
+)
+
+check_build_and_test(
+    name = "with_extended_regex_matcher",
+    src = "cpp_compile_error.cpp",
+    compile_stderr = matcher.contains_extended_regex("If .* is correctly declared, this will fail"),
+    deps = ["//tests/unit/cc/cpp_compile_error_with_includes/library"],
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":plain",
+        ":with_substr_matcher",
+        ":with_basic_regex_matcher",
+        ":with_extended_regex_matcher",
+    ],
+)

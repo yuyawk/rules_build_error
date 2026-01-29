@@ -1,0 +1,14 @@
+#ifndef TESTS_UNIT_CC_CPP_COMPILE_ERROR_WITH_INCLUDES_LIBRARY_INCLUDE_FOO_BAR_HPP_
+#define TESTS_UNIT_CC_CPP_COMPILE_ERROR_WITH_INCLUDES_LIBRARY_INCLUDE_FOO_BAR_HPP_
+
+namespace foo
+{
+
+    constexpr bool Bar() noexcept
+    {
+        return false;
+    }
+
+} // namespace foo
+
+#endif // TESTS_UNIT_CC_CPP_COMPILE_ERROR_WITH_INCLUDES_LIBRARY_INCLUDE_FOO_BAR_HPP_

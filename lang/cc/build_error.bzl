@@ -144,7 +144,14 @@ def _try_compile(ctx):
         user_compile_flags = ccopts,
         include_directories = compilation_context.includes,
         quote_include_directories = compilation_context.quote_includes,
-        system_include_directories = compilation_context.system_includes,
+        system_include_directories = depset(
+            # Merge system includes and external includes because both are included in the same way
+            transitive = [
+                compilation_context.system_includes,
+                # Added in Bazel 7, see https://github.com/bazelbuild/bazel/commit/a6ef0b341a8ffe8ab27e5ace79d8eaae158c422b
+                compilation_context.external_includes,
+            ],
+        ),
         framework_include_directories = compilation_context.framework_includes,
         preprocessor_defines = depset(
             direct = ctx.attr.local_defines,
