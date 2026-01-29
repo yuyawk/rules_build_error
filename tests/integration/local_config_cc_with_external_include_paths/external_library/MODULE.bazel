@@ -1,0 +1,8 @@
+"""An external library module to define a `cc_library` target used in the tests."""
+
+module(
+    name = "external_library",
+    version = "0.0.0",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.16")
