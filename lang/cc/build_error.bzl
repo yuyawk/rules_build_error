@@ -138,12 +138,6 @@ def _try_compile(ctx):
         ],
     )
 
-    print("Debug: compilation_context.includes = {}".format(compilation_context.includes.to_list()))
-    print("Debug: compilation_context.quote_includes = {}".format(compilation_context.quote_includes.to_list()))
-    print("Debug: compilation_context.system_includes = {}".format(compilation_context.system_includes.to_list()))
-    print("Debug: compilation_context.framework_includes = {}".format(compilation_context.framework_includes.to_list()))
-    print("Debug: compilation_context.external_includes = {}".format(compilation_context.external_includes.to_list()))
-
     compile_variables = cc_common.create_compile_variables(
         cc_toolchain = cc_toolchain,
         feature_configuration = features,
@@ -201,8 +195,6 @@ def _try_compile(ctx):
 
     # Added in Bazel 7, see https://github.com/bazelbuild/bazel/commit/a6ef0b341a8ffe8ab27e5ace79d8eaae158c422b
     args.add_all(compilation_context.external_includes, before_each = "-isystem")
-
-    print("Debug: args = {}".format(args))
 
     ctx.actions.run_shell(
         outputs = [compile_output, compile_stdout, compile_stderr],
