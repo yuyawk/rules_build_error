@@ -42,11 +42,14 @@ jobs:
   fetch-integration-test-directories:
     runs-on: ubuntu-latest
     outputs:
-      integ_test_dirs: ${{ steps.set-matrix.outputs.integ_test_dirs }}
+      integ_test_dirs: ${{ steps.set-array.outputs.integ_test_dirs }}
     steps:
       - uses: actions/checkout@v6
-      - id: set-matrix
-        uses: ./.github/actions/fetch_integration_directories
+      - id: set-array
+        shell: bash
+        run: |
+          integ_test_dirs=$(find tests/integration -mindepth 1 -maxdepth 1 -type d | jq -R -s -c 'split("\n")[:-1]')
+          echo "integ_test_dirs=${integ_test_dirs}" >> "${GITHUB_OUTPUT}"
 
   integration-test:
     needs: fetch-integration-test-directories
