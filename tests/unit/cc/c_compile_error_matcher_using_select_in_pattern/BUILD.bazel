@@ -1,0 +1,33 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//matcher:defs.bzl", "matcher")
+load("//tests/unit/cc:utils.bzl", "check_build_and_test")
+
+check_build_and_test(
+    name = "with_select_switching_matcher",
+    src = "c_compile_error.c",
+    compile_stderr = select({
+        "@platforms//os:linux": matcher.has_substr("The target platform is linux"),
+        "@platforms//os:windows": matcher.contains_basic_regex(r"The[[:space:]]target \(p\|P\)latform is Windows"),
+        "@platforms//os:macos": matcher.contains_extended_regex("The[[:space:]]target (p|P)latform is macOS"),
+        "//conditions:default": None,
+    }),
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":with_select_switching_matcher",
+    ],
+)
+
+# Test case which should fail to build
+check_build_and_test(
+    name = "incorrect_matcher",
+    src = "c_compile_error.c",
+    compile_stderr = select({
+        "@platforms//os:linux": matcher.has_substr("The target platform is Windows"),
+        "@platforms//os:windows": matcher.contains_basic_regex(r"The[[:space:]]target \(p\|P\)latform is macOS"),
+        "@platforms//os:macos": matcher.contains_extended_regex("The[[:space:]]target (p|P)latform is linux"),
+    }),
+    tags = ["manual"],
+)
