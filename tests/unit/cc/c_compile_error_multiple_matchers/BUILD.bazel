@@ -1,0 +1,18 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//matcher:defs.bzl", "matcher")
+load("//tests/unit/cc:utils.bzl", "check_build_and_test")
+
+check_build_and_test(
+    name = "with_multiple_matchers",
+    src = "c_compile_error.c",
+    compile_stderr = matcher.has_substr("Multiple matchers") +
+                     matcher.contains_basic_regex(r"must[[:space:]]be[[:space:]]supported") +
+                     matcher.contains_extended_regex(r"by (t|T)his framework\."),
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":with_multiple_matchers",
+    ],
+)
