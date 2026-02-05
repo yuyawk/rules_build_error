@@ -6,22 +6,24 @@ visibility("//lang/...")
 # Tag to identify a MatchCondition object.
 _TAG_SUFFIX = "\1RBEMATCHCONDITION\1"
 
-# A tag for `contains_basic_regex` matcher.
-_TAG_CONTAINS_BASIC_REGEX = "0"
-
-# A tag for `contains_extended_regex` matcher.
-_TAG_CONTAINS_EXTENDED_REGEX = "1"
-
-# A tag for `has_substr` matcher.
-_TAG_HAS_SUBSTR = "2"
-
-# Mapping between matcher labels and their string representations.
-# Every string representation is a single character.
-_MATCHER_TO_TAG = {
-    Label("//matcher/executable:contains_basic_regex"): _TAG_CONTAINS_BASIC_REGEX,
-    Label("//matcher/executable:contains_extended_regex"): _TAG_CONTAINS_EXTENDED_REGEX,
-    Label("//matcher/executable:has_substr"): _TAG_HAS_SUBSTR,
-}
+# Contains information to identify each matcher.
+_MATCHERS_INFORMATION = [
+    struct(
+        tag = "0",
+        label = Label("//matcher/executable:contains_basic_regex"),
+        attr_name = "_matcher_contains_basic_regex",
+    ),
+    struct(
+        tag = "1",
+        label = Label("//matcher/executable:contains_extended_regex"),
+        attr_name = "_matcher_contains_extended_regex",
+    ),
+    struct(
+        tag = "2",
+        label = Label("//matcher/executable:has_substr"),
+        attr_name = "_matcher_has_substr",
+    ),
+]
 
 def MatchCondition(*, pattern, matcher):
     """MatchCondition constructor.
@@ -32,14 +34,29 @@ def MatchCondition(*, pattern, matcher):
 
     Return:
         An object describing the match condition
-    """
+    """  # buildifier: disable=function-docstring-return (false-positive)
+
+    def _matcher_to_tag(matcher_label):
+        """Retrieve the tag string for the given matcher label.
+
+        Args:
+            matcher_label(label): Label to the matcher executable.
+
+        Return:
+            str: Tag string for the matcher.
+        """
+        for matcher_info in _MATCHERS_INFORMATION:
+            if matcher_label == matcher_info.label:
+                return matcher_info.tag
+        fail("Unknown matcher label: '{}'".format(matcher_label))
+
     if not pattern:
         fail(
             "Empty pattern string is not allowed for the MatchCondition",
         )
 
     # Internally MatchCondition is represented as a string, so that it can support `select()` in BUILD files.
-    return _MATCHER_TO_TAG[matcher] + pattern + _TAG_SUFFIX
+    return _matcher_to_tag(matcher) + pattern + _TAG_SUFFIX
 
 def _attr_match_condition(doc):
     """Rule attribute definition for MatchCondition object.
@@ -58,18 +75,11 @@ def _attr_match_condition(doc):
 
 # Rule attributes required whenever using a MatchCondition attribute.
 _MATCH_CONDITION_REQUIRED_ATTRS = {
-    "_matcher_contains_basic_regex": attr.label(
-        default = Label("//matcher/executable:contains_basic_regex"),
+    matcher_info.attr_name: attr.label(
+        default = matcher_info.label,
         allow_single_file = True,
-    ),
-    "_matcher_contains_extended_regex": attr.label(
-        default = Label("//matcher/executable:contains_extended_regex"),
-        allow_single_file = True,
-    ),
-    "_matcher_has_substr": attr.label(
-        default = Label("//matcher/executable:has_substr"),
-        allow_single_file = True,
-    ),
+    )
+    for matcher_info in _MATCHERS_INFORMATION
 }
 
 def _match_condition_to_structs(ctx, match_condition):
@@ -97,16 +107,13 @@ def _match_condition_to_structs(ctx, match_condition):
 
         pattern = None
         matcher = None
-        for matcher_tag, matcher_label in {
-            _TAG_CONTAINS_BASIC_REGEX: ctx.attr._matcher_contains_basic_regex,
-            _TAG_CONTAINS_EXTENDED_REGEX: ctx.attr._matcher_contains_extended_regex,
-            _TAG_HAS_SUBSTR: ctx.attr._matcher_has_substr,
-        }.items():
-            if remaining.startswith(matcher_tag):
+        for matcher_info in _MATCHERS_INFORMATION:
+            if remaining.startswith(matcher_info.tag):
                 index_right = remaining.find(_TAG_SUFFIX)
                 if index_right == -1:
                     fail("Invalid MatchCondition object: '{}'".format(match_condition))
-                pattern = remaining[len(matcher_tag):index_right]
+                pattern = remaining[len(matcher_info.tag):index_right]
+                matcher_label = getattr(ctx.attr, matcher_info.attr_name)
                 matcher = matcher_label.files_to_run.executable
                 remaining = remaining[index_right + len(_TAG_SUFFIX):]
                 break
