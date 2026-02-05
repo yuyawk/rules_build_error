@@ -1,7 +1,7 @@
 """Defines `matcher`.
 
 Each matcher function must receive a positional string argument,
-and return a struct `MatchCondition` with the following members:
+and return an object `MatchCondition` with constructed from the  following members:
     pattern(str): Argument of the matcher function
     matcher(label): Label to the matcher executable.
                     Matcher executable is an executable which receives two arguments

@@ -28,11 +28,10 @@ load(
     "LIST_ALL_ARGS",
     "check_build_error",
     "check_each_message",
-    "get_executable_file",
 )
 load(
     "//matcher:match_condition.bzl",
-    "DEFAULT_MATCH_CONDITION",
+    "match_condition_util",
 )
 
 visibility("private")
@@ -184,10 +183,7 @@ def _try_compile(ctx):
     inputs = [ctx.file.src] + compilation_context.headers.to_list()
 
     # Arguments for `try_build.bash`
-    try_build_executable = get_executable_file(ctx.attr._try_build)
-    if type(try_build_executable) != "File":
-        fail("{} must correspond to an executable".format(ctx.attr._try_build))
-
+    try_build_executable = ctx.attr._try_build.files_to_run.executable
     args = ctx.actions.args()
     args.add(try_build_executable)
     args.add("-e", compile_stderr)
@@ -338,9 +334,7 @@ def _try_link(ctx, compile_output):
     inputs = [compile_output] + ctx.attr.additional_linker_inputs
 
     # Arguments for `try_build.bash`
-    try_build_executable = get_executable_file(ctx.attr._try_build)
-    if type(try_build_executable) != "File":
-        fail("{} must correspond to an executable".format(ctx.attr._try_build))
+    try_build_executable = ctx.attr._try_build.files_to_run.executable
     args = ctx.actions.args()
     args.add(try_build_executable)
     args.add("-e", link_stderr)
@@ -411,7 +405,7 @@ def _try_build_impl(ctx):
             link_result.output,
         ],
         error_message = "ERROR: C/C++ build error didn't occur",
-        check_emptiness = get_executable_file(ctx.attr._check_emptiness),
+        check_emptiness = ctx.attr._check_emptiness.files_to_run.executable,
     )
 
     markers = [marker_check_build_error]
@@ -511,44 +505,35 @@ def _check_messages_impl(ctx):
     """
 
     cc_build_error_info = ctx.attr.build_trial[CcBuildErrorInfo]
-    marker_compile_stderr = check_each_message(
+    markers_compile_stderr = check_each_message(
         ctx = ctx,
         id = "compile_stderr",
         message_file = cc_build_error_info.compile_stderr,
-        matcher = get_executable_file(ctx.attr.matcher_compile_stderr),
-        pattern = ctx.attr.pattern_compile_stderr,
-        checker = get_executable_file(ctx.attr._check_each_message),
+        match_conditions = match_condition_util.to_structs(ctx, ctx.attr.compile_stderr),
+        checker = ctx.attr._check_each_message.files_to_run.executable,
     )
-    marker_compile_stdout = check_each_message(
+    markers_compile_stdout = check_each_message(
         ctx = ctx,
         id = "compile_stdout",
         message_file = cc_build_error_info.compile_stdout,
-        matcher = get_executable_file(ctx.attr.matcher_compile_stdout),
-        pattern = ctx.attr.pattern_compile_stdout,
-        checker = get_executable_file(ctx.attr._check_each_message),
+        match_conditions = match_condition_util.to_structs(ctx, ctx.attr.compile_stdout),
+        checker = ctx.attr._check_each_message.files_to_run.executable,
     )
-    marker_link_stderr = check_each_message(
+    markers_link_stderr = check_each_message(
         ctx = ctx,
         id = "link_stderr",
         message_file = cc_build_error_info.link_stderr,
-        matcher = get_executable_file(ctx.attr.matcher_link_stderr),
-        pattern = ctx.attr.pattern_link_stderr,
-        checker = get_executable_file(ctx.attr._check_each_message),
+        match_conditions = match_condition_util.to_structs(ctx, ctx.attr.link_stderr),
+        checker = ctx.attr._check_each_message.files_to_run.executable,
     )
-    marker_link_stdout = check_each_message(
+    markers_link_stdout = check_each_message(
         ctx = ctx,
         id = "link_stdout",
         message_file = cc_build_error_info.link_stdout,
-        matcher = get_executable_file(ctx.attr.matcher_link_stdout),
-        pattern = ctx.attr.pattern_link_stdout,
-        checker = get_executable_file(ctx.attr._check_each_message),
+        match_conditions = match_condition_util.to_structs(ctx, ctx.attr.link_stdout),
+        checker = ctx.attr._check_each_message.files_to_run.executable,
     )
-    markers = [
-        marker_compile_stderr,
-        marker_compile_stdout,
-        marker_link_stderr,
-        marker_link_stdout,
-    ] + cc_build_error_info.markers
+    markers = markers_compile_stderr + markers_compile_stdout + markers_link_stderr + markers_link_stdout + cc_build_error_info.markers
     return [
         CcBuildErrorInfo(
             compile_stderr = cc_build_error_info.compile_stderr,
@@ -571,61 +556,33 @@ _check_messages = rule(
             mandatory = True,
             providers = [CcBuildErrorInfo],
         ),
-        "matcher_compile_stderr": attr.label(
-            doc = "Matcher executable for stderr while compiling",
-            mandatory = False,
+        "compile_stderr": match_condition_util.attr(
+            doc = "MatchCondition for stderr while compiling",
         ),
-        "matcher_compile_stdout": attr.label(
-            doc = "Matcher executable for stdout while compiling",
-            mandatory = False,
+        "compile_stdout": match_condition_util.attr(
+            doc = "MatchCondition for stdout while compiling",
         ),
-        "matcher_link_stderr": attr.label(
-            doc = "Matcher executable for stderr while linking",
-            mandatory = False,
+        "link_stderr": match_condition_util.attr(
+            doc = "MatchCondition for stderr while linking",
         ),
-        "matcher_link_stdout": attr.label(
-            doc = "Matcher executable for stdout while linking",
-            mandatory = False,
-        ),
-        "pattern_compile_stderr": attr.string(
-            doc = "Pattern string for stderr while compiling",
-            mandatory = False,
-        ),
-        "pattern_compile_stdout": attr.string(
-            doc = "Pattern string for stdout while compiling",
-            mandatory = False,
-        ),
-        "pattern_link_stderr": attr.string(
-            doc = "Pattern string for stderr while linking",
-            mandatory = False,
-        ),
-        "pattern_link_stdout": attr.string(
-            doc = "Pattern string for stdout while linking",
-            mandatory = False,
+        "link_stdout": match_condition_util.attr(
+            doc = "MatchCondition for stdout while linking",
         ),
         "_check_each_message": attr.label(
             default = Label("//lang/private/script:check_each_message"),
         ),
-    },
+    } | match_condition_util.required_attrs,
     provides = [CcBuildErrorInfo, DefaultInfo],
 )
 
 def cc_build_error(
         *,
         name,
-        compile_stderr = DEFAULT_MATCH_CONDITION,
-        compile_stdout = DEFAULT_MATCH_CONDITION,
-        link_stderr = DEFAULT_MATCH_CONDITION,
-        link_stdout = DEFAULT_MATCH_CONDITION,
         **kwargs):
     """Check a C/C++ build error.
 
     Args:
         name(str): Name of the target.
-        compile_stderr(MatchCondition): MatchCondition for stderr during compilation.
-        compile_stdout(MatchCondition): MatchCondition for stdout during compilation.
-        link_stderr(MatchCondition): MatchCondition for stderr while linking.
-        link_stdout(MatchCondition): MatchCondition for stdout while linking.
         **kwargs(dict): Passed to internal rules.
     """
 
@@ -676,14 +633,6 @@ def cc_build_error(
     _check_messages(
         name = name,
         build_trial = ":" + try_build_target,
-        matcher_compile_stderr = compile_stderr.matcher,
-        matcher_compile_stdout = compile_stdout.matcher,
-        matcher_link_stderr = link_stderr.matcher,
-        matcher_link_stdout = link_stdout.matcher,
-        pattern_compile_stderr = compile_stderr.pattern,
-        pattern_compile_stdout = compile_stdout.pattern,
-        pattern_link_stderr = link_stderr.pattern,
-        pattern_link_stdout = link_stdout.pattern,
         visibility = visibility,
         tags = tags,
         testonly = testonly,
