@@ -3,7 +3,7 @@ load("//matcher:defs.bzl", "matcher")
 load("//tests/unit/cc:utils.bzl", "check_build_and_test")
 
 check_build_and_test(
-    name = "select_inside_substr_matcher",
+    name = "select_inside_substr_match_condition",
     src = "c_compile_error.c",
     compile_stderr = matcher.has_substr("The target platform is " + select({
         "@platforms//os:linux": "linux",
@@ -14,7 +14,7 @@ check_build_and_test(
 )
 
 check_build_and_test(
-    name = "select_inside_basic_regex_matcher",
+    name = "select_inside_basic_regex_match_condition",
     src = "c_compile_error.c",
     compile_stderr = matcher.contains_basic_regex(r"The[[:space:]]target \(p\|P\)latform is " + select({
         "@platforms//os:linux": "linux",
@@ -25,7 +25,7 @@ check_build_and_test(
 )
 
 check_build_and_test(
-    name = "select_inside_extended_regex_matcher",
+    name = "select_inside_extended_regex_match_condition",
     src = "c_compile_error.c",
     compile_stderr = matcher.contains_extended_regex("The[[:space:]]target (p|P)latform is " + select({
         "@platforms//os:linux": "linux",
@@ -36,7 +36,7 @@ check_build_and_test(
 )
 
 check_build_and_test(
-    name = "select_outside_matchers",
+    name = "select_outside_match_conditions",
     src = "c_compile_error.c",
     compile_stderr = select({
         "@platforms//os:linux": matcher.has_substr("The target platform is linux"),
@@ -49,16 +49,16 @@ check_build_and_test(
 build_test(
     name = "build_test",
     targets = [
-        ":select_inside_substr_matcher",
-        ":select_inside_basic_regex_matcher",
-        ":select_inside_extended_regex_matcher",
-        ":select_outside_matchers",
+        ":select_inside_substr_match_condition",
+        ":select_inside_basic_regex_match_condition",
+        ":select_inside_extended_regex_match_condition",
+        ":select_outside_match_conditions",
     ],
 )
 
 # Test case which should fail to build
 check_build_and_test(
-    name = "incorrect_select_inside_matcher",
+    name = "incorrect_select_inside_match_condition",
     src = "c_compile_error.c",
     compile_stderr = matcher.has_substr("The target platform is " + select({
         "@platforms//os:linux": "Windows",
@@ -71,7 +71,7 @@ check_build_and_test(
 
 # Test case which should fail to build
 check_build_and_test(
-    name = "incorrect_select_outside_matcher",
+    name = "incorrect_select_outside_match_conditions",
     src = "c_compile_error.c",
     compile_stderr = select({
         "@platforms//os:linux": matcher.has_substr("The target platform is Windows"),

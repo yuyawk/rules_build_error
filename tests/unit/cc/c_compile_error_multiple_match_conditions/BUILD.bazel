@@ -3,9 +3,9 @@ load("//matcher:defs.bzl", "matcher")
 load("//tests/unit/cc:utils.bzl", "check_build_and_test")
 
 check_build_and_test(
-    name = "with_multiple_matchers",
+    name = "with_multiple_matcher_conditions",
     src = "c_compile_error.c",
-    compile_stderr = matcher.has_substr("Multiple matchers") +
+    compile_stderr = matcher.has_substr("Multiple match conditions") +
                      matcher.contains_basic_regex(r"must[[:space:]]be[[:space:]]supported") +
                      matcher.contains_extended_regex(r"by (t|T)his framework\."),
 )
@@ -13,6 +13,6 @@ check_build_and_test(
 build_test(
     name = "build_test",
     targets = [
-        ":with_multiple_matchers",
+        ":with_multiple_matcher_conditions",
     ],
 )
