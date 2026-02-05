@@ -184,7 +184,6 @@ def _try_compile(ctx):
 
     # Arguments for `try_build.bash`
     try_build_executable = ctx.attr._try_build.files_to_run.executable
-
     args = ctx.actions.args()
     args.add(try_build_executable)
     args.add("-e", compile_stderr)
