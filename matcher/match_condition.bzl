@@ -34,7 +34,7 @@ def MatchCondition(*, pattern, matcher):
 
     Return:
         An object describing the match condition
-    """  # buildifier: disable=function-docstring-return (false-positive)
+    """
 
     def _matcher_to_tag(matcher_label):
         """Retrieve the tag string for the given matcher label.
