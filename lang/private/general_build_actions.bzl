@@ -5,19 +5,6 @@ visibility("//lang/...")
 
 LIST_ALL_ARGS = '"$@"'
 
-def get_executable_file(label):
-    """Get executable file if the label is not None.
-
-    Args:
-        label(label or None): Executable label
-
-    Returns:
-        File: Executable file.
-    """
-    if not label:
-        return None
-    return label.files_to_run.executable
-
 def check_build_error(
         *,
         ctx,
@@ -80,64 +67,45 @@ def check_each_message(
         ctx,
         id,
         message_file,
-        matcher,
-        pattern,
+        match_conditions,
         checker):
     """Check each message with a matcher and a pattern string.
 
-    After checking the message, create an empty text file as a marker for the action.
-    This marker file has to be surely evaluated by the rule.
+    After checking the message, create empty text files as the markers for the action.
+    The marker files have to be surely evaluated by the rule.
 
     Args:
         ctx(ctx): The rule's context.
         id(str): Identifier string to distinguish different checks corresponding to the same label.
         message_file(File): A text file containing message.
-        matcher(File or None): A matcher executable.
-        pattern(str or None): A pattern string.
+        match_conditions(list of structs): List of structs obtained from `match_condition_util.to_structs()`.
         checker(File): Executable file object for `check_each_message.bash`
 
     Returns:
-        File: Marker file for the check.
+        list of File: Marker files for the check.
     """
+    markers = []
 
-    # Marker for the check
-    marker_file = ctx.actions.declare_file(
-        ctx.label.name +
-        "/m_cem/" +
-        id,
-    )
-
-    if not matcher:
-        if pattern:
-            fail(
-                "When not specifying the matcher, " +
-                "pattern string must be empty",
-            )
-
-        ctx.actions.run(
-            outputs = [marker_file],
-            executable = "touch",
-            arguments = [
-                marker_file.path,
-            ],
+    for index, match_condition in enumerate(match_conditions):
+        # Marker for the check
+        marker_file = ctx.actions.declare_file(
+            ctx.label.name +
+            "/m_cem/" +
+            id + "/" +
+            str(index),
         )
-    else:
-        if not pattern:
-            fail(
-                "When specifying the matcher, " +
-                "pattern string must not be empty",
-            )
 
         # Text file containing the pattern string
         pattern_file = ctx.actions.declare_file(
             ctx.label.name +
             "/p_cem/" +
-            id,
+            id + "/" +
+            str(index),
         )
 
         ctx.actions.write(
             output = pattern_file,
-            content = pattern,
+            content = match_condition.pattern,
         )
 
         ctx.actions.run_shell(
@@ -146,12 +114,14 @@ def check_each_message(
             command = LIST_ALL_ARGS,
             arguments = [
                 checker.path,
-                matcher.path,
+                match_condition.matcher.path,
                 pattern_file.path,
                 message_file.path,
                 marker_file.path,
             ],
-            tools = [checker, matcher],
+            tools = [checker, match_condition.matcher],
         )
 
-    return marker_file
+        markers.append(marker_file)
+
+    return markers
