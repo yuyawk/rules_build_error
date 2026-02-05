@@ -57,5 +57,7 @@ check_bazel_build_error //tests/unit/cc/cpp_inline_src:incorrect_extension
 check_bazel_build_error //tests/unit/cc/cpp_inline_src:incorrect_extension.test
 check_bazel_build_error //tests/unit/cc/c_inline_src:incorrect_extension
 check_bazel_build_error //tests/unit/cc/c_inline_src:incorrect_extension.test
-check_bazel_build_error //tests/unit/cc/c_compile_error_matcher_using_select:incorrect_matcher
-check_bazel_build_error //tests/unit/cc/c_compile_error_matcher_using_select:incorrect_matcher.test
+check_bazel_build_error //tests/unit/cc/c_compile_error_matcher_using_select:incorrect_select_inside_matcher
+check_bazel_build_error //tests/unit/cc/c_compile_error_matcher_using_select:incorrect_select_inside_matcher.test
+check_bazel_build_error //tests/unit/cc/c_compile_error_matcher_using_select:incorrect_select_outside_matcher
+check_bazel_build_error //tests/unit/cc/c_compile_error_matcher_using_select:incorrect_select_outside_matcher.test
