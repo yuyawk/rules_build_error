@@ -7,6 +7,9 @@ visibility("//lang/...")
 _TAG_SUFFIX = "\1RBEMATCHCONDITION\1"
 
 # Contains information to identify each matcher.
+# Constraints:
+#   * Each tag must be a unique, single character.
+#   * Each attr must be unique and start with "_matcher_".
 _MATCHERS_INFORMATION = [
     struct(
         tag = "0",
