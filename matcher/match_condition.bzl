@@ -1,4 +1,8 @@
 """Defines some functions to characterize MatchCondition.
+
+This bzl file refers to the implementation details of MatchCondition object,
+but outwardly the details are hidden behind the utility struct `match_condition_util`
+and the MatchCondition constructor.
 """
 
 visibility("//lang/...")
