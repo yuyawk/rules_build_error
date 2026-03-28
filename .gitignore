@@ -3,6 +3,3 @@
 MODULE.bazel.lock
 ## Generated based on version configuration
 .bazelversion
-
-# For development
-/.cache

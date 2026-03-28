@@ -4,6 +4,3 @@
 # Bazel
 /bazel-*
 MODULE.bazel.lock
-
-# For development
-/.cache
