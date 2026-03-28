@@ -1,6 +1,8 @@
 ---
 name: Set up environment
 
+description: Set up environment for Bazel builds, including installing Visual C++ Build Tools on Windows if needed.
+
 inputs:
   bazel-version:
     description: Bazel version
@@ -32,4 +34,3 @@ runs:
     - uses: bazel-contrib/setup-bazel@0.19.0
       with:
         bazelisk-cache: true
-    
