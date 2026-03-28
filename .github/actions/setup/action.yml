@@ -29,5 +29,17 @@ runs:
         echo "DEVELOPMENT_BAZEL_VERSION=${BAZEL_VERSION}" >> "${GITHUB_ENV}"
       env:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
+    - name: Place top-level .bazelversion file for bazelisk-cache, after checking there is no existing .bazelversion file
+      shell: bash
+      run: |
+        if [ -f .bazelversion ]; then
+          echo ".bazelversion file already exists in the repository. Please remove it to use this action."
+          exit 1
+        fi
+        echo "${BAZEL_VERSION}" > .bazelversion
+      env:
+        BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk
       uses: bazel-contrib/setup-bazel@0.19.0
+      with:
+        bazelisk-cache: true
