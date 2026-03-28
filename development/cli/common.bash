@@ -35,9 +35,17 @@ bazel() {
     local environment_variables_to_set
     environment_variables_to_set=(
         BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
-        "BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk"
         "PATH=${PATH}"
     )
+    # Store the bazelisk cache locally when not running on CI, to avoid polluting the home directory
+    if [[ "${CI:-}" != "true" ]]; then
+        environment_variables_to_set+=("BAZELISK_HOME=${REPO_ROOT_DIR}/.cache/bazelisk")
+    else
+        # On CI, the default cache directory is used, to make the most of the caching mechanism of bazel-contrib/setup-bazel
+        [[ -n "${HOME:-}" ]] && environment_variables_to_set+=("HOME=${HOME}")
+        [[ -n "${XDG_CACHE_HOME:-}" ]] && environment_variables_to_set+=("XDG_CACHE_HOME=${XDG_CACHE_HOME}")
+        [[ -n "${LOCALAPPDATA:-}" ]] && environment_variables_to_set+=("LOCALAPPDATA=${LOCALAPPDATA}")
+    fi
     # Also set BAZEL_VC if defined in the environment
     # https://bazel.build/configure/windows#build_cpp
     if [[ -n "${BAZEL_VC:-}" ]]; then
