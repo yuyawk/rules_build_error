@@ -30,7 +30,6 @@ runs:
       env:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk
-      uses: yuyawk/github-actions/install-bazelisk@v1
-    - uses: bazel-contrib/setup-bazel@0.19.0
+      uses: bazel-contrib/setup-bazel@0.19.0
       with:
         bazelisk-cache: true
