@@ -31,5 +31,3 @@ runs:
         BAZEL_VERSION: ${{ inputs.bazel-version }}
     - name: Install bazelisk
       uses: bazel-contrib/setup-bazel@0.19.0
-      with:
-        bazelisk-cache: true
