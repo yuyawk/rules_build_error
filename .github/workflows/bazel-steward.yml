@@ -47,7 +47,7 @@ jobs:
           EOS
         env:
           WORKSPACE_ROOT: ${{ matrix.workspace-root }}
-      - uses: VirtusLab/bazel-steward@v1
+      - uses: VirtusLab/bazel-steward@v1.7.1
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           # Workaround for multiple workspaces (cf. https://github.com/VirtusLab/bazel-steward/issues/40)
