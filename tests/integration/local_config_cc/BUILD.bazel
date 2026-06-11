@@ -53,7 +53,7 @@ cc_build_error_test(
         return 0;
     }
     """),
-    compile_stdout = matcher.has_substr("static_assert failed"),
+    compile_stdout = matcher.has_substr("static assertion failed"),
     target_compatible_with = [
         "@platforms//os:windows",
     ],
@@ -69,7 +69,7 @@ cc_build_error_test(
         return 0;
     }
     """),
-    compile_stdout = matcher.has_substr("static_assert failed"),
+    compile_stdout = matcher.has_substr("static assertion failed"),
     target_compatible_with = [
         "@platforms//os:windows",
     ],
