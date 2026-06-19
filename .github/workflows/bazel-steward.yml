@@ -12,7 +12,7 @@ jobs:
     outputs:
       workspace_roots: ${{ steps.fetch.outputs.workspace_roots }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Fetch workspace roots
         id: fetch
         shell: bash
@@ -27,7 +27,7 @@ jobs:
         workspace-root: ${{ fromJson(needs.fetch-workspace-roots.outputs.workspace_roots) }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Generate GitHub Apps token
