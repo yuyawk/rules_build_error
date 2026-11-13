@@ -1,0 +1,31 @@
+load("//lang/cc:defs.bzl", "cc_build_error")
+load(":action_env_test.bzl", "action_env_test")
+
+cc_build_error(
+    name = "link_error",
+    src = "link_error.c",
+)
+
+cc_build_error(
+    name = "link_error_with_default_shell_env",
+    src = "link_error.c",
+    use_default_shell_env = True,
+)
+
+# The compiler must not record the sandbox directory in its outputs.
+_EXPECTED_PWD = select({
+    "@platforms//os:linux": "/proc/self/cwd",
+    "//conditions:default": "",
+})
+
+action_env_test(
+    name = "link_error_test",
+    expected_pwd = _EXPECTED_PWD,
+    target_under_test = ":link_error__0",
+)
+
+action_env_test(
+    name = "link_error_with_default_shell_env_test",
+    expected_pwd = _EXPECTED_PWD,
+    target_under_test = ":link_error_with_default_shell_env__0",
+)
