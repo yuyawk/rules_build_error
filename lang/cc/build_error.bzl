@@ -61,6 +61,25 @@ _EXTENSIONS_CPP = [
     ".cxx",
 ]
 
+def _get_env(ctx, toolchain_env):
+    """Get the environment variables for a compile or link action.
+
+    Like Bazel's own C/C++ actions, set `PWD=/proc/self/cwd` on Linux so that
+    the compiler does not record the sandbox directory (e.g. as the DWARF
+    `DW_AT_comp_dir`). Otherwise the outputs depend on the execution root and
+    are not reproducible. Variables set by the toolchain take precedence.
+
+    Args:
+        ctx(ctx): The rule's context.
+        toolchain_env(dict[str, str]): Environment variables from the toolchain.
+
+    Returns:
+        dict[str, str]: Environment variables for the action.
+    """
+    if ctx.attr.os != "linux":
+        return toolchain_env
+    return {"PWD": "/proc/self/cwd"} | toolchain_env
+
 def _is_c(src_file):
     """Whether the source file is for C.
 
@@ -202,7 +221,7 @@ def _try_compile(ctx):
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
-        env = env,
+        env = _get_env(ctx, env),
         use_default_shell_env = ctx.attr.use_default_shell_env,
     )
 
@@ -377,7 +396,7 @@ def _try_link(ctx, compile_output):
         arguments = [args],
         command = LIST_ALL_ARGS,
         tools = cc_toolchain.all_files.to_list() + [try_build_executable],
-        env = env,
+        env = _get_env(ctx, env),
         use_default_shell_env = ctx.attr.use_default_shell_env,
     )
 
