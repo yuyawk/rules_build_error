@@ -29,8 +29,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -69,8 +67,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -98,8 +94,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
@@ -115,8 +109,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up
         uses: ./.github/actions/setup
         with:
